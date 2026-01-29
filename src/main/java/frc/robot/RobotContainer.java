@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AutoAim;
+import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -78,7 +79,7 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         joystick.x().whileTrue(new DriveOverBump(drivetrain));
-
+        joystick.a().whileTrue(new AutoDrive(drivetrain));
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
