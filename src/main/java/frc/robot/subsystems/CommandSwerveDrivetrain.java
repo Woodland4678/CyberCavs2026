@@ -12,13 +12,23 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -27,6 +37,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -45,6 +56,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
     public static final Field2d field = new Field2d();
+    double cameraForwardPos = Units.inchesToMeters(-12.5);
+    double cameraRightPos = Units.inchesToMeters(2.5); //negative is to the right
+    Transform2d cameraToRobot = new Transform2d(new Translation2d(cameraForwardPos, cameraRightPos),new Rotation2d());
     boolean hasMultiTagTarget = false;
 
     Transform3d fieldToCameraPosition;
@@ -55,6 +69,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
+
+    private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
@@ -143,6 +159,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
          rpi = new PhotonCamera("Arducam_OV9281_USB_Camera");
          fieldToCameraPosition = new Transform3d();
+         configureAutoBuilder();
     }
 
     /**
@@ -169,6 +186,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
          rpi = new PhotonCamera("Arducam_OV9281_USB_Camera");
          fieldToCameraPosition = new Transform3d();
+         configureAutoBuilder();
     }
 
     /**
@@ -203,8 +221,50 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
          rpi = new PhotonCamera("Arducam_OV9281_USB_Camera");
          fieldToCameraPosition = new Transform3d();
+         configureAutoBuilder();
     }
 
+
+     private void configureAutoBuilder() {
+        try {
+            var config = RobotConfig.fromGUISettings();
+            AutoBuilder.configure(
+                () -> getState().Pose,   // Supplier of current robot pose
+                this::resetPose,         // Consumer for seeding pose against auto
+                () -> getState().Speeds, // Supplier of current robot speeds
+                // Consumer of ChassisSpeeds and feedforwards to drive the robot
+                (speeds, feedforwards) -> setControl(
+                    m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
+                        .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                        .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
+                ),
+                new PPHolonomicDriveController(
+                    // PID constants for translation
+                    new PIDConstants(10, 0, 0),
+                    // PID constants for rotation
+                    new PIDConstants(7, 0, 0)
+                ),
+                config,
+                // Assume the path needs to be flipped for Red vs Blue, this is normally the case
+                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                this // Subsystem for requirements
+            );
+        } catch (Exception ex) {
+            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+        }
+    }
+    public Command getAutonomousCommand() {
+        try{
+            // Load the path you want to follow using its name in the GUI
+            PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
+
+            // Create a path following command using AutoBuilder. This will also trigger event markers.
+            return AutoBuilder.followPath(path);
+        } catch (Exception e) {
+            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
+        }
+    }
     /**
      * Returns a command that applies the specified control request to this swerve drivetrain.
      *
@@ -263,7 +323,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             if (multiTagResult.isPresent()) {
                 hasMultiTagTarget = true;
                 fieldToCameraPosition = multiTagResult.get().estimatedPose.best;
-                this.addVisionMeasurement(new Pose2d(fieldToCameraPosition.getX(), fieldToCameraPosition.getY(), this.getState().Pose.getRotation()), Timer.getFPGATimestamp());
+                this.addVisionMeasurement(new Pose2d(fieldToCameraPosition.getX(), fieldToCameraPosition.getY(), this.getState().Pose.getRotation()).transformBy(cameraToRobot), Timer.getFPGATimestamp());
                 SmartDashboard.putNumber("Field to camera X", fieldToCameraPosition.getX());
                 SmartDashboard.putNumber("Field to camera Y", fieldToCameraPosition.getY());
             }

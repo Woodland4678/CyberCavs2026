@@ -27,19 +27,20 @@ public class AutoDrive extends Command {
   int currentIndex = 0;
   boolean isDone = false;
 
-  double POSITION_TOLERANCE = 0.2; // 5 cm
+  double POSITION_TOLERANCE = 0.15; // 5 cm
   static final double MAX_LINEAR_SPEED = 4.4;   // m/s (use your drivetrain max)
   static final double MAX_ANGULAR_SPEED = Math.PI * 2; // rad/s
   static final double CRUISE_SPEED = 4.0;
+  double ROTATION_TOLERANCE_RAD = Math.toRadians(10.0);
 
   PIDController xController = new PIDController(8.0, 0.0, 0.0);
   PIDController yController = new PIDController(8.0, 0.0, 0.0);
 
   ProfiledPIDController thetaController =
       new ProfiledPIDController(
-          8.0, 0.0, 0.0,
+          10.0, 0.0, 0.0,
           new TrapezoidProfile.Constraints(
-              2 * Math.PI, Math.PI * 4));
+              3 * Math.PI, Math.PI * 4));
 
   HolonomicDriveController controller =
       new HolonomicDriveController(
@@ -59,11 +60,16 @@ public class AutoDrive extends Command {
     isDone = false;
     currentIndex = 0;
     currentPose = S_Swerve.getState().Pose;
-    POSITION_TOLERANCE = 0.20;
+    POSITION_TOLERANCE = 0.15;
+    ROTATION_TOLERANCE_RAD = Math.toRadians(10.0);
     Pose2d[] path = {
-      new Pose2d(currentPose.getX() + 1, currentPose.getY(), currentPose.getRotation()),
-      new Pose2d(currentPose.getX() + 2, currentPose.getY() + 1,  Rotation2d.fromDegrees(20)),
-      new Pose2d(currentPose.getX(), currentPose.getY(),  Rotation2d.fromDegrees(0))
+      new Pose2d(7.671, 3, new Rotation2d().fromDegrees(145)),
+      new Pose2d(7.865, 2.286, new Rotation2d().fromDegrees(40)),
+      //new Pose2d(currentPose.getX() + 2, currentPose.getY(), new Rotation2d().fromDegrees(180)),
+      //new Pose2d(currentPose.getX() + 1.5, currentPose.getY() - 1,  Rotation2d.fromDegrees(135)),
+      //new Pose2d(currentPose.getX() + 1, currentPose.getY() - 1,  Rotation2d.fromDegrees(0)),
+      //new Pose2d(currentPose.getX(), currentPose.getY(),  Rotation2d.fromDegrees(45)),
+      new Pose2d(5.648, 1.977,  Rotation2d.fromDegrees(45))
       //new Pose2d(currentPose.getX(), currentPose.getY() + 1, currentPose.getRotation()),
       //new Pose2d(currentPose.getX(), currentPose.getY(), currentPose.getRotation())
     };
@@ -77,14 +83,23 @@ public class AutoDrive extends Command {
     Pose2d targetPose = waypoints[currentIndex];
     SmartDashboard.putString("Auto Drive Target Pose", targetPose.toString());
     if (currentIndex == waypoints.length - 1) {
-      POSITION_TOLERANCE = 0.01;
+      POSITION_TOLERANCE = 0.03;
+      ROTATION_TOLERANCE_RAD = Math.toRadians(3.0);
     }
     // Distance check (XY only)
     double distance =
         currentPose.getTranslation()
             .getDistance(targetPose.getTranslation());
+
+    double rotationError =
+    Math.abs(
+        MathUtil.angleModulus(
+            targetPose.getRotation().getRadians()
+                - currentPose.getRotation().getRadians()
+        )
+    );
     SmartDashboard.putNumber("Auto Drive Error", distance);
-    if (distance <= POSITION_TOLERANCE) {
+    if (distance <= POSITION_TOLERANCE && rotationError < ROTATION_TOLERANCE_RAD) {
       currentIndex++;
       if (currentIndex >= waypoints.length) {
         isDone = true;
@@ -102,7 +117,7 @@ public class AutoDrive extends Command {
       
     double linearSpeed = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     if (currentIndex < waypoints.length - 1) {
-      if (linearSpeed < CRUISE_SPEED) {
+      if (linearSpeed < CRUISE_SPEED && distance > POSITION_TOLERANCE) {
         double scale = CRUISE_SPEED / linearSpeed;
         speeds.vxMetersPerSecond *= scale;
         speeds.vyMetersPerSecond *= scale;
@@ -118,10 +133,14 @@ public class AutoDrive extends Command {
     //     speeds.omegaRadiansPerSecond,
     //     -MAX_ANGULAR_SPEED,
     //     MAX_ANGULAR_SPEED);
-
+    ChassisSpeeds fieldSpeeds =
+    ChassisSpeeds.fromRobotRelativeSpeeds(
+        speeds,
+        currentPose.getRotation()
+    );
     S_Swerve.setControl(
         new SwerveRequest.ApplyFieldSpeeds()
-            .withSpeeds(speeds));
+            .withSpeeds(fieldSpeeds));
     SmartDashboard.putString("Auto Drive speeds", speeds.toString());
     SmartDashboard.putNumber("AutoDrive Target Index", currentIndex);
     SmartDashboard.putNumber("AutoDrive Distance", distance);

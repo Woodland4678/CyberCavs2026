@@ -25,6 +25,7 @@ public class DriveOverBump extends Command {
   int cnt = 0;
   double xSpeed = 4.2;
   double ySpeed = 0.0;
+  boolean isDone = false;
   private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
             .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -38,8 +39,9 @@ public class DriveOverBump extends Command {
   @Override
   public void initialize() {
     state = 0;
-    xSpeed = 4.2;
+    xSpeed = 3.5;
     cnt = 0;
+    isDone = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,11 +56,6 @@ public class DriveOverBump extends Command {
         //I conclude looking for one direction, then the other, then flat will be more consistent
       switch(state) {
         case 0:
-          if (Math.abs(S_Swerve.getGyroRoll())>3 || Math.abs(S_Swerve.getGyroPitch()) > 3) {
-            state++;
-          }
-        break;
-      /*  case 0:
           if (S_Swerve.getGyroRoll() > 3) {
             state++;
           }
@@ -67,8 +64,8 @@ public class DriveOverBump extends Command {
           if (S_Swerve.getGyroRoll() < -3) {
             state++;
           }
-        break;*/
-        case 1:
+        break;
+        case 2:
           if ((S_Swerve.getGyroRoll() > -1.5 && S_Swerve.getGyroRoll() < 1.5)&&(S_Swerve.getGyroPitch() > -1.5 && S_Swerve.getGyroPitch() < 1.5)) {
             //state++;
             cnt++;
@@ -80,9 +77,10 @@ public class DriveOverBump extends Command {
             state++;
           }
         break;
-        case 2:
+        case 3:
           xSpeed = 0;
           ySpeed = 0;
+          isDone = true;
         break;
       }
       SmartDashboard.putNumber("Get Over Bump State", state);
@@ -102,6 +100,6 @@ public class DriveOverBump extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return isDone;
   }
 }
