@@ -24,6 +24,7 @@ import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 
@@ -45,6 +46,7 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public final Hopper S_Hopper = new Hopper();
+    public final Climber S_Climber = new Climber();
 
     public RobotContainer() {
         configureBindings();
@@ -56,6 +58,12 @@ public class RobotContainer {
 
         joystick.povUp().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPM(500)));
         joystick.povUp().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
+
+        joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.moveClimberToPosition(100)));//normal position (placeholder vlaue)
+        joystick.povLeft().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
+        joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.moveClimberToPosition(200)));//up position (placeholder value)
+        joystick.povRight().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
+
 
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
