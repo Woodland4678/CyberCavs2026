@@ -9,6 +9,7 @@ import java.util.Dictionary;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -37,7 +38,7 @@ public class Shooter extends SubsystemBase {
   DigitalInput rightFuelSensor;
 
   public Shooter() {
-    final CANBus canbus = new CANBus("rio");
+    final CANBus canbus = new CANBus("DriveTrain");
 
     leftFuelSensor = new DigitalInput(8); //needs valid channel ???
     leftFuelSensor = new DigitalInput(9); //needs valid channel ???
@@ -52,12 +53,13 @@ public class Shooter extends SubsystemBase {
     var feederConfigs = new TalonFXConfiguration();
 
     var shooterMotionPIDConfigs = shooterConfigs.Slot0;
-    shooterMotionPIDConfigs.kS = 0.0; // Add 0.25 V output to overcome static friction
-    shooterMotionPIDConfigs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
+    shooterMotionPIDConfigs.kS = 0.19; // Add 0.25 V output to overcome static friction
+    shooterMotionPIDConfigs.kV = 0.1; // A velocity target of 1 rps results in 0.12 V output
     shooterMotionPIDConfigs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterMotionPIDConfigs.kP = 1; // A position error of 2.5 rotations results in 12 V output
+    shooterMotionPIDConfigs.kP = 0.0; // A position error of 2.5 rotations results in 12 V output
     shooterMotionPIDConfigs.kI = 0; // no output for integrated error
     shooterMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
+
 
     var shooterMotionConfigs = shooterConfigs.MotionMagic;
     shooterMotionConfigs.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
@@ -100,9 +102,10 @@ public class Shooter extends SubsystemBase {
   public void setShooterSpeedRPS(double rps) {
     // create a velocity closed-loop request, voltage output, slot 0 configs
     final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
-
+    final TorqueCurrentFOC m_requestFOC = new TorqueCurrentFOC(0);
     // set velocity to 8 rps, add 0.5 V to overcome gravity
-    shooterLeadMotor.setControl(m_request.withVelocity(rps));
+    //shooterLeadMotor.setControl(m_request.withVelocity(rps));
+    shooterLeadMotor.setControl(m_requestFOC);
   }
 
   public double getShooterSpeedRPS() {
@@ -120,6 +123,7 @@ public class Shooter extends SubsystemBase {
     final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
     // set velocity to 8 rps, add 0.5 V to overcome gravity
+    m_request.EnableFOC = true;
     feederMotor.setControl(m_request.withVelocity(rps));
   }
 

@@ -66,7 +66,7 @@ public class RobotContainer {
         joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.moveClimberToPosition(200)));//up position (placeholder value)
         joystick.povRight().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
 
-        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(10)));//up position (placeholder value)
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(40)));//up position (placeholder value)
         joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
 
         drivetrain.setDefaultCommand(

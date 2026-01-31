@@ -336,6 +336,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Robot Rotation", getGyroValue());
         SmartDashboard.putNumber("Gyro Roll", this.getPigeon2().getRoll().getValueAsDouble());
         SmartDashboard.putNumber("Gyro Pitch", this.getPigeon2().getPitch().getValueAsDouble());
+        SmartDashboard.putNumber("Front left drive speed", this.getModule(0).getDriveMotor().getVelocity().getValueAsDouble());
     }
 
     private void startSimThread() {
