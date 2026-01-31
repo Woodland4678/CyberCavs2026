@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -22,7 +23,8 @@ public class Hopper extends SubsystemBase {
   /** Creates a new Hopper. */
   public Hopper() {
 
-    floorMotor = new TalonFX(0,"rio");
+    final CANBus canbus = new CANBus("rio");
+    floorMotor = new TalonFX(0,canbus);
 
     // in init function
     var floorConfigs = new TalonFXConfiguration();
