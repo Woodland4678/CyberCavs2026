@@ -27,6 +27,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -47,6 +48,7 @@ public class RobotContainer {
 
     public final Hopper S_Hopper = new Hopper();
     public final Climber S_Climber = new Climber();
+    public final Shooter S_Shooter = new Shooter();
 
     public RobotContainer() {
         configureBindings();
@@ -64,6 +66,8 @@ public class RobotContainer {
         joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.moveClimberToPosition(200)));//up position (placeholder value)
         joystick.povRight().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
 
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(10)));//up position (placeholder value)
+        joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
 
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
