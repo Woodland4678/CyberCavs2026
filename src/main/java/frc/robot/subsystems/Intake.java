@@ -92,11 +92,11 @@ public class Intake extends SubsystemBase {
 
   }
 
-  public void setIntakeWheelSpeed(double rpm){
+  public void setIntakeWheelSpeed(double rps){
     // create a velocity closed-loop request, voltage output, slot 0 configs
     final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
-
-    intakeWheels.setControl(m_request.withVelocity(rpm/60));
+    m_request.EnableFOC = true;
+    intakeWheels.setControl(m_request.withVelocity(rps));
     //floorMotor.setControl(m_request.withVelocity(rpm).withFeedForward(0.5));
 
   }

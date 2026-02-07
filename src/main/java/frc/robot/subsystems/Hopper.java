@@ -55,13 +55,13 @@ public class Hopper extends SubsystemBase {
     return floorMotor.getVelocity().getValueAsDouble();
   }
 
-  public void setFloorRPM(double rpm){
+  public void setFloorRPM(double rps){
 
     // create a velocity closed-loop request, voltage output, slot 0 configs
     final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
     // set velocity to 8 rps, add 0.5 V to overcome gravity
-    floorMotor.setControl(m_request.withVelocity(rpm/60));
+    floorMotor.setControl(m_request.withVelocity(rps));
     //floorMotor.setControl(m_request.withVelocity(rpm).withFeedForward(0.5)); 
   }
 

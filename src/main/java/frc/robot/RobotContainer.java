@@ -32,7 +32,7 @@ import frc.robot.subsystems.Shooter;
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-
+    private PathPlannerPath examplePath;
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -46,28 +46,29 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public final Hopper S_Hopper = new Hopper();
-    public final Climber S_Climber = new Climber();
+   // public final Hopper S_Hopper = new Hopper();
+  //  public final Climber S_Climber = new Climber();
     public final Shooter S_Shooter = new Shooter();
 
     public RobotContainer() {
         configureBindings();
+        loadPaths();
     }
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
 
-        joystick.povUp().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPM(500)));
-        joystick.povUp().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
+       // joystick.povUp().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPM(500)));
+       // joystick.povUp().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
+//
+       // joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.moveClimberToPosition(100)));//normal position (placeholder vlaue)
+       // joystick.povLeft().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
+       // joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.moveClimberToPosition(200)));//up position (placeholder value)
+       // joystick.povRight().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
 
-        joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.moveClimberToPosition(100)));//normal position (placeholder vlaue)
-        joystick.povLeft().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
-        joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.moveClimberToPosition(200)));//up position (placeholder value)
-        joystick.povRight().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
-
-        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(40)));//up position (placeholder value)
-        joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
+        //joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(70)));//up position (placeholder value)
+        //joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
 
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
@@ -109,16 +110,17 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        try{
-        // Load the path you want to follow using its name in the GUI
-        PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
+        return new RightSideToNeutralTwice(drivetrain,examplePath);
+        // try{
+        // // Load the path you want to follow using its name in the GUI
+        // PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
 
-        // Create a path following command using AutoBuilder. This will also trigger event markers.
-        return AutoBuilder.followPath(path);
-            } catch (Exception e) {
-                DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-                return Commands.none();
-            }
+        // // Create a path following command using AutoBuilder. This will also trigger event markers.
+        // return AutoBuilder.followPath(path);
+        //     } catch (Exception e) {
+        //         DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+        //         return Commands.none();
+        //     }
         
         //return new RightSideToNeutralTwice(drivetrain);
         // Simple drive forward auton
@@ -138,4 +140,15 @@ public class RobotContainer {
         //     drivetrain.applyRequest(() -> idle)
         // );
     }
+    private void loadPaths() {
+        try {
+            examplePath = PathPlannerPath.fromPathFile("Example Path");
+        } catch (Exception e) {
+            DriverStation.reportError(
+                "Failed to load Example Path",
+                e.getStackTrace()
+            );
+            examplePath = null;
+        }
+}
 }

@@ -23,7 +23,7 @@ public class DriveOverBump extends Command {
   double targetY = 4.035;
   int state = 0;
   int cnt = 0;
-  double xSpeed = 4.2;
+  double xSpeed = 5.8;
   double ySpeed = 0.0;
   boolean isDone = false;
   private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
@@ -39,7 +39,6 @@ public class DriveOverBump extends Command {
   @Override
   public void initialize() {
     state = 0;
-    xSpeed = 3.5;
     cnt = 0;
     isDone = false;
   }
@@ -66,7 +65,7 @@ public class DriveOverBump extends Command {
           }
         break;
         case 2:
-          if ((S_Swerve.getGyroRoll() > -1.5 && S_Swerve.getGyroRoll() < 1.5)&&(S_Swerve.getGyroPitch() > -1.5 && S_Swerve.getGyroPitch() < 1.5)) {
+          if ((S_Swerve.getGyroRoll() > -1.5 && S_Swerve.getGyroRoll() < 1.5)) {
             //state++;
             cnt++;
           }

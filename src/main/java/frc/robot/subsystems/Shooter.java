@@ -10,6 +10,7 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -33,6 +34,7 @@ public class Shooter extends SubsystemBase {
 
   String currentHoodPosition;
 
+  int slot = 0;
   DigitalInput leftFuelSensor;
   DigitalInput centreFuelSensor;
   DigitalInput rightFuelSensor;
@@ -52,13 +54,23 @@ public class Shooter extends SubsystemBase {
     var shooterConfigs = new TalonFXConfiguration();
     var feederConfigs = new TalonFXConfiguration();
 
+    //For Velocity Voltage
     var shooterMotionPIDConfigs = shooterConfigs.Slot0;
-    shooterMotionPIDConfigs.kS = 0.19; // Add 0.25 V output to overcome static friction
-    shooterMotionPIDConfigs.kV = 0.1; // A velocity target of 1 rps results in 0.12 V output
+    shooterMotionPIDConfigs.kS = 0.0; // Add 0.25 V output to overcome static friction
+    shooterMotionPIDConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
     shooterMotionPIDConfigs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterMotionPIDConfigs.kP = 0.0; // A position error of 2.5 rotations results in 12 V output
+    shooterMotionPIDConfigs.kP = 0.6; // A position error of 2.5 rotations results in 12 V output
     shooterMotionPIDConfigs.kI = 0; // no output for integrated error
     shooterMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
+
+    // For VelocityTorqueCurrentFOC
+    var shooterMotionPIDConfigs2 = shooterConfigs.Slot1;
+    shooterMotionPIDConfigs2.kS = 0.0; // Add 0.25 V output to overcome static friction
+    shooterMotionPIDConfigs2.kV = 0.057; // A velocity target of 1 rps results in 0.12 V output
+    shooterMotionPIDConfigs2.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
+    shooterMotionPIDConfigs2.kP = 6.0; // A position error of 2.5 rotations results in 12 V output
+    shooterMotionPIDConfigs2.kI = 0; // no output for integrated error
+    shooterMotionPIDConfigs2.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
 
     var shooterMotionConfigs = shooterConfigs.MotionMagic;
@@ -101,11 +113,20 @@ public class Shooter extends SubsystemBase {
 
   public void setShooterSpeedRPS(double rps) {
     // create a velocity closed-loop request, voltage output, slot 0 configs
-    final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
-    final TorqueCurrentFOC m_requestFOC = new TorqueCurrentFOC(0);
-    // set velocity to 8 rps, add 0.5 V to overcome gravity
-    //shooterLeadMotor.setControl(m_request.withVelocity(rps));
-    shooterLeadMotor.setControl(m_requestFOC);
+    
+    // if (Math.abs(getShooterSpeedRPS() - rps) < 1.0) {
+    //   slot = 1;
+    // }
+    final VelocityVoltage m_requestFOC = new VelocityVoltage(0).withSlot(0);
+   
+    m_requestFOC.EnableFOC = true;
+
+    shooterLeadMotor.setControl(m_requestFOC.withVelocity(rps));
+  }
+  public void setShooterRPSTorqueFOC(double rps) {
+    final VelocityTorqueCurrentFOC m_requestFOC = new VelocityTorqueCurrentFOC(0).withSlot(0);
+
+    shooterLeadMotor.setControl(m_requestFOC.withVelocity(rps));
   }
 
   public double getShooterSpeedRPS() {
@@ -133,6 +154,9 @@ public class Shooter extends SubsystemBase {
 
   public void stopFeeder() {
     feederMotor.disable();
+  }
+  public void setShooterPIDSlot(int slot) {
+  
   }
 
   // public void findFeederTargetSpeed(double distance) {}

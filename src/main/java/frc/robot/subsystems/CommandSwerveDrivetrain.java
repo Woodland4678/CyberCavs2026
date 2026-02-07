@@ -16,6 +16,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.Matrix;
@@ -265,6 +266,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             return Commands.none();
         }
     }
+    public Command findPath(PathPlannerPath path, PathConstraints constraints) {
+        return AutoBuilder.pathfindThenFollowPath(
+                    path,
+                    constraints
+        );
+  }
     /**
      * Returns a command that applies the specified control request to this swerve drivetrain.
      *
@@ -337,6 +344,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Gyro Roll", this.getPigeon2().getRoll().getValueAsDouble());
         SmartDashboard.putNumber("Gyro Pitch", this.getPigeon2().getPitch().getValueAsDouble());
         SmartDashboard.putNumber("Front left drive speed", this.getModule(0).getDriveMotor().getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Robot Velocity X", this.getState().Speeds.vxMetersPerSecond);
     }
 
     private void startSimThread() {
