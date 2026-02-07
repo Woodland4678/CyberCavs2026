@@ -14,8 +14,16 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,7 +38,14 @@ public class Shooter extends SubsystemBase {
 
   SparkMax hoodMotor;
 
-  Dictionary<String, Double> hoodPositions;
+  private SparkMaxConfig hoodMotorConfig;
+  private SparkClosedLoopController hoodMotorController;
+
+  public static enum HoodPosition {
+    LOW,
+    MEDIUM,
+    HIGH
+  }
 
   String currentHoodPosition;
 
@@ -56,10 +71,10 @@ public class Shooter extends SubsystemBase {
 
     //For Velocity Voltage
     var shooterMotionPIDConfigs = shooterConfigs.Slot0;
-    shooterMotionPIDConfigs.kS = 0.0; // Add 0.25 V output to overcome static friction
+    shooterMotionPIDConfigs.kS = 0.2; // Add 0.25 V output to overcome static friction
     shooterMotionPIDConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
     shooterMotionPIDConfigs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterMotionPIDConfigs.kP = 0.6; // A position error of 2.5 rotations results in 12 V output
+    shooterMotionPIDConfigs.kP = 0.175; // A position error of 2.5 rotations results in 12 V output
     shooterMotionPIDConfigs.kI = 0; // no output for integrated error
     shooterMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
@@ -96,8 +111,22 @@ public class Shooter extends SubsystemBase {
     feederMotionConfigs.MotionMagicJerk = 2000; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
     feederMotor.getConfigurator().apply(feederConfigs);
+    
+     hoodMotor = new SparkMax(4, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
+     hoodMotorController = hoodMotor.getClosedLoopController();
 
-    // hoodMotor = new SparkMax(4, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
+     hoodMotorConfig = new SparkMaxConfig();
+
+     hoodMotorConfig.closedLoop
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      // Set PID values for position control. We don't need to pass a closed
+      // loop slot, as it will default to slot 0.
+      .p(0.1)
+      .i(0)
+      .d(0)
+      .outputRange(-1, 1);
+
+      hoodMotor.configure(hoodMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     // hoodPositions = new Dictionary<String,Double>() {
       
@@ -161,7 +190,27 @@ public class Shooter extends SubsystemBase {
 
   // public void findFeederTargetSpeed(double distance) {}
 
-  // public void setHoodPosition(string position) {}
+  public void setHoodPosition(HoodPosition position) {
+
+    double pos;
+
+    switch(position) {
+      case LOW:
+        pos = 0;
+        break;
+      case MEDIUM:
+        pos = 0;
+        break;
+      case HIGH:
+        pos = 0;
+       break;
+      default:
+        pos = 0;
+        break;
+    }
+
+    hoodMotorController.setSetpoint(pos, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+  }
 
   // public string getHoodPosition() {}
 

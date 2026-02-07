@@ -23,7 +23,7 @@ public class DriveOverBump extends Command {
   double targetY = 4.035;
   int state = 0;
   int cnt = 0;
-  double xSpeed = 5.8;
+  double xSpeed;
   double ySpeed = 0.0;
   boolean isDone = false;
   private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
@@ -40,6 +40,7 @@ public class DriveOverBump extends Command {
   public void initialize() {
     state = 0;
     cnt = 0;
+    xSpeed = 4.5;
     isDone = false;
   }
 

@@ -158,7 +158,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-         rpi = new PhotonCamera("Arducam_OV9281_USB_Camera");
+         rpi = new PhotonCamera("Arducam_Main");
          fieldToCameraPosition = new Transform3d();
          configureAutoBuilder();
     }
@@ -267,6 +267,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
     public Command findPath(PathPlannerPath path, PathConstraints constraints) {
+
         return AutoBuilder.pathfindThenFollowPath(
                     path,
                     constraints
