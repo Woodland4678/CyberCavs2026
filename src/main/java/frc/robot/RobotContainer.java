@@ -103,14 +103,15 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        joystick.x().whileTrue(new DriveOverBump(drivetrain));
+        joystick.x().whileTrue(new DriveOverBump(drivetrain, 0));
+        joystick.y().whileTrue(new DriveOverBump(drivetrain, 1));
         joystick.a().whileTrue(new AutoDrive(drivetrain));
-        joystick.y().whileTrue(drivetrain.getAutonomousCommand());
+        //joystick.y().whileTrue(drivetrain.getAutonomousCommand());
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
-        return new RightSideToNeutralTwice(drivetrain,examplePath);
+        return new RightSideToNeutralTwice(drivetrain);
         // try{
         // // Load the path you want to follow using its name in the GUI
         // PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");

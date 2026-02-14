@@ -4,12 +4,19 @@
 
 package frc.robot.autos;
 
+import java.util.List;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.RotationTarget;
+import com.pathplanner.lib.path.Waypoint;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -20,13 +27,30 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class RightSideToNeutralTwice extends SequentialCommandGroup {
   /** Creates a new RightSideToNeutralTwice. */
   CommandSwerveDrivetrain S_Swerve;
-  public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, PathPlannerPath path1) {
+  public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve) {
     this.S_Swerve = S_Swerve;
+    //var currentPose = S_Swerve.getState().Pose;
+    // PathConstraints constraints = new PathConstraints(2.0, 2.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this path.
+    // List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+    //     new Pose2d(currentPose.getX() + 1, currentPose.getY(), Rotation2d.fromDegrees(0)),
+    //     new Pose2d(currentPose.getX() + 2, currentPose.getY() + 1, Rotation2d.fromDegrees(45)),
+    //     //new Pose2d(currentPose.getX(), currentPose.getY() + 1, Rotation2d.fromDegrees(0)),
+    //     new Pose2d(currentPose.getX(), currentPose.getY(), Rotation2d.fromDegrees(0))
+    // );
+    // List<RotationTarget> rotationTargets = List.of(
+    //   new RotationTarget(0.5, Rotation2d.fromDegrees(-45))
+    // );
+
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new DriveOverBump(S_Swerve),
-      S_Swerve.findPath(path1, new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI))
+      new DriveOverBump(S_Swerve,0),
+      new AutoDrive(S_Swerve),
+      new DriveOverBump(S_Swerve, 1),
+      new AutoAim(S_Swerve)
+      //S_Swerve.pathOnTheFly(waypoints, rotationTargets, constraints)
+      //new DriveOverBump(S_Swerve),
+      //S_Swerve.findPath(path1, new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI))
       //S_Swerve.getAutonomousCommand(),
       //new AutoDrive(S_Swerve)
 
