@@ -8,6 +8,16 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Relay;
@@ -17,38 +27,32 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
   
-  TalonFX climberMotor;
+  SparkMax climberMotor;
+
+  private SparkMaxConfig climberMotorConfig;
+  private SparkClosedLoopController climberMotorController;
+
+
   private DigitalInput atMaxExtention;
-  boolean isLocked = false;
-  Relay lockSolenoid;
-
-
-
 
   public Climber() {
     final CANBus canbus = new CANBus("rio");
-    climberMotor = new TalonFX(10,canbus); //needs valid device id
-    atMaxExtention = new DigitalInput(7); //needs valid channel
-    var climberConfigs = new TalonFXConfiguration();
-    lockSolenoid = new Relay(3);//needs valid channel
 
-    // set slot 0 gains
-    var climberMotionPIDConfigs = climberConfigs.Slot0;
-    climberMotionPIDConfigs.kS = 0.0; // Add 0.25 V output to overcome static friction
-    climberMotionPIDConfigs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
-    climberMotionPIDConfigs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    climberMotionPIDConfigs.kP = 1; // A position error of 2.5 rotations results in 12 V output
-    climberMotionPIDConfigs.kI = 0; // no output for integrated error
-    climberMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
+    climberMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
+    climberMotorController = climberMotor.getClosedLoopController();
 
-    var climberMotionConfigs = climberConfigs.MotionMagic;
-    climberMotionConfigs.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
-    climberMotionConfigs.MotionMagicAcceleration = 200; // Target acceleration of 160 rps/s (0.5 seconds)
-    climberMotionConfigs.MotionMagicJerk = 2000; // Target jerk of 1600 rps/s/s (0.1 seconds)
+    climberMotorConfig = new SparkMaxConfig();
 
-    climberMotor.getConfigurator().apply(climberConfigs);
-    
+     climberMotorConfig.closedLoop
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      // Set PID values for position control. We don't need to pass a closed
+      // loop slot, as it will default to slot 0.
+      .p(0.1)
+      .i(0)
+      .d(0)
+      .outputRange(-1, 1);
 
+      climberMotor.configure(climberMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   @Override
@@ -61,32 +65,16 @@ public class Climber extends SubsystemBase {
     return atMaxExtention.get();
   }
   public void moveClimberToPosition(double pos){
-    
-    // create a Motion Magic request, voltage output
-    final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-
-    // set target position to 100 rotations
-    
-   // if (!isLocked) {
-      climberMotor.setControl(m_request.withPosition(pos));
-    //}
+    climberMotorController.setSetpoint(pos, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
   public double getClimberPosition(){
 
-    return climberMotor.getPosition().getValueAsDouble();
+    return climberMotor.getEncoder().getPosition();
   
   }
-  public void setClimberVoltage(double voltage) {
-    //if (!isLocked) {
-      climberMotor.setVoltage(voltage);
-    //}
-  }
-  public boolean getIsLocked() {
-    return isLocked;
-  }
-  public boolean isClimberReady() {
-    return climberMotor.isConnected();
-  }
+  // public boolean isClimberReady() {
+  //   return climberMotor.isConnected();
+  // }
   public void stopClimber() {
     climberMotor.disable();
   }

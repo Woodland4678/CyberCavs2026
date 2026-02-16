@@ -10,6 +10,16 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,7 +27,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
 
-  TalonFX deployMotor;
+  SparkMax deployMotor;
+  private SparkMaxConfig deployMotorConfig;
+  private SparkClosedLoopController deployMotorController;
+
   TalonFX intakeWheels;
   private boolean isIntakeDeployed;
 
@@ -25,25 +38,23 @@ public class Intake extends SubsystemBase {
   public Intake() {
 
     final CANBus canbus = new CANBus("rio");
-    deployMotor = new TalonFX(1,canbus);
     intakeWheels = new TalonFX(2,canbus);
-   
 
-    // in init function
-    var deployMotorConfigs = new TalonFXConfiguration();
-    
-    deployMotorConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    // set slot 0 gains
-    var deployMotionPIDConfigs = deployMotorConfigs.Slot0;
-    deployMotionPIDConfigs.kS = 0.25; // Add 0.25 V output to overcome static friction
-    deployMotionPIDConfigs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
-    deployMotionPIDConfigs.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    deployMotionPIDConfigs.kP = 50; // A position error of 2.5 rotations results in 12 V output
-    deployMotionPIDConfigs.kI = 0; // no output for integrated error
-    deployMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
+    deployMotor = new SparkMax(1, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
+    deployMotorController = deployMotor.getClosedLoopController();
 
+    deployMotorConfig = new SparkMaxConfig();
 
-    deployMotor.getConfigurator().apply(deployMotorConfigs);
+     deployMotorConfig.closedLoop
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      // Set PID values for position control. We don't need to pass a closed
+      // loop slot, as it will default to slot 0.
+      .p(0.1)
+      .i(0)
+      .d(0)
+      .outputRange(-1, 1);
+
+      deployMotor.configure(deployMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     // in init function
     var intakeWheelsConfigs = new TalonFXConfiguration();
@@ -72,8 +83,8 @@ public class Intake extends SubsystemBase {
   }
 
   public void moveIntake(double pos){
-    final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-    deployMotor.setControl(m_request.withPosition(pos));
+    
+    deployMotorController.setSetpoint(pos, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0);
   }
 
   public void deployIntake(){
