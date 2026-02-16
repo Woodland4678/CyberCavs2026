@@ -61,6 +61,7 @@ public class Hopper extends SubsystemBase {
     final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
 
     // set velocity to 8 rps, add 0.5 V to overcome gravity
+    m_request.EnableFOC = true;
     floorMotor.setControl(m_request.withVelocity(rps));
     //floorMotor.setControl(m_request.withVelocity(rpm).withFeedForward(0.5)); 
   }
