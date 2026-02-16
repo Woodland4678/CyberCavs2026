@@ -66,6 +66,10 @@ public class Hopper extends SubsystemBase {
     //floorMotor.setControl(m_request.withVelocity(rpm).withFeedForward(0.5)); 
   }
 
+  public void setFloorVoltage(double voltage) {
+    floorMotor.setVoltage(voltage);
+  }
+
   public void stopFloor(){
     floorMotor.disable();
   }

@@ -13,6 +13,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.autos.AutoPaths;
 import frc.robot.autos.LeftSideToNeutralTwice;
 import frc.robot.autos.RightSideToNeutralTwice;
+import frc.robot.autos.RightSideToNeutralTwiceBehindHub;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
@@ -47,6 +49,7 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
    // public final Hopper S_Hopper = new Hopper();
   //  public final Climber S_Climber = new Climber();
@@ -54,7 +57,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
-        loadPaths();
+        configureAutoChooser();
     }
 
     private void configureBindings() {
@@ -115,45 +118,19 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new LeftSideToNeutralTwice(drivetrain, AutoPaths.LeftSideGatherFuel1);
-        // try{
-        // // Load the path you want to follow using its name in the GUI
-        // PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
-
-        // // Create a path following command using AutoBuilder. This will also trigger event markers.
-        // return AutoBuilder.followPath(path);
-        //     } catch (Exception e) {
-        //         DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-        //         return Commands.none();
-        //     }
-        
-        //return new RightSideToNeutralTwice(drivetrain);
-        // Simple drive forward auton
-        // final var idle = new SwerveRequest.Idle();
-        // return Commands.sequence(
-        //     // Reset our field centric heading to match the robot
-        //     // facing away from our alliance station wall (0 deg).
-        //     drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-        //     // Then slowly drive forward (away from us) for 5 seconds.
-        //     drivetrain.applyRequest(() ->
-        //         drive.withVelocityX(0.5)
-        //             .withVelocityY(0)
-        //             .withRotationalRate(0)
-        //     )
-        //     .withTimeout(5.0),
-        //     // Finally idle for the rest of auton
-        //     drivetrain.applyRequest(() -> idle)
-        // );
+        // return autoChooser.getSelected();
+        return new RightSideToNeutralTwiceBehindHub(drivetrain, AutoPaths.RightSideGatherFuel2);
+       
     }
-    private void loadPaths() {
-        try {
-            examplePath = PathPlannerPath.fromPathFile("Example Path");
-        } catch (Exception e) {
-            DriverStation.reportError(
-                "Failed to load Example Path",
-                e.getStackTrace()
-            );
-            examplePath = null;
-        }
-}
+    private void configureAutoChooser() {
+        // Example commands
+        Command rightNeutralZoneTwice1 = new RightSideToNeutralTwice(drivetrain, AutoPaths.RightSideGatherFuel1);
+        Command leftNeutralZoneTwice1 = new LeftSideToNeutralTwice(drivetrain, AutoPaths.LeftSideGatherFuel1);
+        //Command simpleDriveAuto = new SimpleDriveAuto(s_Swerve);
+
+        // Add them to the chooser
+        autoChooser.setDefaultOption("Right side neutral zone twice", rightNeutralZoneTwice1); // default
+        autoChooser.addOption("Left side neutral zone twice", leftNeutralZoneTwice1);
+        //autoChooser.addOption("Simple Drive Auto", simpleDriveAuto);
+    }
 }

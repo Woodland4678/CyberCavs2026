@@ -109,7 +109,10 @@ public class Intake extends SubsystemBase {
     m_request.EnableFOC = true;
     intakeWheels.setControl(m_request.withVelocity(rps));
     //floorMotor.setControl(m_request.withVelocity(rpm).withFeedForward(0.5));
+  }
 
+  public void setIntakeWheelVoltage(double voltage) {
+    intakeWheels.setVoltage(voltage);
   }
 
   public double getIntakeWheelSpeed(){

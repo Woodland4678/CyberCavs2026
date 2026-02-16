@@ -4,11 +4,15 @@
 
 package frc.robot.commands;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 
 import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,6 +22,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class DriveOverBump extends Command {
   /** Creates a new DriveOverBump. */
    PhoenixPIDController rController = new PhoenixPIDController(0.25, 0, 0.0); //14.1, 0, 0.15
+   Optional<Alliance> ally = DriverStation.getAlliance();
   CommandSwerveDrivetrain S_Swerve;
   double angleToTarget;
   double targetX = 5.223; //from blue alliance wall to middle of blue hub
@@ -53,6 +58,7 @@ public class DriveOverBump extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    
     rController.enableContinuousInput(-180, 180);
     if (directionType == 0 || directionType == 2) {
       xSpeed = 4.9;
@@ -63,6 +69,11 @@ public class DriveOverBump extends Command {
     state = 0;
     cnt = 0;
     isDone = false;
+     if (ally.isPresent()) {
+      if (ally.get() == Alliance.Red) {
+        
+      }
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -184,6 +184,11 @@ public class Shooter extends SubsystemBase {
   public void stopFeeder() {
     feederMotor.disable();
   }
+
+  public void setFeederVoltage(double voltage) {
+    feederMotor.setVoltage(voltage);
+  }
+
   public void setShooterPIDSlot(int slot) {
   
   }
@@ -210,9 +215,12 @@ public class Shooter extends SubsystemBase {
     }
 
     hoodMotorController.setSetpoint(pos, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+
   }
 
-  // public string getHoodPosition() {}
+  public double getHoodPosition() {
+    return hoodMotorController.getSetpoint();
+  }
 
   // public void findTargetHoodPosition(double position) {}
 
