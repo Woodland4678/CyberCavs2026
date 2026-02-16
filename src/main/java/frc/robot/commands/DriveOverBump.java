@@ -9,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 
 import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -16,7 +17,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveOverBump extends Command {
   /** Creates a new DriveOverBump. */
-   PhoenixPIDController rController = new PhoenixPIDController(14.1, 0, 0.15);
+   PhoenixPIDController rController = new PhoenixPIDController(0.25, 0, 0.0); //14.1, 0, 0.15
   CommandSwerveDrivetrain S_Swerve;
   double angleToTarget;
   double targetX = 5.223; //from blue alliance wall to middle of blue hub
@@ -30,6 +31,15 @@ public class DriveOverBump extends Command {
   double firstThreshold = -9.0;
   double secondThreshold = 9.0;
   int directionType = 0;
+  /*
+  1. Blue side right side intake towards far right
+  2. Blue side right side intake towards close right
+  3. Blue side left side intake towards far left
+  4. Blue side left side intake towards close left
+  1 & 2 are used for right side auto (1 goes to middle zone, 2 comes back)
+  3 & 4 are used for left side auto (3 goes to middle zone and 4 comes back)
+  */
+  double[] directionTypeRotationAngles = {135, 45, -135,-45};
   private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
             .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -43,7 +53,8 @@ public class DriveOverBump extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (directionType == 0) {
+    rController.enableContinuousInput(-180, 180);
+    if (directionType == 0 || directionType == 2) {
       xSpeed = 4.9;
     }
     else {
@@ -57,20 +68,22 @@ public class DriveOverBump extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (directionType == 0) {
+    if (directionType == 0 || directionType == 3) {
       gyroAxisValue = S_Swerve.getGyroRoll();
       firstThreshold = 3.0;
       secondThreshold = -3.0;
     }
-    else {
+    else if (directionType == 1 || directionType == 2) {
       gyroAxisValue = S_Swerve.getGyroPitch();
       firstThreshold = -3.0;
       secondThreshold = 3.0;
     }
+    
+    double rSpeed = rController.calculate(S_Swerve.getGyroValue(), directionTypeRotationAngles[directionType], Timer.getFPGATimestamp());
     S_Swerve.setControl(
           m_driveRequestDrive.withVelocityX(xSpeed)
               .withVelocityY(ySpeed)
-              .withRotationalRate(0)
+              .withRotationalRate(rSpeed)
 
         );
         //I conclude looking for one direction, then the other, then flat will be more consistent

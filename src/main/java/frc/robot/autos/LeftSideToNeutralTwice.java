@@ -31,29 +31,28 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class RightSideToNeutralTwice extends SequentialCommandGroup {
+public class LeftSideToNeutralTwice extends SequentialCommandGroup {
   /** Creates a new RightSideToNeutralTwice. */
   CommandSwerveDrivetrain S_Swerve;
   public static final Field2d field = new Field2d();
-
   
-  
-  public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, List<AutoWaypoint[]> waypoints) {
+  public LeftSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, List<AutoWaypoint[]> waypoints) {
     this.S_Swerve = S_Swerve;
     addRequirements(S_Swerve);
+
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     field.getObject("Auto Waypoints")
      .setPoses(extractPoses(waypoints.get(0)));
      SmartDashboard.putData("Auto Field", field);
     addCommands(
-      new DriveOverBump(S_Swerve,0),
+      new DriveOverBump(S_Swerve,2),
       new AutoDrive(S_Swerve, waypoints.get(0)),
-      new DriveOverBump(S_Swerve, 1),
+      new DriveOverBump(S_Swerve, 3),
       new AutoAim(S_Swerve).withTimeout(3.5),
-      new DriveOverBump(S_Swerve, 0),
+      new DriveOverBump(S_Swerve, 2),
       new AutoDrive(S_Swerve, waypoints.get(1)),
-      new DriveOverBump(S_Swerve, 1),
+      new DriveOverBump(S_Swerve, 3),
       new AutoAim(S_Swerve).withTimeout(3.5)
       //S_Swerve.pathOnTheFly(waypoints, rotationTargets, constraints)
       //new DriveOverBump(S_Swerve),

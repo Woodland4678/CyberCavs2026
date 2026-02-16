@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.autos.AutoPaths;
+import frc.robot.autos.LeftSideToNeutralTwice;
 import frc.robot.autos.RightSideToNeutralTwice;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoDrive;
@@ -105,13 +107,15 @@ public class RobotContainer {
 
         joystick.x().whileTrue(new DriveOverBump(drivetrain, 0));
         joystick.y().whileTrue(new DriveOverBump(drivetrain, 1));
+        joystick.povUp().whileTrue(new DriveOverBump(drivetrain, 2));
+        joystick.povDown().whileTrue(new DriveOverBump(drivetrain, 3));
         //joystick.a().whileTrue(new AutoDrive(drivetrain));
         //joystick.y().whileTrue(drivetrain.getAutonomousCommand());
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
-        return new RightSideToNeutralTwice(drivetrain);
+        return new LeftSideToNeutralTwice(drivetrain, AutoPaths.LeftSideGatherFuel1);
         // try{
         // // Load the path you want to follow using its name in the GUI
         // PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
