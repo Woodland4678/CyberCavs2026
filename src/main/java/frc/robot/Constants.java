@@ -4,7 +4,20 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public final class Constants {
-    
+    public static class ClimberConstants {
+        public static final double extendPosition = 10.0;
+        public static final double retractPosition = 1.0;
+    }
+    public static class IntakeConstants {
+        public static final double deployPosition = 10.0;
+        public static final double retractPosition = 1.0;
+    }
+    public static class ShooterConstants {
+
+    }
+    public static class HopperConstants {
+
+    }
     
     
     public static class AutoWaypoint{

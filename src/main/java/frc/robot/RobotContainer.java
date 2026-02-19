@@ -6,20 +6,27 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.List;
+import java.util.Map;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.AutoWaypoint;
 import frc.robot.autos.AutoPaths;
 import frc.robot.autos.LeftSideToNeutralTwice;
 import frc.robot.autos.RightSideToNeutralTwice;
@@ -34,6 +41,8 @@ import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
+    private String lastSelectedAuto = "";
+    private final Field2d field = new Field2d();
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(1.25).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     private PathPlannerPath examplePath;
@@ -50,6 +59,20 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+    private final Map<String, AutoDefinition> autos = Map.of(
+        "RightFuelAuto",
+            new AutoDefinition(
+                new RightSideToNeutralTwice(drivetrain, AutoPaths.RightSideGatherFuel1),
+                AutoPaths.RightSideGatherFuel1
+            ),
+
+        "LeftFuelAuto",
+            new AutoDefinition(
+                new LeftSideToNeutralTwice(drivetrain, AutoPaths.LeftSideGatherFuel1),
+                AutoPaths.LeftSideGatherFuel1
+            )
+    );
 
    // public final Hopper S_Hopper = new Hopper();
   //  public final Climber S_Climber = new Climber();
@@ -123,14 +146,46 @@ public class RobotContainer {
        
     }
     private void configureAutoChooser() {
-        // Example commands
-        Command rightNeutralZoneTwice1 = new RightSideToNeutralTwice(drivetrain, AutoPaths.RightSideGatherFuel1);
-        Command leftNeutralZoneTwice1 = new LeftSideToNeutralTwice(drivetrain, AutoPaths.LeftSideGatherFuel1);
-        //Command simpleDriveAuto = new SimpleDriveAuto(s_Swerve);
 
-        // Add them to the chooser
-        autoChooser.setDefaultOption("Right side neutral zone twice", rightNeutralZoneTwice1); // default
-        autoChooser.addOption("Left side neutral zone twice", leftNeutralZoneTwice1);
-        //autoChooser.addOption("Simple Drive Auto", simpleDriveAuto);
+        boolean first = true;
+
+        for (Map.Entry<String, AutoDefinition> entry : autos.entrySet()) {
+            if (first) {
+                autoChooser.setDefaultOption(entry.getKey(), entry.getValue().command);
+                first = false;
+            } else {
+                autoChooser.addOption(entry.getKey(), entry.getValue().command);
+            }
+        }
+
+        SmartDashboard.putData("Autonomous Mode", autoChooser);
+        
+        //// Example commands
+        //Command rightNeutralZoneTwice1 = new RightSideToNeutralTwice(drivetrain, AutoPaths.RightSideGatherFuel1);
+        //Command leftNeutralZoneTwice1 = new LeftSideToNeutralTwice(drivetrain, AutoPaths.LeftSideGatherFuel1);
+        ////Command simpleDriveAuto = new SimpleDriveAuto(s_Swerve);
+//
+        //// Add them to the chooser
+        //autoChooser.setDefaultOption("Right side neutral zone twice", rightNeutralZoneTwice1); // default
+        //autoChooser.addOption("Left side neutral zone twice", leftNeutralZoneTwice1);
+        ////autoChooser.addOption("Simple Drive Auto", simpleDriveAuto);
     }
+    public void updateAutoPreview() {
+        String selectedKey = autoChooser.getSelected().getName();
+        if (selectedKey == null || selectedKey.equals(lastSelectedAuto)) {
+            return;
+        }
+
+        lastSelectedAuto = selectedKey;
+
+        AutoDefinition auto = autos.get(selectedKey);
+        if (auto == null) return;
+
+        Pose2d[] poses = AutoPaths.extractPoses(auto.paths());
+        field.getObject("AutoPath").setPoses(poses);
+    }
+    public record AutoDefinition(
+        Command command,
+        List<AutoWaypoint[]> paths
+    ) {}
 }

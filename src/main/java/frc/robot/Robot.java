@@ -34,7 +34,9 @@ public class Robot extends TimedRobot {
     public void disabledInit() {}
 
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+        m_robotContainer.updateAutoPreview();
+    }
 
     @Override
     public void disabledExit() {}

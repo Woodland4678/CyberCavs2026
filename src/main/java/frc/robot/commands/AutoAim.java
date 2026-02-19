@@ -10,12 +10,16 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -23,7 +27,7 @@ public class AutoAim extends Command {
 
   CommandSwerveDrivetrain S_Swerve;
 
-  Optional<Alliance> ally = DriverStation.getAlliance();
+  
 
   // The x and y values of the hub.
   Double hubX;
@@ -53,6 +57,7 @@ public class AutoAim extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Optional<Alliance> ally = DriverStation.getAlliance();
     if (ally.isPresent()) {
       if (ally.get() == Alliance.Red) {
 
@@ -72,30 +77,45 @@ public class AutoAim extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    robotX = S_Swerve.getState().Pose.getX();
-    robotY = S_Swerve.getState().Pose.getY();
+    Pose2d robotPose = S_Swerve.getState().Pose;
+    
+
+    // Vector to hub
+    double dX = hubX - robotPose.getX();
+    double dY = hubY - robotPose.getY();
+
+    // Desired field-relative heading
+    Rotation2d targetHeading =
+        Rotation2d.fromRadians(Math.atan2(dY, dX));
+
+
+
+
+    
+    // robotX = S_Swerve.getState().Pose.getX();
+    // robotY = S_Swerve.getState().Pose.getY();
    
-    // Get the angle to turn to face the centre of the hub.
-    if (ally.isPresent()) {
-      if (ally.get() == Alliance.Red) {
-        // FInd the angle from the robot to the hub.
-        Double angleToTag = Math.atan((hubY - robotY) / ((robotX - hubX)));
+    // // Get the angle to turn to face the centre of the hub.
+    // if (ally.isPresent()) {
+    //   if (ally.get() == Alliance.Red) {
+    //     // FInd the angle from the robot to the hub.
+    //     Double angleToTag = Math.atan((hubY - robotY) / ((robotX - hubX)));
 
-        // Find the angle the robot needs to turn to face the hub.
-        targetAngle = Math.PI*angleToTag/Math.abs(angleToTag) - angleToTag;
+    //     // Find the angle the robot needs to turn to face the hub.
+    //     targetAngle = Math.PI*angleToTag/Math.abs(angleToTag) - angleToTag;
       
-      } else {
-        // Get the angle to turn to facing the centre of the hub.
-        targetAngle = Math.atan((hubY - robotY)/(hubX - robotX));
-      }
-    }
+    //   } else {
+    //     // Get the angle to turn to facing the centre of the hub.
+    //     targetAngle = Math.atan((hubY - robotY)/(hubX - robotX));
+    //   }
+    // }
 
-    // Turn the robot the correct angle.
-    double degrees = S_Swerve.getGyroValue();
-    double rSpeed = rController.calculate(Math.toRadians(degrees), targetAngle, Timer.getFPGATimestamp());
+    // // Turn the robot the correct angle.
+    // double degrees = S_Swerve.getGyroValue();
+    double rSpeed = rController.calculate(robotPose.getRotation().getRadians(), targetHeading.getRadians(), Timer.getFPGATimestamp());
     S_Swerve.setControl(m_driveRequestDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(rSpeed));
     SmartDashboard.putNumber("Auto Aim rspeed", rSpeed);
-    SmartDashboard.putNumber("Target Angle", targetAngle);
+    SmartDashboard.putNumber("Target Angle", targetHeading.getDegrees());
   }
 
   // Called once the command ends or is interrupted.

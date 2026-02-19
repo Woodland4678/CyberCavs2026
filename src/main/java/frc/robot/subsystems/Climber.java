@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
@@ -36,7 +37,7 @@ public class Climber extends SubsystemBase {
   private DigitalInput atMaxExtention;
 
   public Climber() {
-    final CANBus canbus = new CANBus("rio");
+    //final CANBus canbus = new CANBus("rio");
 
     climberMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
     climberMotorController = climberMotor.getClosedLoopController();
@@ -77,5 +78,11 @@ public class Climber extends SubsystemBase {
   // }
   public void stopClimber() {
     climberMotor.disable();
+  }
+  public void extendClimber() {
+    moveClimberToPosition(Constants.ClimberConstants.extendPosition);
+  }
+  public void retractClimber() {
+    moveClimberToPosition(Constants.ClimberConstants.retractPosition);
   }
 }
