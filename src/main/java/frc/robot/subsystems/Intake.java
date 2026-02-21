@@ -38,9 +38,9 @@ public class Intake extends SubsystemBase {
   public Intake() {
 
     final CANBus canbus = new CANBus("rio");
-    intakeWheels = new TalonFX(2,canbus);
+    intakeWheels = new TalonFX(1,canbus);
 
-    deployMotor = new SparkMax(1, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
+    deployMotor = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
     deployMotorController = deployMotor.getClosedLoopController();
 
     deployMotorConfig = new SparkMaxConfig();

@@ -38,6 +38,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
@@ -61,23 +62,23 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     private final Map<String, AutoDefinition> autos = Map.of(
-        "RightFuelAuto",
+        "RightSideToNeutralTwice",
             new AutoDefinition(
                 new RightSideToNeutralTwice(drivetrain, AutoPaths.RightSideGatherFuel1),
                 AutoPaths.RightSideGatherFuel1
             ),
 
-        "LeftFuelAuto",
+        "LeftSideToNeutralTwice",
             new AutoDefinition(
                 new LeftSideToNeutralTwice(drivetrain, AutoPaths.LeftSideGatherFuel1),
                 AutoPaths.LeftSideGatherFuel1
             )
     );
 
-   // public final Hopper S_Hopper = new Hopper();
-  //  public final Climber S_Climber = new Climber();
+    public final Hopper S_Hopper = new Hopper();
+    //public final Climber S_Climber = new Climber();
     public final Shooter S_Shooter = new Shooter();
-
+    public final Intake S_Intake = new Intake();
     public RobotContainer() {
         configureBindings();
         configureAutoChooser();
@@ -97,7 +98,19 @@ public class RobotContainer {
 
         //joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(70)));//up position (placeholder value)
         //joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
+        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorVoltage(10)));
+        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
+        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederVoltage(9)));
+        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopFeeder()));
+        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterVoltage(2)));
+        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
+        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(3)));
+        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
 
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorVoltage(5)));
+        joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(8)));
+        joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
@@ -126,7 +139,7 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        joystick.rightTrigger().whileTrue(new AutoAim(drivetrain));
+       // joystick.rightTrigger().whileTrue(new AutoAim(drivetrain));
 
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -171,8 +184,17 @@ public class RobotContainer {
         ////autoChooser.addOption("Simple Drive Auto", simpleDriveAuto);
     }
     public void updateAutoPreview() {
-        String selectedKey = autoChooser.getSelected().getName();
-        if (selectedKey == null || selectedKey.equals(lastSelectedAuto)) {
+        Command selectedAuto = autoChooser.getSelected();
+
+        if (selectedAuto == null) {
+            // Nothing selected yet — dashboard not ready
+            return;
+        }
+
+        String selectedKey = selectedAuto.getName();
+        //System.out.println("selected key " + selectedKey);
+
+        if (selectedKey.equals(lastSelectedAuto)) {
             return;
         }
 
@@ -182,7 +204,10 @@ public class RobotContainer {
         if (auto == null) return;
 
         Pose2d[] poses = AutoPaths.extractPoses(auto.paths());
+
+       // field.getObject("AutoPath").close();
         field.getObject("AutoPath").setPoses(poses);
+        SmartDashboard.putData("Auto Field", field);
     }
     public record AutoDefinition(
         Command command,

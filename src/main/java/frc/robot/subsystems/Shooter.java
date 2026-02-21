@@ -32,7 +32,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
   TalonFX shooterLeadMotor;
-  TalonFX shooterFollowerMotor;
+  TalonFX shooterFollowerMotor1;
+  TalonFX shooterFollowerMotor2;
+  TalonFX shooterFollowerMotor3;
+
 
   TalonFX feederMotor;
 
@@ -55,16 +58,21 @@ public class Shooter extends SubsystemBase {
   DigitalInput rightFuelSensor;
 
   public Shooter() {
-    final CANBus canbus = new CANBus("DriveTrain");
+    final CANBus canbus = new CANBus("rio");
 
     leftFuelSensor = new DigitalInput(8); //needs valid channel ???
     leftFuelSensor = new DigitalInput(9); //needs valid channel ???
     leftFuelSensor = new DigitalInput(10); //needs valid channel ???
 
-    shooterLeadMotor = new TalonFX(20,canbus); //needs valid device id ???
-    shooterFollowerMotor = new TalonFX(21,canbus);
+    shooterLeadMotor = new TalonFX(5,canbus); //needs valid device id ???
+    shooterFollowerMotor1 = new TalonFX(6,canbus);
+    shooterFollowerMotor2= new TalonFX(7,canbus);
+    shooterFollowerMotor3 = new TalonFX(8,canbus);
     
-    shooterFollowerMotor.setControl(new Follower(shooterLeadMotor.getDeviceID(), MotorAlignmentValue.Aligned));
+    //Aligned vs opposed needs to be determined 
+    shooterFollowerMotor1.setControl(new Follower(shooterLeadMotor.getDeviceID(), MotorAlignmentValue.Aligned));
+    shooterFollowerMotor2.setControl(new Follower(shooterLeadMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+    shooterFollowerMotor3.setControl(new Follower(shooterLeadMotor.getDeviceID(), MotorAlignmentValue.Opposed));
       
     var shooterConfigs = new TalonFXConfiguration();
     var feederConfigs = new TalonFXConfiguration();
@@ -95,7 +103,7 @@ public class Shooter extends SubsystemBase {
 
     shooterLeadMotor.getConfigurator().apply(shooterConfigs);
 
-    feederMotor = new TalonFX(22,canbus); //needs valid device id ???
+    feederMotor = new TalonFX(9,canbus); //needs valid device id ???
 
     var feederMotionPIDConfigs = feederConfigs.Slot0;
     feederMotionPIDConfigs.kS = 0.0; // Add 0.25 V output to overcome static friction
@@ -112,7 +120,7 @@ public class Shooter extends SubsystemBase {
 
     feederMotor.getConfigurator().apply(feederConfigs);
     
-     hoodMotor = new SparkMax(4, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
+     hoodMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
      hoodMotorController = hoodMotor.getClosedLoopController();
 
      hoodMotorConfig = new SparkMaxConfig();
@@ -192,7 +200,9 @@ public class Shooter extends SubsystemBase {
   public void setShooterPIDSlot(int slot) {
   
   }
-
+  public void setShooterVoltage(double voltage) {
+    shooterLeadMotor.setVoltage(voltage);
+  }
   // public void findFeederTargetSpeed(double distance) {}
 
   public void setHoodPosition(HoodPosition position) {

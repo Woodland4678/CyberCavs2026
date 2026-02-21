@@ -49,7 +49,7 @@ public class RightSideToNeutralTwiceBehindHub extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     field.getObject("Auto Waypoints")
      .setPoses(extractPoses(LeftSideGatherFuel1.get(0)));
-     SmartDashboard.putData("Auto Field", field);
+    
     addCommands(
       //new DriveOverBump(S_Swerve,0),
       //new AutoDrive(S_Swerve, waypoints.get(0)),

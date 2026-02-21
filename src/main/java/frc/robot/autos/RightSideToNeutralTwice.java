@@ -43,9 +43,7 @@ public class RightSideToNeutralTwice extends SequentialCommandGroup {
     addRequirements(S_Swerve);
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    field.getObject("Auto Waypoints")
-     .setPoses(extractPoses(waypoints.get(0)));
-     SmartDashboard.putData("Auto Field", field);
+
     addCommands(
       new DriveOverBump(S_Swerve,0),
       new AutoDrive(S_Swerve, waypoints.get(0)),

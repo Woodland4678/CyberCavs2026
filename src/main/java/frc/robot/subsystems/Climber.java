@@ -39,7 +39,7 @@ public class Climber extends SubsystemBase {
   public Climber() {
     //final CANBus canbus = new CANBus("rio");
 
-    climberMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
+    climberMotor = new SparkMax(4, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
     climberMotorController = climberMotor.getClosedLoopController();
 
     climberMotorConfig = new SparkMaxConfig();

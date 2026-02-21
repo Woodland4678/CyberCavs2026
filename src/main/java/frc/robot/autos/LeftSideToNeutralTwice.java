@@ -42,9 +42,9 @@ public class LeftSideToNeutralTwice extends SequentialCommandGroup {
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    field.getObject("Auto Waypoints")
-     .setPoses(extractPoses(waypoints.get(0)));
-     SmartDashboard.putData("Auto Field", field);
+    // field.getObject("Auto Waypoints")
+    //  .setPoses(extractPoses(waypoints.get(0)));
+    //  SmartDashboard.putData("Auto Field", field);
     addCommands(
       new DriveOverBump(S_Swerve,2),
       new AutoDrive(S_Swerve, waypoints.get(0)),

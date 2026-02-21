@@ -24,7 +24,7 @@ public class Hopper extends SubsystemBase {
   public Hopper() {
 
     final CANBus canbus = new CANBus("rio");
-    floorMotor = new TalonFX(0,canbus);
+    floorMotor = new TalonFX(3,canbus);
 
     // in init function
     var floorConfigs = new TalonFXConfiguration();
