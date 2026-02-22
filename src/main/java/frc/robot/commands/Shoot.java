@@ -1,0 +1,59 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.commands;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Shooter;
+
+/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+public class Shoot extends Command {
+  Shooter S_Shooter;
+  Hopper S_Hopper;
+  double shooterTargetRPS = 55;
+  
+  /** Creates a new Shoot. */
+  public Shoot(Shooter S_Shooter, Hopper S_Hopper) {
+    this.S_Hopper = S_Hopper;
+    this.S_Shooter = S_Shooter;
+    addRequirements(S_Shooter, S_Hopper);
+    // Use addRequirements() here to declare subsystem dependencies.
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
+    S_Hopper.setFloorRPM(90);
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    if (Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 3.0) {
+      S_Shooter.setFeederSpeed(110);
+    }
+    else if (Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) > 15.0) {//slow down if shooter not within speed
+      S_Shooter.stopFeeder();
+    }
+    else {
+      S_Shooter.setFeederSpeed(30);
+    }
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    S_Shooter.stopFeeder();
+    S_Shooter.stopShooterMotor();
+    S_Hopper.stopFloor();
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+}
