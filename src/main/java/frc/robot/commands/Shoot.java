@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Shooter;
@@ -13,6 +14,7 @@ public class Shoot extends Command {
   Shooter S_Shooter;
   Hopper S_Hopper;
   double shooterTargetRPS = 55;
+  Debouncer shooterReadyDebounce = new Debouncer(0.04, Debouncer.DebounceType.kRising);
   
   /** Creates a new Shoot. */
   public Shoot(Shooter S_Shooter, Hopper S_Hopper) {
@@ -32,10 +34,13 @@ public class Shoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 3.0) {
+    boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 3.0;
+    boolean shooterReady = shooterReadyDebounce.calculate(rawReady);
+    double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
+    if (shooterReady) {
       S_Shooter.setFeederSpeed(110);
     }
-    else if (Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) > 15.0) {//slow down if shooter not within speed
+    else if (error > 8.0) {//slow down if shooter not within speed
       S_Shooter.stopFeeder();
     }
     else {
