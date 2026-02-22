@@ -79,10 +79,10 @@ public class Shooter extends SubsystemBase {
 
     //For Velocity Voltage
     var shooterMotionPIDConfigs = shooterConfigs.Slot0;
-    shooterMotionPIDConfigs.kS = 0.2; // Add 0.25 V output to overcome static friction
+    shooterMotionPIDConfigs.kS = 0.1; // Add 0.25 V output to overcome static friction
     shooterMotionPIDConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
     shooterMotionPIDConfigs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterMotionPIDConfigs.kP = 0.175; // A position error of 2.5 rotations results in 12 V output
+    shooterMotionPIDConfigs.kP = 0.38; // A position error of 2.5 rotations results in 12 V output
     shooterMotionPIDConfigs.kI = 0; // no output for integrated error
     shooterMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
@@ -106,10 +106,10 @@ public class Shooter extends SubsystemBase {
     feederMotor = new TalonFX(9,canbus); //needs valid device id ???
 
     var feederMotionPIDConfigs = feederConfigs.Slot0;
-    feederMotionPIDConfigs.kS = 0.0; // Add 0.25 V output to overcome static friction
-    feederMotionPIDConfigs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
+    feederMotionPIDConfigs.kS = 0.1; // Add 0.25 V output to overcome static friction
+    feederMotionPIDConfigs.kV = 0.102; // A velocity target of 1 rps results in 0.12 V output
     feederMotionPIDConfigs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    feederMotionPIDConfigs.kP = 1; // A position error of 2.5 rotations results in 12 V output
+    feederMotionPIDConfigs.kP = 0.2; // A position error of 2.5 rotations results in 12 V output
     feederMotionPIDConfigs.kI = 0; // no output for integrated error
     feederMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
@@ -129,7 +129,7 @@ public class Shooter extends SubsystemBase {
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       // Set PID values for position control. We don't need to pass a closed
       // loop slot, as it will default to slot 0.
-      .p(0.1)
+      .p(0.2)
       .i(0)
       .d(0)
       .outputRange(-1, 1);
@@ -146,6 +146,8 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
 
     SmartDashboard.putNumber("Shooter RPS", getShooterSpeedRPS());
+    SmartDashboard.putNumber("Hood Encoder Position", getHoodPosition());
+    SmartDashboard.putNumber("Feeder RPS", getFeederSpeed());
   }
 
   public void setShooterSpeedRPS(double rps) {
@@ -205,31 +207,31 @@ public class Shooter extends SubsystemBase {
   }
   // public void findFeederTargetSpeed(double distance) {}
 
-  public void setHoodPosition(HoodPosition position) {
+  public void setHoodPosition(double position) {
 
-    double pos;
+   
 
-    switch(position) {
-      case LOW:
-        pos = 0;
-        break;
-      case MEDIUM:
-        pos = 0;
-        break;
-      case HIGH:
-        pos = 0;
-       break;
-      default:
-        pos = 0;
-        break;
-    }
+    // switch(position) {
+    //   case LOW:
+    //     pos = 0;
+    //     break;
+    //   case MEDIUM:
+    //     pos = 0;
+    //     break;
+    //   case HIGH:
+    //     pos = 0;
+    //    break;
+    //   default:
+    //     pos = 0;
+    //     break;
+    // }
 
-    hoodMotorController.setSetpoint(pos, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    hoodMotorController.setSetpoint(position, SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0);
 
   }
 
   public double getHoodPosition() {
-    return hoodMotorController.getSetpoint();
+    return hoodMotor.getEncoder().getPosition();
   }
 
   // public void findTargetHoodPosition(double position) {}

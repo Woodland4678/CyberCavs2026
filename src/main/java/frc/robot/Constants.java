@@ -5,14 +5,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public final class Constants {
     public static class ClimberConstants {
-        public static final double extendPosition = 10.0;
-        public static final double retractPosition = 1.0;
+        public static final double extendPosition = -1;
+        public static final double retractPosition = 16.0;
     }
     public static class IntakeConstants {
-        public static final double deployPosition = 10.0;
-        public static final double retractPosition = 1.0;
+        public static final double deployPosition = -11.38;
+        public static final double retractPosition = -0.1;
     }
     public static class ShooterConstants {
+        public static final double hoodRetractPosition = 0;
+        public static final double hoodStage1Position = -7.81;
+        public static final double hoodStage2Position = -13.857;
 
     }
     public static class HopperConstants {

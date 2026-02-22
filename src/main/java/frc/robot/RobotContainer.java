@@ -34,6 +34,7 @@ import frc.robot.autos.RightSideToNeutralTwiceBehindHub;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
+import frc.robot.commands.Shoot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -76,7 +77,7 @@ public class RobotContainer {
     );
 
     public final Hopper S_Hopper = new Hopper();
-    //public final Climber S_Climber = new Climber();
+    public final Climber S_Climber = new Climber();
     public final Shooter S_Shooter = new Shooter();
     public final Intake S_Intake = new Intake();
     public RobotContainer() {
@@ -91,25 +92,31 @@ public class RobotContainer {
        // joystick.povUp().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPM(500)));
        // joystick.povUp().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
 //
-       // joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.moveClimberToPosition(100)));//normal position (placeholder vlaue)
-       // joystick.povLeft().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
-       // joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.moveClimberToPosition(200)));//up position (placeholder value)
-       // joystick.povRight().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
+       joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.extendClimber()));
+       joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.retractClimber()));
 
         //joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(70)));//up position (placeholder value)
         //joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
-        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorVoltage(10)));
-        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
-        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederVoltage(9)));
-        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopFeeder()));
-        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterVoltage(2)));
-        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
-        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(3)));
-        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
 
-        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorVoltage(5)));
+        joystick.povUp().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodRetractPosition)));
+        joystick.povRight().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage1Position)));
+        joystick.povDown().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage2Position)));
+
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorVoltage(10)));
+        // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederSpeed(10)));
+        // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopFeeder()));
+        joystick.rightTrigger().whileTrue(new Shoot(S_Shooter, S_Hopper));
+
+
+        //joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterVoltage(2)));
+        //joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
+        //joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(3)));
+       // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
+
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorVoltage(8.5)));
         joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
-        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(8)));
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(10)));
         joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
@@ -126,7 +133,7 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
-
+        joystick.a().whileTrue(new AutoAim(drivetrain));
        // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
@@ -142,15 +149,18 @@ public class RobotContainer {
        // joystick.rightTrigger().whileTrue(new AutoAim(drivetrain));
 
         // Reset the field-centric heading on left bumper press.
-        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        joystick.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         joystick.x().whileTrue(new DriveOverBump(drivetrain, 0));
         joystick.y().whileTrue(new DriveOverBump(drivetrain, 1));
-        joystick.povUp().whileTrue(new DriveOverBump(drivetrain, 2));
-        joystick.povDown().whileTrue(new DriveOverBump(drivetrain, 3));
+       // joystick.povUp().whileTrue(new DriveOverBump(drivetrain, 2));
+       // joystick.povDown().whileTrue(new DriveOverBump(drivetrain, 3));
         //joystick.a().whileTrue(new AutoDrive(drivetrain));
         //joystick.y().whileTrue(drivetrain.getAutonomousCommand());
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        joystick.rightBumper().onTrue(new InstantCommand(() -> S_Intake.deployIntake()));
+        joystick.leftBumper().onTrue(new InstantCommand(() -> S_Intake.retractIntake()));
     }
 
     public Command getAutonomousCommand() {

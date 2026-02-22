@@ -24,6 +24,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
 
@@ -49,10 +50,10 @@ public class Intake extends SubsystemBase {
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       // Set PID values for position control. We don't need to pass a closed
       // loop slot, as it will default to slot 0.
-      .p(0.1)
+      .p(0.2)
       .i(0)
       .d(0)
-      .outputRange(-1, 1);
+      .outputRange(-0.5, 0.5);
 
       deployMotor.configure(deployMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
@@ -78,6 +79,7 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Intake Deploy Status = ", isIntakeDeployed());
     SmartDashboard.putNumber("IntakeWheel Speed", getIntakeWheelSpeed());
+    SmartDashboard.putNumber("Intake Positiion", getintakePosition());
 
 
   }
@@ -89,13 +91,15 @@ public class Intake extends SubsystemBase {
 
   public void deployIntake(){
     isIntakeDeployed = true;
-    moveIntake(1);
+    moveIntake(Constants.IntakeConstants.deployPosition);
+    setIntakeWheelVoltage(10);
   }
 
   
   public void retractIntake(){
     isIntakeDeployed = false;
-    moveIntake(0);
+    moveIntake(Constants.IntakeConstants.retractPosition);
+    stopIntakeWheels();
   }
 
   public boolean isIntakeDeployed(){
@@ -121,5 +125,8 @@ public class Intake extends SubsystemBase {
 
   public void stopIntakeWheels(){
     intakeWheels.disable();
+  }
+  public double getintakePosition() {
+    return deployMotor.getEncoder().getPosition();
   }
 }

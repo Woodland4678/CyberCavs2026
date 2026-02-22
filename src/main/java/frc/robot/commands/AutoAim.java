@@ -39,7 +39,7 @@ public class AutoAim extends Command {
   // Angle to turn to for facing centre of the hub.
   Double targetAngle;
 
-  PhoenixPIDController rController = new PhoenixPIDController(14.1, 0, 0.15);
+  PhoenixPIDController rController = new PhoenixPIDController(19.1, 0, 0.15);
     private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
             .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors

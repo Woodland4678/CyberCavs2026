@@ -61,8 +61,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
     public static final Field2d field = new Field2d();
-    double cameraForwardPos = Units.inchesToMeters(-12.5);
-    double cameraRightPos = Units.inchesToMeters(2.5); //negative is to the right
+    double cameraForwardPos = Units.inchesToMeters(-14.9375);
+    double cameraRightPos = Units.inchesToMeters(0); //negative is to the right
     Transform2d cameraToRobot = new Transform2d(new Translation2d(cameraForwardPos, cameraRightPos),new Rotation2d());
     boolean hasMultiTagTarget = false;
 
@@ -189,7 +189,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-         rpi = new PhotonCamera("Arducam_OV9281_USB_Camera");
+         rpi = new PhotonCamera("Arducam_Main");
          fieldToCameraPosition = new Transform3d();
          configureAutoBuilder();
     }
@@ -224,7 +224,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-         rpi = new PhotonCamera("Arducam_OV9281_USB_Camera");
+         rpi = new PhotonCamera("Arducam_Main");
          fieldToCameraPosition = new Transform3d();
          configureAutoBuilder();
     }

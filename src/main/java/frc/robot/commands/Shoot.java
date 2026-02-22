@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Shooter;
@@ -13,7 +14,8 @@ import frc.robot.subsystems.Shooter;
 public class Shoot extends Command {
   Shooter S_Shooter;
   Hopper S_Hopper;
-  double shooterTargetRPS = 55;
+  double shooterTargetRPS = 45;
+  double startTime = 0;
   Debouncer shooterReadyDebounce = new Debouncer(0.04, Debouncer.DebounceType.kRising);
   
   /** Creates a new Shoot. */
@@ -28,23 +30,31 @@ public class Shoot extends Command {
   @Override
   public void initialize() {
     S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    S_Hopper.setFloorRPM(90);
+    S_Hopper.setFloorVoltage(10);
+    startTime = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 3.0;
+    if (Timer.getFPGATimestamp() - startTime < 0.5) {
+      shooterTargetRPS = 50.5;
+    }
+    else {
+      shooterTargetRPS = 47.0;
+    }
+    S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
+    boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 1.75;
     boolean shooterReady = shooterReadyDebounce.calculate(rawReady);
     double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
     if (shooterReady) {
-      S_Shooter.setFeederSpeed(110);
+      S_Shooter.setFeederSpeed(70);
     }
     else if (error > 8.0) {//slow down if shooter not within speed
       S_Shooter.stopFeeder();
     }
     else {
-      S_Shooter.setFeederSpeed(30);
+      S_Shooter.setFeederSpeed(20);
     }
   }
 
