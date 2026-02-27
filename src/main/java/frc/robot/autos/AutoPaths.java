@@ -40,6 +40,21 @@ public final class AutoPaths {
         }
     );
 
+    public static final List<AutoWaypoint[]> DriveToClimberLeftSide = List.of(
+        // First segment
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(15.492, 3.14, new Rotation2d().fromDegrees(180)), 0.0, 1.0, Math.PI * 3, 0.01, 4),
+            new AutoWaypoint(new Pose2d(15.492, 3.43, new Rotation2d().fromDegrees(180)), 0.0, 1.0, Math.PI * 3, 0.02, 2),
+        },
+        // Second segment
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(6.391, 1.330, new Rotation2d().fromDegrees(-90)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.914, 0.974, new Rotation2d().fromDegrees(-90)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.914, 2.48, new Rotation2d().fromDegrees(-90)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(5.873, 2.399, new Rotation2d().fromDegrees(45)), 2, 3.0, Math.PI * 3, 0.15, 6)
+        }
+    );
+
 
 
     

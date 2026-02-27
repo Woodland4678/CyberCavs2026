@@ -167,8 +167,8 @@ public class AutoDrive extends Command {
         currentPose.getRotation()
     );
     S_Swerve.setControl(
-          drive.withVelocityX(fieldSpeeds.vxMetersPerSecond) // Drive forward with negative Y (forward)
-              .withVelocityY(fieldSpeeds.vyMetersPerSecond) // Drive left with negative X (left)
+          drive.withVelocityX(-fieldSpeeds.vxMetersPerSecond) // Drive forward with negative Y (forward)
+              .withVelocityY(-fieldSpeeds.vyMetersPerSecond) // Drive left with negative X (left)
               .withRotationalRate(fieldSpeeds.omegaRadiansPerSecond)
               .withDriveRequestType(DriveRequestType.Velocity) // Drive counterclockwise with negative X (left)
       );
