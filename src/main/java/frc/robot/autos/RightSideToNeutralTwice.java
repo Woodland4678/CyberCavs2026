@@ -5,6 +5,7 @@
 package frc.robot.autos;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
@@ -14,6 +15,8 @@ import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,10 +38,18 @@ public class RightSideToNeutralTwice extends SequentialCommandGroup {
   /** Creates a new RightSideToNeutralTwice. */
   CommandSwerveDrivetrain S_Swerve;
   public static final Field2d field = new Field2d();
-
+  
   
   
   public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, List<AutoWaypoint[]> waypoints) {
+    Optional<Alliance> ally = DriverStation.getAlliance();
+    if (ally.isPresent()) {
+      if (ally.get() == Alliance.Red) {
+        waypoints = waypoints.stream()
+          .map(segment -> AutoPaths.rotateRed(segment, Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS))
+          .toList();       
+      }
+    }
     this.S_Swerve = S_Swerve;
     addRequirements(S_Swerve);
     // Add your commands in the addCommands() call, e.g.
@@ -62,11 +73,5 @@ public class RightSideToNeutralTwice extends SequentialCommandGroup {
 
     );
   }
-  public static Pose2d[] extractPoses(AutoWaypoint[] waypoints) {
-    Pose2d[] poses = new Pose2d[waypoints.length];
-    for (int i = 0; i < waypoints.length; i++) {
-        poses[i] = waypoints[i].waypoint;
-    }
-    return poses;
-  }
+  
 }

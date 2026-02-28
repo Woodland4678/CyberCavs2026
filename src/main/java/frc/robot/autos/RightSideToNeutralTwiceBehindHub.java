@@ -47,8 +47,7 @@ public class RightSideToNeutralTwiceBehindHub extends SequentialCommandGroup {
         .toList();
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    field.getObject("Auto Waypoints")
-     .setPoses(extractPoses(LeftSideGatherFuel1.get(0)));
+    
     
     addCommands(
       //new DriveOverBump(S_Swerve,0),
@@ -71,11 +70,5 @@ public class RightSideToNeutralTwiceBehindHub extends SequentialCommandGroup {
 
     );
   }
-  public static Pose2d[] extractPoses(AutoWaypoint[] waypoints) {
-    Pose2d[] poses = new Pose2d[waypoints.length];
-    for (int i = 0; i < waypoints.length; i++) {
-        poses[i] = waypoints[i].waypoint;
-    }
-    return poses;
-  }
+  
 }

@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public final class Constants {
+    public static final double FIELD_WIDTH_METERS = 8.042656;
+    public static final double FIELD_LENGTH_METERS = 16.54;
     public static class ClimberConstants {
         public static final double extendPosition = -1;
         public static final double retractPosition = 16.0;

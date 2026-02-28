@@ -63,11 +63,5 @@ public class LeftSideToNeutralTwice extends SequentialCommandGroup {
 
     );
   }
-  public static Pose2d[] extractPoses(AutoWaypoint[] waypoints) {
-    Pose2d[] poses = new Pose2d[waypoints.length];
-    for (int i = 0; i < waypoints.length; i++) {
-        poses[i] = waypoints[i].waypoint;
-    }
-    return poses;
-  }
+  
 }

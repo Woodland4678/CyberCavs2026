@@ -160,4 +160,68 @@ public final class AutoPaths {
         return poses;
     }
 
+
+
+
+
+
+
+
+    public static AutoWaypoint[] mirrorBlueRightToLeft(AutoWaypoint[] original,
+        double fieldWidthMeters
+    ) {
+        AutoWaypoint[] out = new AutoWaypoint[original.length];
+
+        for (int i = 0; i < original.length; i++) {
+            AutoWaypoint wp = original[i];
+            out[i] = new AutoWaypoint(
+                mirrorBlueRightToLeft(wp.waypoint, fieldWidthMeters),
+                wp.cruiseSpeed,
+                wp.maxSpeed,
+                wp.maxAngularSpeed,
+                wp.translationTolerance,
+                wp.rotationTolerance
+            );
+        }
+        return out;
+    }
+    public static Pose2d mirrorBlueRightToLeft(Pose2d original, double fieldWidthMeters) {
+        return new Pose2d(
+            original.getX(),
+            fieldWidthMeters - original.getY(),
+            original.getRotation().unaryMinus()
+        );
+    }
+    public static Pose2d rotateBlueToRed(
+        Pose2d original,
+        double fieldLengthMeters,
+        double fieldWidthMeters
+    ) {
+        return new Pose2d(
+            fieldLengthMeters - original.getX(),
+            fieldWidthMeters  - original.getY(),
+            original.getRotation().plus(Rotation2d.fromRadians(Math.PI))
+        );
+    }
+    public static AutoWaypoint[] rotateBlueToRed(
+        AutoWaypoint[] original,
+        double fieldLengthMeters,
+        double fieldWidthMeters
+    ) {
+        AutoWaypoint[] out = new AutoWaypoint[original.length];
+
+        for (int i = 0; i < original.length; i++) {
+            AutoWaypoint wp = original[i];
+            out[i] = new AutoWaypoint(
+                rotateBlueToRed(wp.waypoint, fieldLengthMeters, fieldWidthMeters),
+                wp.cruiseSpeed,
+                wp.maxSpeed,
+                wp.maxAngularSpeed,
+                wp.translationTolerance,
+                wp.rotationTolerance
+            );
+        }
+        return out;
+    }
+
 }
