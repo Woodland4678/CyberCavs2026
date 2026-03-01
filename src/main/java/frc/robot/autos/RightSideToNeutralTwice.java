@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoWaypoint;
@@ -38,24 +39,29 @@ public class RightSideToNeutralTwice extends SequentialCommandGroup {
   /** Creates a new RightSideToNeutralTwice. */
   CommandSwerveDrivetrain S_Swerve;
   public static final Field2d field = new Field2d();
+  Pose2d startingPose;
   
   
-  
-  public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, List<AutoWaypoint[]> waypoints) {
+  public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, List<AutoWaypoint[]> waypoints, Pose2d startingPose) {
     Optional<Alliance> ally = DriverStation.getAlliance();
+    this.startingPose = startingPose;
     if (ally.isPresent()) {
       if (ally.get() == Alliance.Red) {
+        this.startingPose = AutoPaths.rotateBlueToRed(startingPose, Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS);
         waypoints = waypoints.stream()
-          .map(segment -> AutoPaths.rotateRed(segment, Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS))
+          .map(segment -> AutoPaths.rotateBlueToRed(segment, Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS))
           .toList();       
       }
     }
     this.S_Swerve = S_Swerve;
+    this.S_Swerve.resetPose(startingPose);
+    SmartDashboard.putNumber("Auto starting pose y value", this.startingPose.getX());
     addRequirements(S_Swerve);
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
     addCommands(
+      new InstantCommand(() -> S_Swerve.resetPose(this.startingPose)),
       new DriveOverBump(S_Swerve,0),
       new AutoDrive(S_Swerve, waypoints.get(0)),
       new DriveOverBump(S_Swerve, 1),
@@ -73,5 +79,6 @@ public class RightSideToNeutralTwice extends SequentialCommandGroup {
 
     );
   }
+  
   
 }

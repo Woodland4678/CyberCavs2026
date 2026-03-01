@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -17,6 +18,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,7 +32,6 @@ import frc.robot.Constants.AutoWaypoint;
 import frc.robot.autos.AutoPaths;
 import frc.robot.autos.LeftSideToNeutralTwice;
 import frc.robot.autos.RightSideToNeutralTwice;
-import frc.robot.autos.RightSideToNeutralTwiceBehindHub;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
@@ -45,6 +46,7 @@ import frc.robot.subsystems.Shooter;
 public class RobotContainer {
     private String lastSelectedAuto = "";
     private final Field2d field = new Field2d();
+    Optional<Alliance> ally;
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(1.25).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     private PathPlannerPath examplePath;
@@ -65,7 +67,7 @@ public class RobotContainer {
     private final Map<String, AutoDefinition> autos = Map.of(
         "RightSideToNeutralTwice",
             new AutoDefinition(
-                new RightSideToNeutralTwice(drivetrain, AutoPaths.RightSideGatherFuel1),
+                new RightSideToNeutralTwice(drivetrain, AutoPaths.RightSideGatherFuel1, new Pose2d(3.573, 2.579, new Rotation2d().fromDegrees(90))),
                 AutoPaths.RightSideGatherFuel1
             ),
 
@@ -167,8 +169,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        // return autoChooser.getSelected();
-        return new RightSideToNeutralTwiceBehindHub(drivetrain, AutoPaths.RightSideGatherFuel2);
+         return autoChooser.getSelected();
+        //return new RightSideToNeutralTwiceBehindHub(drivetrain, AutoPaths.RightSideGatherFuel2);
        
     }
     private void configureAutoChooser() {
@@ -198,27 +200,37 @@ public class RobotContainer {
     }
     public void updateAutoPreview() {
         Command selectedAuto = autoChooser.getSelected();
-
         if (selectedAuto == null) {
-            // Nothing selected yet — dashboard not ready
             return;
         }
 
         String selectedKey = selectedAuto.getName();
-        //System.out.println("selected key " + selectedKey);
-
         if (selectedKey.equals(lastSelectedAuto)) {
             return;
         }
-
         lastSelectedAuto = selectedKey;
 
         AutoDefinition auto = autos.get(selectedKey);
         if (auto == null) return;
 
+        // 🔹 Safely read alliance HERE
+        Alliance alliance =
+            DriverStation.getAlliance().orElse(Alliance.Blue);
+
+        // Extract original (blue-right) poses
         Pose2d[] poses = AutoPaths.extractPoses(auto.paths());
 
-       // field.getObject("AutoPath").close();
+        // 🔹 Apply transforms ONLY for preview
+        if (alliance == Alliance.Red) {
+            for (int i = 0; i < poses.length; i++) {
+                poses[i] = AutoPaths.rotateBlueToRed(
+                    poses[i],
+                    Constants.FIELD_LENGTH_METERS,
+                    Constants.FIELD_WIDTH_METERS
+                );
+            }
+        }
+
         field.getObject("AutoPath").setPoses(poses);
         SmartDashboard.putData("Auto Field", field);
     }

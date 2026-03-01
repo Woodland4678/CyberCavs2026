@@ -5,6 +5,15 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants.AutoWaypoint;
+/********************************************************
+ * Steps for new autos
+ * 1. Create new list of AutoWaypoints
+ * 2. Add left side of the same auto
+ * 3. Create copy of AutoTemplate and rename it to a new auto
+ * 4. In robot container add a new entry to the autos map defining the command and the paths to use
+ * 5. If using the teamplet there should be no need for flipping to red, it should be handled within the command itself
+ * 
+ **********************************************************/
 
 public final class AutoPaths {
     public static final double FIELD_WIDTH_METERS = 8.042656;
@@ -60,91 +69,11 @@ public final class AutoPaths {
     
     public static final List<AutoWaypoint[]> LeftSideGatherFuel1 =
     RightSideGatherFuel1.stream()
-        .map(segment -> mirrorWaypointsLeftRight(segment, FIELD_WIDTH_METERS))
+        .map(segment -> mirrorBlueRightToLeft(segment, FIELD_WIDTH_METERS))
         .toList();
 
 
 
-
-    public static AutoWaypoint[] mirrorWaypointsLeftRight(AutoWaypoint[] original, double fieldWidthMeters) {
-        AutoWaypoint[] mirrored = new AutoWaypoint[original.length];
-        for (int i = 0; i < original.length; i++) {
-            AutoWaypoint wp = original[i];
-            mirrored[i] = new AutoWaypoint(
-                mirrorBlueLeftRight(wp.waypoint, fieldWidthMeters), // mirrored Pose2d
-                wp.cruiseSpeed,
-                wp.maxSpeed,
-                wp.maxAngularSpeed,
-                wp.translationTolerance,
-                wp.rotationTolerance
-            );
-        }
-        return mirrored;
-    }
-    public static Pose2d mirrorBlueLeftRight(Pose2d original, double fieldWidthMeters) {
-        return new Pose2d(
-            original.getX(),
-            fieldWidthMeters - original.getY(),
-            new Rotation2d(-original.getRotation().getRadians())
-        );
-    }
-    public static AutoWaypoint[] rotateRed(AutoWaypoint[] original, double fieldLengthMeters, double fieldWidthMeters) {
-        AutoWaypoint[] mirrored = new AutoWaypoint[original.length];
-        for (int i = 0; i < original.length; i++) {
-            AutoWaypoint wp = original[i];
-            mirrored[i] = new AutoWaypoint(
-                rotateRed(wp.waypoint, fieldLengthMeters, fieldWidthMeters), // mirrored Pose2d
-                wp.cruiseSpeed,
-                wp.maxSpeed,
-                wp.maxAngularSpeed,
-                wp.translationTolerance,
-                wp.rotationTolerance
-            );
-        }
-        return mirrored;
-    }
-    public static Pose2d rotateRed(Pose2d original, double fieldLengthMeters, double fieldWidthMeters) {
-        
-        if (original.getRotation().getRadians() > 0) {
-            return new Pose2d(
-            fieldLengthMeters - original.getX(),
-            fieldWidthMeters - original.getY(),
-            new Rotation2d(original.getRotation().getRadians() + Math.PI));
-        } else {
-            return new Pose2d(
-            fieldLengthMeters - original.getX(),
-            fieldWidthMeters - original.getY(),
-            new Rotation2d(original.getRotation().getRadians() - Math.PI));
-        }
-    }
-        public static AutoWaypoint[] rotateRedMirrorLeftRight(AutoWaypoint[] original, double fieldLengthMeters) {
-        AutoWaypoint[] mirrored = new AutoWaypoint[original.length];
-        for (int i = 0; i < original.length; i++) {
-            AutoWaypoint wp = original[i];
-            mirrored[i] = new AutoWaypoint(
-                rotateRedMirrorLeftRight(wp.waypoint, fieldLengthMeters), // mirrored Pose2d
-                wp.cruiseSpeed,
-                wp.maxSpeed,
-                wp.maxAngularSpeed,
-                wp.translationTolerance,
-                wp.rotationTolerance
-            );
-        }
-        return mirrored;
-    }
-    public static Pose2d rotateRedMirrorLeftRight(Pose2d original, double fieldLengthMeters) {
-        if (original.getRotation().getRadians() > 0) {
-            return new Pose2d(
-            fieldLengthMeters - original.getX(),
-            original.getY(),
-            new Rotation2d(-(original.getRotation().getRadians() + Math.PI)));
-        } else {
-            return new Pose2d(
-            fieldLengthMeters - original.getX(),
-            original.getY(),
-            new Rotation2d(-(original.getRotation().getRadians() - Math.PI)));
-        }
-    }
     public static Pose2d[] extractPoses(List<AutoWaypoint[]> waypointSegments) {
         // Count total number of waypoints
         int total = waypointSegments.stream().mapToInt(arr -> arr.length).sum();
@@ -159,13 +88,6 @@ public final class AutoPaths {
 
         return poses;
     }
-
-
-
-
-
-
-
 
     public static AutoWaypoint[] mirrorBlueRightToLeft(AutoWaypoint[] original,
         double fieldWidthMeters
