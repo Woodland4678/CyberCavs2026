@@ -71,7 +71,11 @@ public class DriveOverBump extends Command {
     isDone = false;
      if (ally.isPresent()) {
       if (ally.get() == Alliance.Red) {
-        
+        xSpeed *= -1;
+        directionTypeRotationAngles[0] = -135;
+        directionTypeRotationAngles[1] = -45;
+       // directionTypeRotationAngles[2] = 45;
+        //directionTypeRotationAngles[3] = 45;
       }
     }
   }

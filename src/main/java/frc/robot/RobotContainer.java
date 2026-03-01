@@ -63,11 +63,14 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-
+    public final Hopper S_Hopper = new Hopper();
+    public final Climber S_Climber = new Climber();
+    public final Shooter S_Shooter = new Shooter();
+    public final Intake S_Intake = new Intake();
     private final Map<String, AutoDefinition> autos = Map.of(
         "RightSideToNeutralTwice",
             new AutoDefinition(
-                new RightSideToNeutralTwice(drivetrain, AutoPaths.RightSideGatherFuel1, new Pose2d(3.573, 2.579, new Rotation2d().fromDegrees(90))),
+                new RightSideToNeutralTwice(drivetrain, S_Intake, AutoPaths.RightSideGatherFuel1, new Pose2d(3.573, 2.579, new Rotation2d().fromDegrees(90))),
                 AutoPaths.RightSideGatherFuel1
             ),
 
@@ -78,10 +81,7 @@ public class RobotContainer {
             )
     );
 
-    public final Hopper S_Hopper = new Hopper();
-    public final Climber S_Climber = new Climber();
-    public final Shooter S_Shooter = new Shooter();
-    public final Intake S_Intake = new Intake();
+   
     public RobotContainer() {
         configureBindings();
         configureAutoChooser();
@@ -94,23 +94,28 @@ public class RobotContainer {
        // joystick.povUp().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPM(500)));
        // joystick.povUp().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
 //
-       joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.extendClimber()));
-       joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.retractClimber()));
+      // joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.extendClimber()));
+       //joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.retractClimber()));
 
         //joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(70)));//up position (placeholder value)
         //joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
 
-        joystick.povUp().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodRetractPosition)));
-        joystick.povRight().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage1Position)));
-        joystick.povDown().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage2Position)));
+       // joystick.povUp().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodRetractPosition)));
+        //joystick.povRight().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage1Position)));
+        //joystick.povDown().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage2Position)));
 
-        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(50)));
-        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
-        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederSpeed(90)));
-        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopFeeder()));
-         joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(30)));
-        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
-        //joystick.rightTrigger().whileTrue(new Shoot(S_Shooter, S_Hopper));
+
+        // joystick.povDown().onTrue(new InstantCommand(() -> S_Climber.setClimberVoltage(8)));
+        // joystick.povDown().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
+        // joystick.povUp().onTrue(new InstantCommand(() -> S_Climber.setClimberVoltage(-8)));
+        // joystick.povUp().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(50)));
+        // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederSpeed(90)));
+        // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopFeeder()));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(45)));
+        // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
+        joystick.rightTrigger().whileTrue(new Shoot(drivetrain,S_Shooter, S_Hopper));
 
 
         //joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterVoltage(2)));
@@ -118,10 +123,12 @@ public class RobotContainer {
         //joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(3)));
        // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
 
-        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorVoltage(8.5)));
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(25)));
         joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
-        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(10)));
-        joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
+       // joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederSpeed(80)));
+       // joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopFeeder()));
+        //joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(10)));
+        //joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
@@ -156,8 +163,8 @@ public class RobotContainer {
         joystick.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         joystick.x().whileTrue(new DriveOverBump(drivetrain, 0));
-       // joystick.y().whileTrue(new DriveOverBump(drivetrain, 1));
-       joystick.y().whileTrue(new AutoDrive(drivetrain, AutoPaths.DriveToClimberLeftSide.get(0)));
+        joystick.y().whileTrue(new DriveOverBump(drivetrain, 1));
+       //joystick.y().whileTrue(new AutoDrive(drivetrain, AutoPaths.DriveToClimberLeftSide.get(0)));
        // joystick.povUp().whileTrue(new DriveOverBump(drivetrain, 2));
        // joystick.povDown().whileTrue(new DriveOverBump(drivetrain, 3));
         //joystick.a().whileTrue(new AutoDrive(drivetrain));
@@ -169,8 +176,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-         return autoChooser.getSelected();
-        //return new RightSideToNeutralTwiceBehindHub(drivetrain, AutoPaths.RightSideGatherFuel2);
+         //return autoChooser.getSelected();
+        return new RightSideToNeutralTwice(drivetrain, S_Intake, AutoPaths.RightSideGatherFuel2, new Pose2d(3.573, 2.579, new Rotation2d().fromDegrees(-90)));
        
     }
     private void configureAutoChooser() {

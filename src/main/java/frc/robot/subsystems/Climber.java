@@ -48,10 +48,10 @@ public class Climber extends SubsystemBase {
       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
       // Set PID values for position control. We don't need to pass a closed
       // loop slot, as it will default to slot 0.
-      .p(0.2)
+      .p(1.5)
       .i(0)
       .d(0)
-      .outputRange(-0.4, 0.4);
+      .outputRange(-1, 1);
 
       climberMotor.configure(climberMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
@@ -84,5 +84,8 @@ public class Climber extends SubsystemBase {
   }
   public void retractClimber() {
     moveClimberToPosition(Constants.ClimberConstants.retractPosition);
+  }
+  public void setClimberVoltage(double volts) {
+    climberMotor.setVoltage(volts);
   }
 }

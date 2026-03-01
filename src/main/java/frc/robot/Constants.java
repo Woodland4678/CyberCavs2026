@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public final class Constants {
+    public static final Pose2d BLUE_HUB_POSITION = new Pose2d(4.675, 8.07/2, new Rotation2d());
+    public static final Pose2d RED_HUB_POSITION = new Pose2d(4.675 + 7.19, 8.07/2, new Rotation2d());
     public static final double FIELD_WIDTH_METERS = 8.042656;
     public static final double FIELD_LENGTH_METERS = 16.54;
     public static class ClimberConstants {

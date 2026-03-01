@@ -25,6 +25,7 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,6 +37,7 @@ public class Shooter extends SubsystemBase {
   TalonFX shooterFollowerMotor2;
   TalonFX shooterFollowerMotor3;
 
+  InterpolatingDoubleTreeMap shooterRPSLookup = new InterpolatingDoubleTreeMap();
 
   TalonFX feederMotor;
 
@@ -58,6 +60,10 @@ public class Shooter extends SubsystemBase {
   DigitalInput rightFuelSensor;
 
   public Shooter() {
+    shooterRPSLookup.put(2.0873, 39.2);
+    shooterRPSLookup.put(2.555, 42.5);
+    shooterRPSLookup.put(3.038, 46.8);
+    shooterRPSLookup.put(3.712, 52.0);
     final CANBus canbus = new CANBus("rio");
 
     leftFuelSensor = new DigitalInput(8); //needs valid channel ???
@@ -82,7 +88,7 @@ public class Shooter extends SubsystemBase {
     shooterMotionPIDConfigs.kS = 0.1; // Add 0.25 V output to overcome static friction
     shooterMotionPIDConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
     shooterMotionPIDConfigs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterMotionPIDConfigs.kP = 0.38; // A position error of 2.5 rotations results in 12 V output
+    shooterMotionPIDConfigs.kP = 0.45; // A position error of 2.5 rotations results in 12 V output
     shooterMotionPIDConfigs.kI = 0; // no output for integrated error
     shooterMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
@@ -206,7 +212,9 @@ public class Shooter extends SubsystemBase {
     shooterLeadMotor.setVoltage(voltage);
   }
   // public void findFeederTargetSpeed(double distance) {}
-
+  public double getDesiredShooterRPS(double distance) {
+    return shooterRPSLookup.get(distance);
+  }
   public void setHoodPosition(double position) {
 
    

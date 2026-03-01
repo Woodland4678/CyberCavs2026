@@ -45,7 +45,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -360,6 +360,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Gyro Pitch", this.getPigeon2().getPitch().getValueAsDouble());
         SmartDashboard.putNumber("Front left drive speed", this.getModule(0).getDriveMotor().getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Robot Velocity X", this.getState().Speeds.vxMetersPerSecond);
+        //  double distance =
+        // this.getState().Pose.getTranslation()
+        //     .getDistance(Constants.BLUE_HUB_POSITION.getTranslation());
+        // SmartDashboard.putNumber("Distance to hub middle", distance);
     }
 
     private void startSimThread() {
