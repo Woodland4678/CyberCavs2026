@@ -63,10 +63,10 @@ public class Intake extends SubsystemBase {
     intakeWheelsConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     // set slot 0 gains
     var intakeWheelsMotionPIDConfigs = intakeWheelsConfigs.Slot0;
-    intakeWheelsMotionPIDConfigs.kS = 0.25; // Add 0.25 V output to overcome static friction
-    intakeWheelsMotionPIDConfigs.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
+    intakeWheelsMotionPIDConfigs.kS = 0.3; // Add 0.25 V output to overcome static friction
+    intakeWheelsMotionPIDConfigs.kV = 0.115; // A velocity target of 1 rps results in 0.12 V output
     intakeWheelsMotionPIDConfigs.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    intakeWheelsMotionPIDConfigs.kP = 50; // A position error of 2.5 rotations results in 12 V output
+    intakeWheelsMotionPIDConfigs.kP = 0.4; // A position error of 2.5 rotations results in 12 V output
     intakeWheelsMotionPIDConfigs.kI = 0; // no output for integrated error
     intakeWheelsMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
@@ -91,8 +91,9 @@ public class Intake extends SubsystemBase {
 
   public void deployIntake(){
     isIntakeDeployed = true;
+    setIntakeWheelSpeed(Constants.IntakeConstants.IntakeRPS);
     moveIntake(Constants.IntakeConstants.deployPosition);
-    setIntakeWheelVoltage(10);
+    //setIntakeWheelVoltage(10);
   }
 
   

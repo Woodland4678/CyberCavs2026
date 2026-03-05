@@ -15,6 +15,7 @@ public final class Constants {
     public static class IntakeConstants {
         public static final double deployPosition = -11.38;
         public static final double retractPosition = -0.1;
+        public static final double IntakeRPS = 85;
     }
     public static class ShooterConstants {
         public static final double hoodRetractPosition = 0;
