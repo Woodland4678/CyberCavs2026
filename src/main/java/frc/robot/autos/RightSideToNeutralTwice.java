@@ -41,38 +41,26 @@ public class RightSideToNeutralTwice extends SequentialCommandGroup {
   CommandSwerveDrivetrain S_Swerve;
   Intake S_Intake;
   public static final Field2d field = new Field2d();
-  Pose2d startingPose;
   
   
-  public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, List<AutoWaypoint[]> waypoints, Pose2d startingPose) {
-    Optional<Alliance> ally = DriverStation.getAlliance();
+  public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, List<AutoWaypoint[]> waypoints) {
     this.S_Intake = S_Intake;
-    this.startingPose = startingPose;
-    //if (ally.isPresent()) {
-    //  if (ally.get() == Alliance.Red) {
-        this.startingPose = AutoPaths.rotateBlueToRed(startingPose, Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS);
-        waypoints = waypoints.stream()
-          .map(segment -> AutoPaths.rotateBlueToRed(segment, Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS))
-          .toList();       
-    //  }
-    //}
+  
+    
     this.S_Swerve = S_Swerve;
-    //this.S_Swerve.resetPose(startingPose);
-    SmartDashboard.putNumber("Auto starting pose y value", this.startingPose.getX());
     addRequirements(S_Swerve);
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
     addCommands(
-      //new InstantCommand(() -> S_Swerve.resetPose(this.startingPose)),
       new DriveOverBump(S_Swerve,1),
-      new AutoDrive(S_Swerve, waypoints.get(0)).alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
-      // new DriveOverBump(S_Swerve, 1).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
-      // new AutoAim(S_Swerve).withTimeout(3.5),
-      // new DriveOverBump(S_Swerve, 0),
-      // new AutoDrive(S_Swerve, waypoints.get(1)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())),
-      // new DriveOverBump(S_Swerve, 1).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
-      // new AutoAim(S_Swerve).withTimeout(3.5)
+      new AutoDrive(S_Swerve, waypoints.get(0)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())),
+      new DriveOverBump(S_Swerve, 1).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
+      new AutoAim(S_Swerve).withTimeout(3.5),
+      new DriveOverBump(S_Swerve, 0),
+      new AutoDrive(S_Swerve, waypoints.get(1)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())),
+      new DriveOverBump(S_Swerve, 1).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
+      new AutoAim(S_Swerve).withTimeout(3.5)
 
 
 

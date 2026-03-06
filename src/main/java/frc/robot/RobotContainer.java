@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -62,23 +63,25 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+    private final SendableChooser<String> autoChooser = new SendableChooser<>();
     public final Hopper S_Hopper = new Hopper();
     public final Climber S_Climber = new Climber();
     public final Shooter S_Shooter = new Shooter();
     public final Intake S_Intake = new Intake();
     private final Map<String, AutoDefinition> autos = Map.of(
         "RightSideToNeutralTwice",
-            new AutoDefinition(
-                new RightSideToNeutralTwice(drivetrain, S_Intake, AutoPaths.RightSideGatherFuel1, new Pose2d(3.573, 2.579, new Rotation2d().fromDegrees(90))),
-                AutoPaths.RightSideGatherFuel1
-            ),
+        new AutoDefinition(
+            paths -> new RightSideToNeutralTwice(drivetrain, S_Intake, paths),
+            AutoPaths.RightSideGatherFuel1,
+            new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
+        ),
 
-        "LeftSideToNeutralTwice",
-            new AutoDefinition(
-                new LeftSideToNeutralTwice(drivetrain, AutoPaths.LeftSideGatherFuel1),
-                AutoPaths.LeftSideGatherFuel1
-            )
+         "LeftSideToNeutralTwice",
+        new AutoDefinition(
+            paths -> new LeftSideToNeutralTwice(drivetrain, paths),
+            AutoPaths.LeftSideGatherFuel1,
+            new Pose2d(3.573, 5.3633, Rotation2d.fromDegrees(-90))
+        )
     );
 
    
@@ -176,42 +179,35 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
+        String key = autoChooser.getSelected();
+        if (key == null) return Commands.none();
+
+        AutoDefinition auto = autos.get(key);
+        return buildAuto(auto);
          //return autoChooser.getSelected();
-        return new RightSideToNeutralTwice(drivetrain, S_Intake, AutoPaths.RightSideGatherFuel2, new Pose2d(3.573, 2.579, new Rotation2d().fromDegrees(-90)));
+        //return new RightSideToNeutralTwice(drivetrain, S_Intake, AutoPaths.RightSideGatherFuel2, new Pose2d(3.573, 2.579, new Rotation2d().fromDegrees(-90)));
        
     }
     private void configureAutoChooser() {
-
         boolean first = true;
 
-        for (Map.Entry<String, AutoDefinition> entry : autos.entrySet()) {
+        for (String key : autos.keySet()) {
             if (first) {
-                autoChooser.setDefaultOption(entry.getKey(), entry.getValue().command);
+                autoChooser.setDefaultOption(key, key);
                 first = false;
             } else {
-                autoChooser.addOption(entry.getKey(), entry.getValue().command);
+                autoChooser.addOption(key, key);
             }
         }
 
         SmartDashboard.putData("Autonomous Mode", autoChooser);
-        
-        //// Example commands
-        //Command rightNeutralZoneTwice1 = new RightSideToNeutralTwice(drivetrain, AutoPaths.RightSideGatherFuel1);
-        //Command leftNeutralZoneTwice1 = new LeftSideToNeutralTwice(drivetrain, AutoPaths.LeftSideGatherFuel1);
-        ////Command simpleDriveAuto = new SimpleDriveAuto(s_Swerve);
-//
-        //// Add them to the chooser
-        //autoChooser.setDefaultOption("Right side neutral zone twice", rightNeutralZoneTwice1); // default
-        //autoChooser.addOption("Left side neutral zone twice", leftNeutralZoneTwice1);
-        ////autoChooser.addOption("Simple Drive Auto", simpleDriveAuto);
     }
     public void updateAutoPreview() {
-        Command selectedAuto = autoChooser.getSelected();
-        if (selectedAuto == null) {
+        String selectedKey = autoChooser.getSelected();
+        if (selectedKey == null) {
             return;
         }
 
-        String selectedKey = selectedAuto.getName();
         if (selectedKey.equals(lastSelectedAuto)) {
             return;
         }
@@ -220,14 +216,13 @@ public class RobotContainer {
         AutoDefinition auto = autos.get(selectedKey);
         if (auto == null) return;
 
-        // 🔹 Safely read alliance HERE
-        Alliance alliance =
-            DriverStation.getAlliance().orElse(Alliance.Blue);
+        // Safely read alliance
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
 
-        // Extract original (blue-right) poses
-        Pose2d[] poses = AutoPaths.extractPoses(auto.paths());
+        // Extract original (blue) poses
+        Pose2d[] poses = AutoPaths.extractPoses(auto.bluePaths());
 
-        // 🔹 Apply transforms ONLY for preview
+        // Flip preview if red
         if (alliance == Alliance.Red) {
             for (int i = 0; i < poses.length; i++) {
                 poses[i] = AutoPaths.rotateBlueToRed(
@@ -241,8 +236,37 @@ public class RobotContainer {
         field.getObject("AutoPath").setPoses(poses);
         SmartDashboard.putData("Auto Field", field);
     }
+    private Command buildAuto(AutoDefinition def) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+
+        List<AutoWaypoint[]> paths = def.bluePaths();
+        Pose2d startPose = def.blueStartPose();
+
+        if (alliance == Alliance.Red) {
+
+            paths = paths.stream()
+                .map(segment -> AutoPaths.rotateBlueToRed(
+                    segment,
+                    Constants.FIELD_LENGTH_METERS,
+                    Constants.FIELD_WIDTH_METERS
+                ))
+                .toList();
+
+            startPose = AutoPaths.rotateBlueToRed(
+                startPose,
+                Constants.FIELD_LENGTH_METERS,
+                Constants.FIELD_WIDTH_METERS
+            );
+        }
+
+        Pose2d finalStartPose = startPose;
+
+        return def.builder().apply(paths)
+            .beforeStarting(() -> drivetrain.resetPose(finalStartPose));
+    }
     public record AutoDefinition(
-        Command command,
-        List<AutoWaypoint[]> paths
+        Function<List<AutoWaypoint[]>, Command> builder,
+        List<AutoWaypoint[]> bluePaths,
+        Pose2d blueStartPose
     ) {}
 }
