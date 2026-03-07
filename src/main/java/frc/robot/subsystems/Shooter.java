@@ -60,10 +60,12 @@ public class Shooter extends SubsystemBase {
   DigitalInput rightFuelSensor;
 
   public Shooter() {
-    shooterRPSLookup.put(2.0873, 39.2);
-    shooterRPSLookup.put(2.555, 42.5);
-    shooterRPSLookup.put(3.038, 46.8);
-    shooterRPSLookup.put(3.712, 52.0);
+    shooterRPSLookup.put(1.89, 40.0);
+    shooterRPSLookup.put(2.21, 42.0);
+    shooterRPSLookup.put(2.71, 46.0);
+    shooterRPSLookup.put(3.1, 50.0);
+    shooterRPSLookup.put(3.42, 53.2);
+    shooterRPSLookup.put(3.83, 57.8);
     final CANBus canbus = new CANBus("rio");
 
     leftFuelSensor = new DigitalInput(8); //needs valid channel ???
@@ -154,6 +156,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter RPS", getShooterSpeedRPS());
     SmartDashboard.putNumber("Hood Encoder Position", getHoodPosition());
     SmartDashboard.putNumber("Feeder RPS", getFeederSpeed());
+    SmartDashboard.putNumber("Feeder torque current", feederMotor.getTorqueCurrent().getValueAsDouble());
   }
 
   public void setShooterSpeedRPS(double rps) {
@@ -241,7 +244,12 @@ public class Shooter extends SubsystemBase {
   public double getHoodPosition() {
     return hoodMotor.getEncoder().getPosition();
   }
-
+  public boolean isShooterMotorsReady() {
+    return (shooterLeadMotor.isConnected() && shooterFollowerMotor1.isConnected() && shooterFollowerMotor2.isConnected() && shooterFollowerMotor3.isConnected());
+  }
+  public boolean isShooterHoodReady() {
+    return !hoodMotor.hasActiveFault();
+  }
   // public void findTargetHoodPosition(double position) {}
 
   // public void detectFuel(int lane, double lastReading) {}

@@ -52,7 +52,7 @@ public class Climber extends SubsystemBase {
       .i(0)
       .d(0)
       .outputRange(-1, 1);
-
+      climberMotorConfig.smartCurrentLimit(80);
       climberMotor.configure(climberMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
@@ -87,5 +87,8 @@ public class Climber extends SubsystemBase {
   }
   public void setClimberVoltage(double volts) {
     climberMotor.setVoltage(volts);
+  }
+  public boolean isClimberReady() {
+    return !climberMotor.hasActiveFault();
   }
 }

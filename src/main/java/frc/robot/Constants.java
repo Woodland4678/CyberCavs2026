@@ -9,8 +9,8 @@ public final class Constants {
     public static final double FIELD_WIDTH_METERS = 8.042656;
     public static final double FIELD_LENGTH_METERS = 16.54;
     public static class ClimberConstants {
-        public static final double extendPosition = -1;
-        public static final double retractPosition = 16.0;
+        public static final double extendPosition = 0;
+        public static final double retractPosition = 15.0;
     }
     public static class IntakeConstants {
         public static final double deployPosition = -11.38;
@@ -19,8 +19,8 @@ public final class Constants {
     }
     public static class ShooterConstants {
         public static final double hoodRetractPosition = 0;
-        public static final double hoodStage1Position = -7.81;
-        public static final double hoodStage2Position = -13.857;
+        public static final double hoodStage1Position = 10.5;
+        public static final double hoodStage2Position = 16.5;
 
     }
     public static class HopperConstants {

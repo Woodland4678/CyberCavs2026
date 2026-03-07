@@ -360,10 +360,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Gyro Pitch", this.getPigeon2().getPitch().getValueAsDouble());
         SmartDashboard.putNumber("Front left drive speed", this.getModule(0).getDriveMotor().getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Robot Velocity X", this.getState().Speeds.vxMetersPerSecond);
-        //  double distance =
-        // this.getState().Pose.getTranslation()
-        //     .getDistance(Constants.BLUE_HUB_POSITION.getTranslation());
-        // SmartDashboard.putNumber("Distance to hub middle", distance);
+         double distance =
+        this.getState().Pose.getTranslation()
+            .getDistance(Constants.BLUE_HUB_POSITION.getTranslation());
+        SmartDashboard.putNumber("Distance to hub middle", distance);
     }
 
     private void startSimThread() {
@@ -439,5 +439,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     public boolean getHasMultiTagTarget() {
         return hasMultiTagTarget;
+    }
+    public boolean isAprilTagCameraReady() {
+        return rpi.isConnected();
+    }
+    public boolean isModuleReady(int module) {
+        var mod = this.getModule(module);       
+        return (mod.getEncoder().isConnected() && mod.getDriveMotor().isConnected() && mod.getSteerMotor().isConnected());
+    }
+    public boolean isGyroReady() {
+        return this.getPigeon2().isConnected();
     }
 }

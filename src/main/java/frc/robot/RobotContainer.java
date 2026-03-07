@@ -45,6 +45,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
+    private LEDStrip ledStrip;
     private String lastSelectedAuto = "";
     private final Field2d field = new Field2d();
     Optional<Alliance> ally;
@@ -97,24 +98,24 @@ public class RobotContainer {
        // joystick.povUp().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPM(500)));
        // joystick.povUp().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
 //
-      // joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.extendClimber()));
-       //joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.retractClimber()));
+       joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.extendClimber()));
+       joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.retractClimber()));
 
         //joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(70)));//up position (placeholder value)
         //joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
 
        // joystick.povUp().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodRetractPosition)));
-        //joystick.povRight().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage1Position)));
-        //joystick.povDown().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage2Position)));
+       // joystick.povRight().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage1Position)));
+       // joystick.povDown().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage2Position)));
 
 
         // joystick.povDown().onTrue(new InstantCommand(() -> S_Climber.setClimberVoltage(8)));
         // joystick.povDown().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
         // joystick.povUp().onTrue(new InstantCommand(() -> S_Climber.setClimberVoltage(-8)));
         // joystick.povUp().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
-        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(50)));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(70)));
         // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
-        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederSpeed(90)));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederSpeed(80)));
         // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopFeeder()));
         // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(45)));
         // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
@@ -175,7 +176,9 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         joystick.rightBumper().onTrue(new InstantCommand(() -> S_Intake.deployIntake()));
+        joystick.rightBumper().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(45)));
         joystick.leftBumper().onTrue(new InstantCommand(() -> S_Intake.retractIntake()));
+        joystick.leftBumper().onTrue(new InstantCommand(() -> S_Hopper.stopFloor()));
     }
 
     public Command getAutonomousCommand() {
@@ -269,4 +272,54 @@ public class RobotContainer {
         List<AutoWaypoint[]> bluePaths,
         Pose2d blueStartPose
     ) {}
+    public boolean isShooterMotorsReady() {
+        // return false;
+        //return true; //nothing to check just return true
+        return S_Shooter.isShooterMotorsReady();
+    }
+    public boolean isShooterHoodReady() {
+        // return false;
+        //return true; //nothing to do just return true
+        return S_Shooter.isShooterHoodReady();
+    }
+    public boolean isClimberReady() {
+        //return true; // no diagnostoic test for this
+        return S_Climber.isClimberReady();
+    }
+    public boolean isGyroReady(){
+        return drivetrain.isGyroReady();
+        // return false;
+    }
+    public boolean isAprilTagCameraReady(){
+        // return false;
+        return drivetrain.isAprilTagCameraReady();
+    }   
+    public boolean isFrontLeftSwerveReady() {
+        return drivetrain.isModuleReady(0);
+        // return false;
+    }
+    public boolean isFrontRightSwerveReady() {
+        return drivetrain.isModuleReady(1);
+        //return false;
+    }
+    public boolean isBackLeftSwerveReady() {
+        return drivetrain.isModuleReady(2);
+        // return false;
+    }
+    public boolean isBackRightSwerveReady() {
+        return drivetrain.isModuleReady(3);
+       // return false;
+    }
+    public boolean isFloorReady(){
+        return S_Hopper.isHopperReady();
+        //return false;
+    }
+    public boolean isIntakeDeployReady(){
+        return S_Intake.isIntakeDeployReady();
+        //return true;
+       }
+    public boolean isIntakeWheelsReady(){
+        return S_Intake.isIntakeWheelsReady();
+        //return true;
+       } 
 }

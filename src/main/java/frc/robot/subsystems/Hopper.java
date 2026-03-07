@@ -73,4 +73,7 @@ public class Hopper extends SubsystemBase {
   public void stopFloor(){
     floorMotor.disable();
   }
+  public boolean isHopperReady() {
+    return floorMotor.isConnected();
+  }
 }

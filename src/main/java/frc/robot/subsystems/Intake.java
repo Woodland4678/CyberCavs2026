@@ -130,4 +130,10 @@ public class Intake extends SubsystemBase {
   public double getintakePosition() {
     return deployMotor.getEncoder().getPosition();
   }
+  public boolean isIntakeWheelsReady() {
+    return intakeWheels.isConnected();
+  }
+  public boolean isIntakeDeployReady() {
+    return !deployMotor.hasActiveFault();
+  }
 }

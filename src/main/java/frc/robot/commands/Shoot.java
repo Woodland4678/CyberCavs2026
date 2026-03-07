@@ -4,7 +4,18 @@
 
 package frc.robot.commands;
 
+import java.util.Optional;
+
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
+
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,7 +32,15 @@ public class Shoot extends Command {
   CommandSwerveDrivetrain S_Swerve;
   double shooterTargetRPS = 45;
   double startTime = 0;
+  Translation2d hubDist;
+  double hubX = 0;
+  double hubY = 0;
   Debouncer shooterReadyDebounce = new Debouncer(0.04, Debouncer.DebounceType.kRising);
+
+   PhoenixPIDController rController = new PhoenixPIDController(19.1, 0, 0.15);
+    private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
+            .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   
   /** Creates a new Shoot. */
   public Shoot(CommandSwerveDrivetrain S_Swerve, Shooter S_Shooter, Hopper S_Hopper) {
@@ -36,26 +55,58 @@ public class Shoot extends Command {
   @Override
   public void initialize() {
    // S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    S_Hopper.setFloorRPS(30);
+    S_Hopper.setFloorRPS(85);
     startTime = Timer.getFPGATimestamp();
+    Optional<Alliance> ally = DriverStation.getAlliance();
+    if (ally.isPresent()) {
+      if (ally.get() == Alliance.Red) {
+        hubX = 4.675 + 7.19;
+        hubY = 8.07/2;
+        hubDist = Constants.RED_HUB_POSITION.getTranslation();
+
+      } else {
+        hubX = 4.675;
+        hubY = 8.07/2;
+        hubDist = Constants.BLUE_HUB_POSITION.getTranslation();
+      }
+    }
+    rController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    Pose2d robotPose = S_Swerve.getState().Pose;
+    
+
+    // Vector to hub
+    double dX = hubX - robotPose.getX();
+    double dY = hubY - robotPose.getY();
+
+    // Desired field-relative heading
+    Rotation2d targetHeading =
+        Rotation2d.fromRadians(Math.atan2(dY, dX));
+
+    double rSpeed = rController.calculate(robotPose.getRotation().getRadians(), targetHeading.getRadians(), Timer.getFPGATimestamp());
+    S_Swerve.setControl(m_driveRequestDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(rSpeed));
+    SmartDashboard.putNumber("Auto Aim rspeed", rSpeed);
+    SmartDashboard.putNumber("Target Angle", targetHeading.getDegrees());
+
      double distance =
-        S_Swerve.getState().Pose.getTranslation()
-            .getDistance(Constants.RED_HUB_POSITION.getTranslation());
+        robotPose.getTranslation()
+            .getDistance(hubDist);
     shooterTargetRPS = S_Shooter.getDesiredShooterRPS(distance);
     if (Timer.getFPGATimestamp() - startTime < 0.5) {
-      shooterTargetRPS = S_Shooter.getDesiredShooterRPS(distance) * 1.15;
+      shooterTargetRPS = S_Shooter.getDesiredShooterRPS(distance) * 1.10;
     }
     // else {
     //   shooterTargetRPS = 47.0;
     // }
+    //shooterTargetRPS = 80;
     S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 1.75;
-    boolean shooterReady = shooterReadyDebounce.calculate(rawReady);
+    boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 1.0;
+    boolean rotationReady = Math.abs(rController.getPositionError()) < 2;
+    boolean shooterReady = shooterReadyDebounce.calculate(rawReady && rotationReady);
     double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
     if (shooterReady) {
       S_Shooter.setFeederSpeed(80);
