@@ -64,6 +64,53 @@ public final class AutoPaths {
         }
     );
 
+    public static final List<AutoWaypoint[]> RightSideGatherFuelWithLoop = List.of(
+        new AutoWaypoint[] {
+
+            // Start entering fuel
+            new AutoWaypoint(
+                new Pose2d(6.834, 2.592, Rotation2d.fromDegrees(180)),
+                1.5, 2.0, Math.PI * 3, 0.15, 6
+            ),
+
+            // 1m forward into fuel
+            new AutoWaypoint(
+                new Pose2d(7.834, 2.592, Rotation2d.fromDegrees(180)),
+                1.2, 1.8, Math.PI * 3, 0.15, 6
+            ),
+
+            // Begin semicircle
+            new AutoWaypoint(
+                new Pose2d(8.20, 2.95, Rotation2d.fromDegrees(135)),
+                1.2, 1.8, Math.PI * 3, 0.15, 6
+            ),
+
+            // Middle of arc
+            new AutoWaypoint(
+                new Pose2d(7.83, 3.35, Rotation2d.fromDegrees(90)),
+                1.2, 1.8, Math.PI * 3, 0.15, 6
+            ),
+
+            // Continue arc
+            new AutoWaypoint(
+                new Pose2d(7.40, 2.95, Rotation2d.fromDegrees(45)),
+                1.2, 1.8, Math.PI * 3, 0.15, 6
+            ),
+
+            // Exit arc toward shooter
+            new AutoWaypoint(
+                new Pose2d(5.873, 2.399, Rotation2d.fromDegrees(45)),
+                2, 3.0, Math.PI * 3, 0.15, 6
+            )
+        },
+
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(6.391, 1.330, Rotation2d.fromDegrees(-90)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.914, 0.974, Rotation2d.fromDegrees(-90)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.914, 2.48, Rotation2d.fromDegrees(-90)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(5.873, 2.399, Rotation2d.fromDegrees(45)), 2, 3.0, Math.PI * 3, 0.15, 6)
+        }
+    );
 
 
     

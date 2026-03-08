@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.AutoWaypoint;
 import frc.robot.autos.AutoPaths;
 import frc.robot.autos.LeftSideToNeutralTwice;
+import frc.robot.autos.RightSideNeutralTwiceWithLoop;
 import frc.robot.autos.RightSideToNeutralTwice;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoDrive;
@@ -82,6 +83,12 @@ public class RobotContainer {
             paths -> new LeftSideToNeutralTwice(drivetrain, paths),
             AutoPaths.LeftSideGatherFuel1,
             new Pose2d(3.573, 5.3633, Rotation2d.fromDegrees(-90))
+        ),
+        "RightSideToNeutralTwiceWithLoop",
+        new AutoDefinition(
+            paths -> new RightSideNeutralTwiceWithLoop(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.RightSideGatherFuelWithLoop,
+            new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
         )
     );
 
