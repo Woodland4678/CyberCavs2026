@@ -105,7 +105,7 @@ public class Shoot extends Command {
     //shooterTargetRPS = 80;
     S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
     boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 1.0;
-    boolean rotationReady = Math.abs(rController.getPositionError()) < 2;
+    boolean rotationReady = Math.abs(rController.getPositionError()) < 0.07;
     boolean shooterReady = shooterReadyDebounce.calculate(rawReady && rotationReady);
     double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
     if (shooterReady) {

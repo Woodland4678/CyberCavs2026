@@ -21,16 +21,21 @@ public final class AutoPaths {
         // First segment
         new AutoWaypoint[] {
             new AutoWaypoint(new Pose2d(6.715, 2.788, new Rotation2d().fromDegrees(154)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(7.93, 2.075, new Rotation2d().fromDegrees(154)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(5.873, 2.399, new Rotation2d().fromDegrees(45)), 2, 3.0, Math.PI * 3, 0.15, 6)
+            new AutoWaypoint(new Pose2d(8.848, 2.2, new Rotation2d().fromDegrees(154)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(5.873, 2.499, new Rotation2d().fromDegrees(45)), 2.5, 4.0, Math.PI * 3, 0.08, 6)
         },
-        // Second segment
-        new AutoWaypoint[] {
-            new AutoWaypoint(new Pose2d(6.391, 1.330, new Rotation2d().fromDegrees(-90)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(7.914, 0.974, new Rotation2d().fromDegrees(-90)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(7.914, 2.48, new Rotation2d().fromDegrees(-90)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(5.873, 2.399, new Rotation2d().fromDegrees(45)), 2, 3.0, Math.PI * 3, 0.15, 6)
+         new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(7.007, 2.812, new Rotation2d().fromDegrees(-145.18)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(8.513, 3.522, new Rotation2d().fromDegrees(-145.18)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(5.873, 2.499, new Rotation2d().fromDegrees(45)), 2, 3.0, Math.PI * 3, 0.15, 6)
         }
+        // Second segment
+        // new AutoWaypoint[] {
+        //     new AutoWaypoint(new Pose2d(6.391, 1.330, new Rotation2d().fromDegrees(-90)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+        //     new AutoWaypoint(new Pose2d(7.914, 0.974, new Rotation2d().fromDegrees(-90)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+        //     new AutoWaypoint(new Pose2d(7.914, 2.48, new Rotation2d().fromDegrees(-90)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+        //     new AutoWaypoint(new Pose2d(5.873, 2.399, new Rotation2d().fromDegrees(45)), 2, 3.0, Math.PI * 3, 0.08, 6)
+        // }
     );
 
     public static final List<AutoWaypoint[]> RightSideGatherFuel2 = List.of(

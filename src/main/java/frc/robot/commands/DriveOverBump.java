@@ -45,8 +45,11 @@ public class DriveOverBump extends Command {
   3 & 4 are used for left side auto (3 goes to middle zone and 4 comes back)
   */
   double[] directionTypeRotationAngles = {135, 45, -135,-45};
+  // private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
+  //           .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
+  //           .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
   private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
-            .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   public DriveOverBump(CommandSwerveDrivetrain S_Swerve, int directionType) {
     this.S_Swerve = S_Swerve;
@@ -61,10 +64,10 @@ public class DriveOverBump extends Command {
     
     rController.enableContinuousInput(-180, 180);
     if (directionType == 0 || directionType == 2) {
-      xSpeed = 4.9;
+      xSpeed = 3.0;
     }
     else {
-      xSpeed = -4.9;
+      xSpeed = -3.0;
     }
     state = 0;
     cnt = 0;
@@ -74,8 +77,8 @@ public class DriveOverBump extends Command {
         xSpeed *= -1;
         directionTypeRotationAngles[0] = -135;
         directionTypeRotationAngles[1] = -45;
-       // directionTypeRotationAngles[2] = 45;
-        //directionTypeRotationAngles[3] = 45;
+        directionTypeRotationAngles[2] = 135;
+        directionTypeRotationAngles[3] = 45;
       }
     }
   }
@@ -85,8 +88,8 @@ public class DriveOverBump extends Command {
   public void execute() {
     if (directionType == 0 || directionType == 3) {
       gyroAxisValue = S_Swerve.getGyroRoll();
-      firstThreshold = 3.0;
-      secondThreshold = -3.0;
+      firstThreshold = -3.0;
+      secondThreshold = 3.0;
     }
     else if (directionType == 1 || directionType == 2) {
       gyroAxisValue = S_Swerve.getGyroPitch();
@@ -99,6 +102,7 @@ public class DriveOverBump extends Command {
           m_driveRequestDrive.withVelocityX(xSpeed)
               .withVelocityY(ySpeed)
               .withRotationalRate(rSpeed)
+              .withDriveRequestType(DriveRequestType.Velocity) // Drive counterclockwise with negative X (left)
 
         );
         //I conclude looking for one direction, then the other, then flat will be more consistent

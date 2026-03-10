@@ -27,8 +27,11 @@ import frc.robot.Constants.AutoWaypoint;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
+import frc.robot.commands.Shoot;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 
       
       
@@ -40,12 +43,15 @@ public class RightSideToNeutralTwice extends SequentialCommandGroup {
   /** Creates a new RightSideToNeutralTwice. */
   CommandSwerveDrivetrain S_Swerve;
   Intake S_Intake;
+  Hopper S_Hopper;
+  Shooter S_Shooter;
   public static final Field2d field = new Field2d();
   
   
-  public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, List<AutoWaypoint[]> waypoints) {
+  public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<AutoWaypoint[]> waypoints) {
     this.S_Intake = S_Intake;
-  
+    this.S_Hopper = S_Hopper;
+    this.S_Shooter = S_Shooter;
     
     this.S_Swerve = S_Swerve;
     addRequirements(S_Swerve);
@@ -54,14 +60,13 @@ public class RightSideToNeutralTwice extends SequentialCommandGroup {
 
     addCommands(
       new DriveOverBump(S_Swerve,1),
-      new AutoDrive(S_Swerve, waypoints.get(0)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())),
-      new DriveOverBump(S_Swerve, 1).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
-      new AutoAim(S_Swerve).withTimeout(3.5),
-      new DriveOverBump(S_Swerve, 0),
+      new AutoDrive(S_Swerve, waypoints.get(0)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())).alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
+      new DriveOverBump(S_Swerve, 0).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
+      new Shoot(S_Swerve, S_Shooter, S_Hopper).withTimeout(2.0),
+      new DriveOverBump(S_Swerve, 1),
       new AutoDrive(S_Swerve, waypoints.get(1)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())),
-      new DriveOverBump(S_Swerve, 1).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
-      new AutoAim(S_Swerve).withTimeout(3.5)
-
+      new DriveOverBump(S_Swerve, 0).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
+      new Shoot(S_Swerve, S_Shooter, S_Hopper)
 
 
       //S_Swerve.pathOnTheFly(waypoints, rotationTargets, constraints)

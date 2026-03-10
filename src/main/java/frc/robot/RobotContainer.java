@@ -37,6 +37,7 @@ import frc.robot.autos.RightSideToNeutralTwice;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
+import frc.robot.commands.PassFuel;
 import frc.robot.commands.Shoot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Climber;
@@ -73,7 +74,7 @@ public class RobotContainer {
     private final Map<String, AutoDefinition> autos = Map.of(
         "RightSideToNeutralTwice",
         new AutoDefinition(
-            paths -> new RightSideToNeutralTwice(drivetrain, S_Intake, paths),
+            paths -> new RightSideToNeutralTwice(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
             AutoPaths.RightSideGatherFuel1,
             new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
         ),
@@ -134,8 +135,8 @@ public class RobotContainer {
         //joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(3)));
        // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
 
-        joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(25)));
-        joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
+        // joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(25)));
+        // joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
        // joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederSpeed(80)));
        // joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopFeeder()));
         //joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelVoltage(10)));
@@ -173,8 +174,8 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        joystick.x().whileTrue(new DriveOverBump(drivetrain, 0));
-        joystick.y().whileTrue(new DriveOverBump(drivetrain, 1));
+        joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));
+        joystick.y().whileTrue(new DriveOverBump(drivetrain, 3));
        //joystick.y().whileTrue(new AutoDrive(drivetrain, AutoPaths.DriveToClimberLeftSide.get(0)));
        // joystick.povUp().whileTrue(new DriveOverBump(drivetrain, 2));
        // joystick.povDown().whileTrue(new DriveOverBump(drivetrain, 3));
@@ -186,6 +187,8 @@ public class RobotContainer {
         joystick.rightBumper().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(45)));
         joystick.leftBumper().onTrue(new InstantCommand(() -> S_Intake.retractIntake()));
         joystick.leftBumper().onTrue(new InstantCommand(() -> S_Hopper.stopFloor()));
+
+        joystick.leftTrigger().whileTrue(new PassFuel(drivetrain));
     }
 
     public Command getAutonomousCommand() {
