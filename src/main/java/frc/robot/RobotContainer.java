@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.AutoWaypoint;
 import frc.robot.autos.AutoPaths;
+import frc.robot.autos.LeftSideMiddleCorralClimb;
 import frc.robot.autos.LeftSideToNeutralTwice;
 import frc.robot.autos.RightSideNeutralTwiceWithLoop;
 import frc.robot.autos.RightSideToNeutralTwice;
@@ -51,17 +52,17 @@ public class RobotContainer {
     private String lastSelectedAuto = "";
     private final Field2d field = new Field2d();
     Optional<Alliance> ally;
-    private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(1.25).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    //private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    //private double MaxAngularRate = RotationsPerSecond.of(1.25).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     private PathPlannerPath examplePath;
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDeadband(Constants.SwerveConstants.MaxSpeed * 0.1).withRotationalDeadband(Constants.SwerveConstants.MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final Telemetry logger = new Telemetry(Constants.SwerveConstants.MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
@@ -90,6 +91,12 @@ public class RobotContainer {
             paths -> new RightSideNeutralTwiceWithLoop(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
             AutoPaths.RightSideGatherFuelWithLoop,
             new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
+        ),
+        "LeftSideMiddleOnceCorralClimb",
+        new AutoDefinition(
+            paths -> new LeftSideMiddleCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.LeftSideMiddleCorralClimbPaths,
+            new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
         )
     );
 
@@ -144,9 +151,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-joystick.getLeftY() * Constants.SwerveConstants.MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-joystick.getLeftX() * Constants.SwerveConstants.MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-joystick.getRightX() * Constants.SwerveConstants.MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -188,7 +195,7 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(new InstantCommand(() -> S_Intake.retractIntake()));
         joystick.leftBumper().onTrue(new InstantCommand(() -> S_Hopper.stopFloor()));
 
-        joystick.leftTrigger().whileTrue(new PassFuel(drivetrain));
+        joystick.leftTrigger().whileTrue(new PassFuel(drivetrain,S_Shooter,S_Hopper,joystick));
     }
 
     public Command getAutonomousCommand() {

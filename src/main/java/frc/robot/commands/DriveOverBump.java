@@ -37,12 +37,9 @@ public class DriveOverBump extends Command {
   double secondThreshold = 9.0;
   int directionType = 0;
   /*
-  1. Blue side right side intake towards far right
-  2. Blue side right side intake towards close right
-  3. Blue side left side intake towards far left
-  4. Blue side left side intake towards close left
-  1 & 2 are used for right side auto (1 goes to middle zone, 2 comes back)
-  3 & 4 are used for left side auto (3 goes to middle zone and 4 comes back)
+  
+  0 & 1 are used for right side auto (0 goes to middle zone, 1 comes back)
+  2 & 3 are used for left side auto (2 goes to middle zone and 3 comes back)
   */
   double[] directionTypeRotationAngles = {135, 45, -135,-45};
   // private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
@@ -50,7 +47,7 @@ public class DriveOverBump extends Command {
   //           .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
   private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+            .withDriveRequestType(DriveRequestType.Velocity); // Use open-loop control for drive motors
   public DriveOverBump(CommandSwerveDrivetrain S_Swerve, int directionType) {
     this.S_Swerve = S_Swerve;
     this.directionType = directionType;
@@ -64,21 +61,21 @@ public class DriveOverBump extends Command {
     
     rController.enableContinuousInput(-180, 180);
     if (directionType == 0 || directionType == 2) {
-      xSpeed = 3.0;
+      xSpeed = 3.5;
     }
     else {
-      xSpeed = -3.0;
+      xSpeed = -3.5;
     }
     state = 0;
     cnt = 0;
     isDone = false;
      if (ally.isPresent()) {
       if (ally.get() == Alliance.Red) {
-        xSpeed *= -1;
-        directionTypeRotationAngles[0] = -135;
-        directionTypeRotationAngles[1] = -45;
-        directionTypeRotationAngles[2] = 135;
-        directionTypeRotationAngles[3] = 45;
+        //xSpeed *= -1;
+        directionTypeRotationAngles[0] = -45;
+        directionTypeRotationAngles[1] = -135;
+        directionTypeRotationAngles[2] = 45;
+        directionTypeRotationAngles[3] = 135;
       }
     }
   }
@@ -100,7 +97,7 @@ public class DriveOverBump extends Command {
     double rSpeed = rController.calculate(S_Swerve.getGyroValue(), directionTypeRotationAngles[directionType], Timer.getFPGATimestamp());
     S_Swerve.setControl(
           m_driveRequestDrive.withVelocityX(xSpeed)
-              .withVelocityY(ySpeed)
+              .withVelocityY(0)
               .withRotationalRate(rSpeed)
               .withDriveRequestType(DriveRequestType.Velocity) // Drive counterclockwise with negative X (left)
 

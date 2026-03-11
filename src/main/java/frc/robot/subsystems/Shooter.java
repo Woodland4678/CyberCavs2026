@@ -39,6 +39,9 @@ public class Shooter extends SubsystemBase {
 
   InterpolatingDoubleTreeMap shooterRPSLookup = new InterpolatingDoubleTreeMap();
 
+   InterpolatingDoubleTreeMap passingRPSLookup = new InterpolatingDoubleTreeMap();
+
+
   TalonFX feederMotor;
 
   SparkMax hoodMotor;
@@ -66,6 +69,12 @@ public class Shooter extends SubsystemBase {
     shooterRPSLookup.put(3.1, 50.0);
     shooterRPSLookup.put(3.42, 53.2);
     shooterRPSLookup.put(3.83, 57.8);
+
+    passingRPSLookup.put(3.83, 57.8);
+    passingRPSLookup.put(3.83, 57.8);
+    passingRPSLookup.put(3.83, 57.8);
+    passingRPSLookup.put(3.83, 57.8);
+    passingRPSLookup.put(3.83, 57.8);
     final CANBus canbus = new CANBus("rio");
 
     leftFuelSensor = new DigitalInput(8); //needs valid channel ???
@@ -249,6 +258,9 @@ public class Shooter extends SubsystemBase {
   }
   public boolean isShooterHoodReady() {
     return !hoodMotor.hasActiveFault();
+  }
+  public double getShooterPassRPS(double dist) {
+    return passingRPSLookup.get(dist);
   }
   // public void findTargetHoodPosition(double position) {}
 

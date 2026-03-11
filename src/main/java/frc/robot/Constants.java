@@ -2,6 +2,8 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.generated.TunerConstants;
+import static edu.wpi.first.units.Units.*;
 
 public final class Constants {
     public static final Pose2d BLUE_HUB_POSITION = new Pose2d(4.675, 8.07/2, new Rotation2d());
@@ -26,7 +28,10 @@ public final class Constants {
     public static class HopperConstants {
 
     }
-    
+    public static class SwerveConstants {
+        public static double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+        public static double MaxAngularRate = RotationsPerSecond.of(1.25).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    }
     
     public static class AutoWaypoint{
         public Pose2d waypoint = new Pose2d();

@@ -17,17 +17,25 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PassFuel extends Command {
 
   CommandSwerveDrivetrain S_Swerve;
+  CommandXboxController joystick;
+  Hopper S_Hopper;
+  Shooter S_Shooter;
 
   // The x and y values of the hub.
   Double passPointX;
   Double passPointY;
+
+  Pose2d targetPose;
 
   double robotX;
   double robotY;
@@ -39,12 +47,17 @@ public class PassFuel extends Command {
     private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
             .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-
+  SwerveRequest.FieldCentricFacingAngle driveRequestPointToSpot = new SwerveRequest.FieldCentricFacingAngle()
+            .withDeadband(4 * 0.1)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors;
   /** Creates a new PassFuel. */
-  public PassFuel(CommandSwerveDrivetrain S_Swerve) {
+  public PassFuel(CommandSwerveDrivetrain S_Swerve, Shooter S_Shooter, Hopper S_Hopper, CommandXboxController joystick) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.S_Swerve = S_Swerve;
-    addRequirements(S_Swerve);
+    this.S_Hopper = S_Hopper;
+    this.S_Shooter = S_Shooter;
+    this.joystick = joystick;
+    addRequirements(S_Hopper, S_Shooter);
 
     rController.enableContinuousInput(-Math.PI, Math.PI);
   }
@@ -52,17 +65,21 @@ public class PassFuel extends Command {
   // Called when the command is initially scheduled.
   @Override
     public void initialize() {
+    S_Hopper.setFloorRPS(80);
+    S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage2Position);
     Optional<Alliance> ally = DriverStation.getAlliance();
     if (ally.isPresent()) {
       if (ally.get() == Alliance.Red) {
-
+        
         passPointX = 15.3;
         passPointY = 1.33;
+        targetPose = new Pose2d(passPointX, passPointY, new Rotation2d());
 
       } else if (ally.get() == Alliance.Blue) {
 
         passPointX = Constants.FIELD_LENGTH_METERS - 15.3;
         passPointY = 1.33;
+        targetPose = new Pose2d(passPointX, passPointY, new Rotation2d());
       }
     }
     robotX = S_Swerve.getState().Pose.getX();
@@ -76,8 +93,10 @@ public class PassFuel extends Command {
 
     if (robotPose.getY() > Constants.FIELD_WIDTH_METERS/2) {
       passPointY = Constants.FIELD_WIDTH_METERS - 1.33;
+      targetPose = new Pose2d(passPointX, passPointY, new Rotation2d());
     } else {
       passPointY = 1.33;
+      targetPose = new Pose2d(passPointX, passPointY, new Rotation2d());
     }
 
     // Vector to passing point
@@ -87,11 +106,21 @@ public class PassFuel extends Command {
     // Desired field-relative heading
     Rotation2d targetHeading =
         Rotation2d.fromRadians(Math.atan2(dY, dX));
-
+    
     double rSpeed = rController.calculate(robotPose.getRotation().getRadians(), targetHeading.getRadians(), Timer.getFPGATimestamp());
-    S_Swerve.setControl(m_driveRequestDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(rSpeed));
+    //S_Swerve.setControl(driveRequestPointToSpot.);
+    S_Swerve.setControl(m_driveRequestDrive.withVelocityX(-joystick.getLeftY() * Constants.SwerveConstants.MaxSpeed).withVelocityY(-joystick.getLeftX() * Constants.SwerveConstants.MaxSpeed).withRotationalRate(rSpeed));
     SmartDashboard.putNumber("Passing rspeed", rSpeed);
     SmartDashboard.putNumber("Target Angle", targetHeading.getDegrees());
+    double distance =
+            robotPose.getTranslation()
+                .getDistance(targetPose.getTranslation());
+    
+    double shooterTargetRPS = S_Shooter.getShooterPassRPS(distance);
+    S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
+    if(Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 1.0) {
+      S_Shooter.setFeederSpeed(60);
+    }
   }
 
   // Called once the command ends or is interrupted.
