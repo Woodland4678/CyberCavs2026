@@ -54,8 +54,9 @@ public class Shoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodRetractPosition);
    // S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    S_Hopper.setFloorRPS(85);
+    S_Hopper.setFloorRPS(100);
     startTime = Timer.getFPGATimestamp();
     Optional<Alliance> ally = DriverStation.getAlliance();
     if (ally.isPresent()) {
@@ -104,12 +105,12 @@ public class Shoot extends Command {
     // }
     //shooterTargetRPS = 80;
     S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 1.0;
-    boolean rotationReady = Math.abs(rController.getPositionError()) < 0.07;
+    boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 0.75;
+    boolean rotationReady = Math.abs(rController.getPositionError()) < 0.07; //this radians
     boolean shooterReady = shooterReadyDebounce.calculate(rawReady && rotationReady);
     double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
     if (shooterReady) {
-      S_Shooter.setFeederSpeed(80);
+      S_Shooter.setFeederSpeed(95);
     }
     // else if (error > 8.0) {//slow down if shooter not within speed
     //   S_Shooter.stopFeeder();

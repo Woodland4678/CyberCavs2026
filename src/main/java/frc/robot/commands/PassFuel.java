@@ -127,6 +127,9 @@ public class PassFuel extends Command {
   @Override
   public void end(boolean interrupted) {
     // Set all speeds to 0.
+    S_Shooter.stopFeeder();
+    S_Shooter.stopShooterMotor();
+    S_Hopper.stopFloor();
     S_Swerve.setControl(m_driveRequestDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
   }
 
