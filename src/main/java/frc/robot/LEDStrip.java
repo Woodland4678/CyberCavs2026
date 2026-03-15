@@ -277,6 +277,7 @@ public class LEDStrip {
 
             break;
         }
+
         addressableLED.setData(ledBuffer);
     }
 }

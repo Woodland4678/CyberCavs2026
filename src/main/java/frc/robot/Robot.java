@@ -94,6 +94,9 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("diagState", diagState);
         ledStrip.setDiagnosticPattern(diagState);
         ledStrip.diagnosticLEDmode(); // SDW uncomment when ready to use
+
+        ledStrip.setLEDMode(LEDModes.SOLIDBLUE); // SDW
+
         ledStrip.periodic();
     }
 
@@ -127,9 +130,46 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         String gameData;
+
+        // set our alliance LED colour
+        // ****** shouldn't we do this where we get our colour on init or something? \like in one place? *****
+        Optional<Alliance> ally = DriverStation.getAlliance();
+        ledStrip = LEDStrip.getInstance();
+
+        if (ally.isPresent()) {
+            if (ally.get() == Alliance.Blue) {                
+                ledStrip.setLEDMode(LEDModes.SOLIDGREEN);
+            }
+            else {
+                ledStrip.setLEDMode(LEDModes.SOLIDPURPLE);
+            }
+        }
+       
+
+        // which alliance is inactive first?
+        boolean isRedInactiveFirst = false;
         gameData = DriverStation.getGameSpecificMessage();
         
-        if(gameData.length() > 0 && !hasGameData) {
+        if(!hasGameData && gameData.length() > 0) {
+            switch (gameData.charAt(0)) {
+                case 'B':
+                    isRedInactiveFirst = false;
+                    break;
+                case 'R':
+                    isRedInactiveFirst = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // ******** add code to check if our hub is active currently *********
+        // This should likely be a function accessible from where we need to use it
+
+        /* 
+        gameData = DriverStation.getGameSpecificMessage();
+        
+        if(!hasGameData && gameData.length() > 0) {
             Optional<Alliance> ally = DriverStation.getAlliance();
             switch (gameData.charAt(0)) {
                 case 'B':
@@ -160,7 +200,7 @@ public class Robot extends TimedRobot {
 
                     }
                     if(ally.isPresent()) {
-                        if (ally.get() == Alliance.Red) {
+                        if (ally.get() == Alliance.Blue) {
                             ledStrip = LEDStrip.getInstance();
                             ledStrip.setLEDMode(LEDModes.SOLIDPURPLE);
                         }
@@ -173,6 +213,7 @@ public class Robot extends TimedRobot {
                     break;
             }
         }
+        */
     }
 
     @Override

@@ -55,7 +55,7 @@ public class AutoDrive extends Command {
  // ProfiledPIDController yController2 = new ProfiledPIDController(8, 0, 0, new TrapezoidProfile.Constraints(5, 1));
   ProfiledPIDController thetaController =
       new ProfiledPIDController(
-          6.0, 0.0, 0.0,
+          4.0, 0.0, 0.0,
           new TrapezoidProfile.Constraints(
               3 * Math.PI, Math.PI * 6));
 

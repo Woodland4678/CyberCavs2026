@@ -84,12 +84,12 @@ public class DriveOverBump extends Command {
   @Override
   public void execute() {
     if (directionType == 0 || directionType == 3) {
-      gyroAxisValue = S_Swerve.getGyroRoll();
+      gyroAxisValue = S_Swerve.getGyroPitch();
       firstThreshold = -3.0;
       secondThreshold = 3.0;
     }
     else if (directionType == 1 || directionType == 2) {
-      gyroAxisValue = S_Swerve.getGyroPitch();
+      gyroAxisValue = S_Swerve.getGyroRoll();
       firstThreshold = -3.0;
       secondThreshold = 3.0;
     }

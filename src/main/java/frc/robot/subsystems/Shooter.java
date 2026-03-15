@@ -63,12 +63,12 @@ public class Shooter extends SubsystemBase {
   DigitalInput rightFuelSensor;
 
   public Shooter() {
-    shooterRPSLookup.put(1.89, 40.0);
-    shooterRPSLookup.put(2.21, 42.0);
-    shooterRPSLookup.put(2.71, 46.0);
-    shooterRPSLookup.put(3.1, 50.0);
-    shooterRPSLookup.put(3.42, 53.2);
-    shooterRPSLookup.put(3.83, 57.8);
+    shooterRPSLookup.put(1.89, 42.0);
+    shooterRPSLookup.put(2.21, 44.0);
+    shooterRPSLookup.put(2.71, 48.0);
+    shooterRPSLookup.put(3.1, 52.0);
+    shooterRPSLookup.put(3.42, 55.2);
+    shooterRPSLookup.put(3.83, 59.8);
 
     passingRPSLookup.put(3.83, 57.8);
     passingRPSLookup.put(3.83, 57.8);
@@ -99,16 +99,16 @@ public class Shooter extends SubsystemBase {
     shooterMotionPIDConfigs.kS = 0.1; // Add 0.25 V output to overcome static friction
     shooterMotionPIDConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
     shooterMotionPIDConfigs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterMotionPIDConfigs.kP = 0.45; // A position error of 2.5 rotations results in 12 V output
+    shooterMotionPIDConfigs.kP = 0.3; // A position error of 2.5 rotations results in 12 V output
     shooterMotionPIDConfigs.kI = 0; // no output for integrated error
     shooterMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
     // For VelocityTorqueCurrentFOC
     var shooterMotionPIDConfigs2 = shooterConfigs.Slot1;
-    shooterMotionPIDConfigs2.kS = 0.0; // Add 0.25 V output to overcome static friction
-    shooterMotionPIDConfigs2.kV = 0.057; // A velocity target of 1 rps results in 0.12 V output
+    shooterMotionPIDConfigs2.kS = 1.4; // Add 0.25 V output to overcome static friction
+    shooterMotionPIDConfigs2.kV = 0.009; // A velocity target of 1 rps results in 0.12 V output
     shooterMotionPIDConfigs2.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterMotionPIDConfigs2.kP = 6.0; // A position error of 2.5 rotations results in 12 V output
+    shooterMotionPIDConfigs2.kP = 5.0; // A position error of 2.5 rotations results in 12 V output
     shooterMotionPIDConfigs2.kI = 0; // no output for integrated error
     shooterMotionPIDConfigs2.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
@@ -166,6 +166,13 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Hood Encoder Position", getHoodPosition());
     SmartDashboard.putNumber("Feeder RPS", getFeederSpeed());
     SmartDashboard.putNumber("Feeder torque current", feederMotor.getTorqueCurrent().getValueAsDouble());
+
+    SmartDashboard.putNumber("Feeder supply current", feederMotor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Feeder torque current", feederMotor.getTorqueCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter lead motor supply current", shooterLeadMotor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter follower1 motor supply current", shooterFollowerMotor1.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter follower2 motor supply current", shooterFollowerMotor2.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter follower3 motor supply current", shooterFollowerMotor3.getSupplyCurrent().getValueAsDouble());
   }
 
   public void setShooterSpeedRPS(double rps) {
@@ -181,7 +188,7 @@ public class Shooter extends SubsystemBase {
     shooterLeadMotor.setControl(m_requestFOC.withVelocity(rps));
   }
   public void setShooterRPSTorqueFOC(double rps) {
-    final VelocityTorqueCurrentFOC m_requestFOC = new VelocityTorqueCurrentFOC(0).withSlot(0);
+    final VelocityTorqueCurrentFOC m_requestFOC = new VelocityTorqueCurrentFOC(0).withSlot(1);
 
     shooterLeadMotor.setControl(m_requestFOC.withVelocity(rps));
   }

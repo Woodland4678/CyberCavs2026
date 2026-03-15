@@ -31,7 +31,9 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.AutoWaypoint;
 import frc.robot.autos.AutoPaths;
+import frc.robot.autos.LeftSideHubSweepCorralClimb;
 import frc.robot.autos.LeftSideMiddleCorralClimb;
+import frc.robot.autos.LeftSideSweepWallCorralClimb;
 import frc.robot.autos.LeftSideToNeutralTwice;
 import frc.robot.autos.RightSideNeutralTwiceWithLoop;
 import frc.robot.autos.RightSideToNeutralTwice;
@@ -97,6 +99,18 @@ public class RobotContainer {
             paths -> new LeftSideMiddleCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
             AutoPaths.LeftSideMiddleCorralClimbPaths,
             new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
+        ),
+        "LeftSideHubSweepCorralClimb",
+        new AutoDefinition(
+            paths -> new LeftSideHubSweepCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.LeftSideHubSweepCorralClimb,
+            new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
+        ),
+         "LeftSideSweepWallCorralClimb",
+        new AutoDefinition(
+            paths -> new LeftSideSweepWallCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.LeftSideSweepWallCorral,
+            new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
         )
     );
 
@@ -135,7 +149,8 @@ public class RobotContainer {
         // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(45)));
         // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
         joystick.rightTrigger().whileTrue(new Shoot(drivetrain,S_Shooter, S_Hopper));
-
+        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelSpeed(60)));
+        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
 
         //joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterVoltage(2)));
         //joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
@@ -176,13 +191,16 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
+        joystick.start().onTrue(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
        // joystick.rightTrigger().whileTrue(new AutoAim(drivetrain));
 
         // Reset the field-centric heading on left bumper press.
         joystick.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));
-        joystick.y().whileTrue(new DriveOverBump(drivetrain, 3));
+       // joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));
+       // joystick.y().whileTrue(new DriveOverBump(drivetrain, 3));
+       joystick.y().whileTrue(new AutoDrive(drivetrain,AutoPaths.rotateBlueToRed(AutoPaths.LeftSideTestCorral.get(0), Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS) ));
+       joystick.y().onTrue(new InstantCommand(() -> S_Intake.deployIntake()));
        //joystick.y().whileTrue(new AutoDrive(drivetrain, AutoPaths.DriveToClimberLeftSide.get(0)));
        // joystick.povUp().whileTrue(new DriveOverBump(drivetrain, 2));
        // joystick.povDown().whileTrue(new DriveOverBump(drivetrain, 3));

@@ -48,6 +48,7 @@ public class Hopper extends SubsystemBase {
     // This method will be called once per scheduler run
 
     SmartDashboard.putNumber("Floor Velocity", getFloorVelocity());
+    SmartDashboard.putNumber("Floor Current", floorMotor.getSupplyCurrent().getValueAsDouble());
   }
 
   public double getFloorVelocity(){

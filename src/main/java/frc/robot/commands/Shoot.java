@@ -56,7 +56,8 @@ public class Shoot extends Command {
   public void initialize() {
     S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodRetractPosition);
    // S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    S_Hopper.setFloorRPS(100);
+    S_Hopper.setFloorRPS(112);
+
     startTime = Timer.getFPGATimestamp();
     Optional<Alliance> ally = DriverStation.getAlliance();
     if (ally.isPresent()) {
@@ -97,8 +98,8 @@ public class Shoot extends Command {
         robotPose.getTranslation()
             .getDistance(hubDist);
     shooterTargetRPS = S_Shooter.getDesiredShooterRPS(distance);
-    if (Timer.getFPGATimestamp() - startTime < 0.5) {
-      shooterTargetRPS = S_Shooter.getDesiredShooterRPS(distance) * 1.10;
+    if (Timer.getFPGATimestamp() - startTime < 0.8) {
+      shooterTargetRPS = S_Shooter.getDesiredShooterRPS(distance) * 1.05;
     }
     // else {
     //   shooterTargetRPS = 47.0;
@@ -126,7 +127,7 @@ public class Shoot extends Command {
   @Override
   public void end(boolean interrupted) {
     S_Shooter.stopFeeder();
-    S_Shooter.stopShooterMotor();
+    S_Shooter.setShooterSpeedRPS(Constants.ShooterConstants.idleRPS);
     S_Hopper.stopFloor();
   }
 

@@ -39,7 +39,7 @@ import frc.robot.subsystems.Shooter;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class LeftSideMiddleCorralClimb extends SequentialCommandGroup {
+public class LeftSideSweepWallCorralClimb extends SequentialCommandGroup {
   /** Creates a new RightSideToNeutralTwice. */
   CommandSwerveDrivetrain S_Swerve;
   Hopper S_Hopper;
@@ -47,7 +47,7 @@ public class LeftSideMiddleCorralClimb extends SequentialCommandGroup {
   Shooter S_Shooter;
   
   
-  public LeftSideMiddleCorralClimb(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<AutoWaypoint[]> waypoints) {
+  public LeftSideSweepWallCorralClimb(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<AutoWaypoint[]> waypoints) {
     this.S_Swerve = S_Swerve;
     this.S_Hopper = S_Hopper;
     this.S_Intake = S_Intake;

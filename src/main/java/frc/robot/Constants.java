@@ -12,17 +12,18 @@ public final class Constants {
     public static final double FIELD_LENGTH_METERS = 16.54;
     public static class ClimberConstants {
         public static final double extendPosition = 0;
-        public static final double retractPosition = 15.0;
+        public static final double retractPosition = 14.5;
     }
     public static class IntakeConstants {
         public static final double deployPosition = -11.38;
         public static final double retractPosition = -0.1;
-        public static final double IntakeRPS = 85;
+        public static final double IntakeRPS = 90;
     }
     public static class ShooterConstants {
         public static final double hoodRetractPosition = 0;
         public static final double hoodStage1Position = 10.5;
         public static final double hoodStage2Position = 16.5;
+        public static final double idleRPS = 45;
 
     }
     public static class HopperConstants {
@@ -30,7 +31,7 @@ public final class Constants {
     }
     public static class SwerveConstants {
         public static double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-        public static double MaxAngularRate = RotationsPerSecond.of(1.25).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+        public static double MaxAngularRate = RotationsPerSecond.of(1.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     }
     
     public static class AutoWaypoint{

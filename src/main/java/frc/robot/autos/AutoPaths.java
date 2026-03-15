@@ -56,22 +56,82 @@ public final class AutoPaths {
     public static final List<AutoWaypoint[]> LeftSideMiddleCorralClimbPaths = List.of(
         // First segment
         new AutoWaypoint[] {
-            new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(6.940 , 5.064, new Rotation2d().fromDegrees(155)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(7.320 , 4.900, new Rotation2d().fromDegrees(135)), 2.5, 4.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(7.650 , 4.550, new Rotation2d().fromDegrees(110)), 2.5, 4.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(7.760 , 4.100, new Rotation2d().fromDegrees(80)), 2.5, 4.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(7.680 , 3.850, new Rotation2d().fromDegrees(55)), 2.5, 4.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(7.540 , 3.751, new Rotation2d().fromDegrees(28.3)), 2.5, 4.0, Math.PI * 3, 0.08, 6)
+            //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.240 , 5.064, new Rotation2d().fromDegrees(155)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.620 , 4.900, new Rotation2d().fromDegrees(135)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(7.950 , 4.550, new Rotation2d().fromDegrees(110)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(8.060 , 4.100, new Rotation2d().fromDegrees(80)), 2.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(7.980 , 3.850, new Rotation2d().fromDegrees(55)), 2.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(7.840 , 3.751, new Rotation2d().fromDegrees(28.3)), 2.5, 4.0, Math.PI * 3, 0.08, 6)
         },
         new AutoWaypoint[] {
             new AutoWaypoint(new Pose2d(5.869, 5.390, new Rotation2d().fromDegrees(-45)), 3.0, 4.2, Math.PI * 3, 0.1, 10)
         },
          new AutoWaypoint[] { //getting corral fuel
-            new AutoWaypoint(new Pose2d(0.904, 5.064, new Rotation2d().fromDegrees(-55)), 3.0, 4.2, Math.PI * 3, 0.05, 5),
-            new AutoWaypoint(new Pose2d(0.530, 5.698, new Rotation2d().fromDegrees(-90)), 0.1, 0.5, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(0.530, 6.088, new Rotation2d().fromDegrees(-90)), 0.1, 0.5, Math.PI * 3, 0.05, 5),
-            new AutoWaypoint(new Pose2d(1.812, 5.390, new Rotation2d().fromDegrees(-45)), 0.5, 1.0, Math.PI * 3, 0.05, 5)
+            new AutoWaypoint(new Pose2d(0.400, 4.864, new Rotation2d().fromDegrees(-85)), 0.5, 2.5, Math.PI * 3, 0.10, 5),
+            new AutoWaypoint(new Pose2d(0.400, 5.698, new Rotation2d().fromDegrees(-90)), 0.1, 0.75, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(0.400, 6.588, new Rotation2d().fromDegrees(-90)), 0.1, 0.75, Math.PI * 3, 0.05, 5),
+            new AutoWaypoint(new Pose2d(1.812, 5.390, new Rotation2d().fromDegrees(-45)), 0.5, 1.5, Math.PI * 3, 0.05, 5)
+        },
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(1.033, 4.968, new Rotation2d().fromDegrees(0)), 0.0, 2.0, Math.PI * 3, 0.01, 1)
+        }
+    );
+    public static final List<AutoWaypoint[]> LeftSideHubSweepCorralClimb = List.of(
+        // First segment
+        new AutoWaypoint[] {
+            //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(5.857 , 4.812, new Rotation2d().fromDegrees(90)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(5.857 , 3.501, new Rotation2d().fromDegrees(90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(6.2455 , 3.189, new Rotation2d().fromDegrees(-135)), 1.5, 2.0, Math.PI * 2, 0.08, 6),
+            new AutoWaypoint(new Pose2d(6.634 , 3.889, new Rotation2d().fromDegrees(-90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(6.440 , 4.942, new Rotation2d().fromDegrees(-90)), 2.5, 2.0, Math.PI * 3, 0.08, 6)
+        },
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(5.869, 5.490, new Rotation2d().fromDegrees(-45)), 3.0, 4.2, Math.PI * 3, 0.1, 10)
+        },
+         new AutoWaypoint[] { //getting corral fuel
+            new AutoWaypoint(new Pose2d(0.400, 4.864, new Rotation2d().fromDegrees(-85)), 0.5, 2.5, Math.PI * 3, 0.10, 5),
+            new AutoWaypoint(new Pose2d(0.400, 5.698, new Rotation2d().fromDegrees(-90)), 0.1, 0.75, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(0.400, 6.588, new Rotation2d().fromDegrees(-90)), 0.1, 0.75, Math.PI * 3, 0.05, 5),
+            new AutoWaypoint(new Pose2d(1.812, 5.390, new Rotation2d().fromDegrees(-45)), 0.5, 1.5, Math.PI * 3, 0.05, 5)
+        },
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(1.033, 4.968, new Rotation2d().fromDegrees(0)), 0.0, 2.0, Math.PI * 3, 0.01, 1)
+        }
+    );
+
+    public static final List<AutoWaypoint[]> LeftSideSweepWallCorral = List.of(
+        // First segment
+        new AutoWaypoint[] {
+            //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.428 , 5.962, new Rotation2d().fromDegrees(-145)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(8.189 , 7.020, new Rotation2d().fromDegrees(-90)), 2.5, 3.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(5.911 , 7.020, new Rotation2d().fromDegrees(-90)), 2.5, 4.2, Math.PI * 2, 0.08, 6),
+            //new AutoWaypoint(new Pose2d(6.634 , 3.889, new Rotation2d().fromDegrees(-90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            //new AutoWaypoint(new Pose2d(6.440 , 4.942, new Rotation2d().fromDegrees(-90)), 2.5, 2.0, Math.PI * 3, 0.08, 6)
+        },
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(6.069, 5.530, new Rotation2d().fromDegrees(-45)), 3.0, 4.2, Math.PI * 3, 0.1, 10)
+        },
+         new AutoWaypoint[] { //getting corral fuel
+            new AutoWaypoint(new Pose2d(0.400, 4.864, new Rotation2d().fromDegrees(-85)), 0.5, 2.5, Math.PI * 3, 0.10, 5),
+            new AutoWaypoint(new Pose2d(0.400, 5.698, new Rotation2d().fromDegrees(-90)), 0.1, 0.75, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(0.400, 6.588, new Rotation2d().fromDegrees(-90)), 0.1, 0.75, Math.PI * 3, 0.05, 5),
+            new AutoWaypoint(new Pose2d(1.812, 5.390, new Rotation2d().fromDegrees(-45)), 0.5, 1.5, Math.PI * 3, 0.05, 5)
+        },
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(1.033, 4.968, new Rotation2d().fromDegrees(0)), 0.0, 2.0, Math.PI * 3, 0.01, 1)
+        }
+    );
+
+    public static final List<AutoWaypoint[]> LeftSideTestCorral = List.of(
+        // First segment
+         new AutoWaypoint[] { //getting corral fuel
+            new AutoWaypoint(new Pose2d(0.400, 4.864, new Rotation2d().fromDegrees(-85)), 0.5, 2.5, Math.PI * 3, 0.10, 5),
+            new AutoWaypoint(new Pose2d(0.400, 5.698, new Rotation2d().fromDegrees(-90)), 0.1, 0.75, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(0.400, 6.588, new Rotation2d().fromDegrees(-90)), 0.1, 0.75, Math.PI * 3, 0.05, 5),
+            new AutoWaypoint(new Pose2d(1.812, 5.390, new Rotation2d().fromDegrees(-45)), 0.5, 1.5, Math.PI * 3, 0.05, 5)
         },
         new AutoWaypoint[] {
             new AutoWaypoint(new Pose2d(1.033, 4.968, new Rotation2d().fromDegrees(0)), 0.0, 2.0, Math.PI * 3, 0.01, 1)
