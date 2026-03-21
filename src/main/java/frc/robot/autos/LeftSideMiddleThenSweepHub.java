@@ -39,45 +39,48 @@ import frc.robot.subsystems.Shooter;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class RightSideToNeutralTwice extends SequentialCommandGroup {
+public class LeftSideMiddleThenSweepHub extends SequentialCommandGroup {
   /** Creates a new RightSideToNeutralTwice. */
   CommandSwerveDrivetrain S_Swerve;
-  Intake S_Intake;
   Hopper S_Hopper;
+  Intake S_Intake;
   Shooter S_Shooter;
-  public static final Field2d field = new Field2d();
   
   
-  public RightSideToNeutralTwice(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<AutoWaypoint[]> waypoints) {
-    this.S_Intake = S_Intake;
-    this.S_Hopper = S_Hopper;
-    this.S_Shooter = S_Shooter;
-    
+  public LeftSideMiddleThenSweepHub(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<AutoWaypoint[]> waypoints) {
     this.S_Swerve = S_Swerve;
+    this.S_Hopper = S_Hopper;
+    this.S_Intake = S_Intake;
     addRequirements(S_Swerve);
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
     addCommands(
-      new DriveOverBump(S_Swerve,0),
-      new AutoDrive(S_Swerve, waypoints.get(0)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())).alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
-      new DriveOverBump(S_Swerve, 0).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
-      new Shoot(S_Swerve, S_Shooter, S_Hopper).withTimeout(2.0),
-      new DriveOverBump(S_Swerve, 1),
-      new AutoDrive(S_Swerve, waypoints.get(1)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())),
-      new DriveOverBump(S_Swerve, 0).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
+      new DriveOverBump(S_Swerve, 2)
+        .withTimeout(1.5), 
+      new AutoDrive(S_Swerve, waypoints.get(0))
+        .withTimeout(3.5)
+        .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
+        .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
+      new AutoDrive(S_Swerve, waypoints.get(1)),
+      new DriveOverBump(S_Swerve,3)
+        .withTimeout(2)
+        .alongWith(new InstantCommand(() -> S_Intake.retractIntake())), 
       new Shoot(S_Swerve, S_Shooter, S_Hopper)
-
-
-      //S_Swerve.pathOnTheFly(waypoints, rotationTargets, constraints)
-      //new DriveOverBump(S_Swerve),
-      //S_Swerve.findPath(path1, new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI))
-      //S_Swerve.getAutonomousCommand(),
-      //new AutoDrive(S_Swerve)
-
-
+        .withTimeout(2.75),
+      new DriveOverBump(S_Swerve, 2)
+        .withTimeout(1.5), 
+      new AutoDrive(S_Swerve, waypoints.get(2))
+        .withTimeout(3.5)
+        .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
+        .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
+      new AutoDrive(S_Swerve, waypoints.get(1)),
+      new DriveOverBump(S_Swerve,3)
+        .withTimeout(2)
+        .alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
+      new Shoot(S_Swerve, S_Shooter, S_Hopper)
+      
     );
   }
-  
   
 }

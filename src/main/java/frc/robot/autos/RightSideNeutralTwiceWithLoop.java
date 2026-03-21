@@ -56,11 +56,11 @@ public class RightSideNeutralTwiceWithLoop extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
 
     addCommands(
-      new DriveOverBump(S_Swerve,1),
+      new DriveOverBump(S_Swerve,0),
       new AutoDrive(S_Swerve, waypoints.get(0)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())),
       new DriveOverBump(S_Swerve, 1).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
       new Shoot(S_Swerve, S_Shooter, S_Hopper).withTimeout(4),
-      new DriveOverBump(S_Swerve, 0),
+      new DriveOverBump(S_Swerve, 1),
       new AutoDrive(S_Swerve, waypoints.get(1)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())),
       new DriveOverBump(S_Swerve, 1).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
       new AutoAim(S_Swerve).withTimeout(3.5)

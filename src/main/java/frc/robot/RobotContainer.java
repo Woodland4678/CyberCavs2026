@@ -33,11 +33,17 @@ import frc.robot.Constants.AutoWaypoint;
 import frc.robot.autos.AutoPaths;
 import frc.robot.autos.LeftSideHubSweepCorralClimb;
 import frc.robot.autos.LeftSideMiddleCorralClimb;
+import frc.robot.autos.LeftSideMiddleThenSweepHub;
 import frc.robot.autos.LeftSideSweepWallCorralClimb;
 import frc.robot.autos.LeftSideToNeutralTwice;
+import frc.robot.autos.RightSideDisruption;
+import frc.robot.autos.RightSideFullHopperThenClimb;
+import frc.robot.autos.RightSideMiddleThenSweepHub;
 import frc.robot.autos.RightSideNeutralTwiceWithLoop;
+import frc.robot.autos.RightSideShallowSemicircle;
 import frc.robot.autos.RightSideToNeutralTwice;
 import frc.robot.commands.AutoAim;
+import frc.robot.commands.AutoClimb;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
 import frc.robot.commands.PassFuel;
@@ -79,13 +85,18 @@ public class RobotContainer {
         new AutoDefinition(
             paths -> new RightSideToNeutralTwice(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
             AutoPaths.RightSideGatherFuel1,
-            new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
+            new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
         ),
-
-         "LeftSideToNeutralTwice",
+        "RightSideFullHopperThenClimb",
         new AutoDefinition(
-            paths -> new LeftSideToNeutralTwice(drivetrain, paths),
-            AutoPaths.LeftSideGatherFuel1,
+            paths -> new RightSideFullHopperThenClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.RightSideFullHopperThenClimb,
+            new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
+        ),
+        "LeftSideMiddleThenHubSweep",
+        new AutoDefinition(
+            paths -> new LeftSideMiddleThenSweepHub(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.LeftSideMiddleThenSweepHub,
             new Pose2d(3.573, 5.3633, Rotation2d.fromDegrees(-90))
         ),
         "RightSideToNeutralTwiceWithLoop",
@@ -111,6 +122,24 @@ public class RobotContainer {
             paths -> new LeftSideSweepWallCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
             AutoPaths.LeftSideSweepWallCorral,
             new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
+        ),
+        "RightSideMiddleThenSweepHub",
+        new AutoDefinition(
+            paths -> new RightSideMiddleThenSweepHub(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.RightSideMiddleThenSweepHub,
+            new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
+        ),
+        "RightSideShallowSemicircle",
+        new AutoDefinition(
+            paths -> new RightSideShallowSemicircle(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.RightSideShallowSemicircle,
+            new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
+        ),
+        "RightSideDisruption",
+        new AutoDefinition(
+            paths -> new RightSideDisruption(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.RightSideDisruption,
+            new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
         )
     );
 
@@ -144,10 +173,14 @@ public class RobotContainer {
         // joystick.povUp().onFalse(new InstantCommand(() -> S_Climber.stopClimber()));
         // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(70)));
         // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
-        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederSpeed(80)));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setFeederSpeed(95)));
         // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopFeeder()));
-        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(45)));
-        // joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
+        // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage2Position)));
+       // joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(45)));
+        //joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
+        
+        
+        
         joystick.rightTrigger().whileTrue(new Shoot(drivetrain,S_Shooter, S_Hopper));
         joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelSpeed(60)));
         joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
@@ -178,11 +211,11 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
-        joystick.a().whileTrue(new AutoAim(drivetrain));
+       // joystick.a().whileTrue(new AutoAim(drivetrain));
        // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-        ));
+        // joystick.b().whileTrue(drivetrain.applyRequest(() ->
+        //     point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+        // ));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -197,10 +230,17 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
+       // joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
+       // joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
+       // joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
+       // joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
+       joystick.y().whileTrue(new AutoClimb(drivetrain, S_Climber, false));
+
+
        // joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));
        // joystick.y().whileTrue(new DriveOverBump(drivetrain, 3));
-       joystick.y().whileTrue(new AutoDrive(drivetrain,AutoPaths.rotateBlueToRed(AutoPaths.LeftSideTestCorral.get(0), Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS) ));
-       joystick.y().onTrue(new InstantCommand(() -> S_Intake.deployIntake()));
+      // joystick.y().whileTrue(new AutoDrive(drivetrain,AutoPaths.rotateBlueToRed(AutoPaths.LeftSideTestCorral.get(0), Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS) ));
+       //joystick.y().onTrue(new InstantCommand(() -> S_Intake.deployIntake()));
        //joystick.y().whileTrue(new AutoDrive(drivetrain, AutoPaths.DriveToClimberLeftSide.get(0)));
        // joystick.povUp().whileTrue(new DriveOverBump(drivetrain, 2));
        // joystick.povDown().whileTrue(new DriveOverBump(drivetrain, 3));
@@ -211,6 +251,8 @@ public class RobotContainer {
         joystick.rightBumper().onTrue(new InstantCommand(() -> S_Intake.deployIntake()));
         joystick.rightBumper().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(45)));
         joystick.leftBumper().onTrue(new InstantCommand(() -> S_Intake.retractIntake()));
+        joystick.leftBumper().whileTrue(new InstantCommand(() -> S_Intake.setIntakeWheelSpeed(Constants.IntakeConstants.IntakeRPS)));
+        joystick.leftBumper().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
         joystick.leftBumper().onTrue(new InstantCommand(() -> S_Hopper.stopFloor()));
 
         joystick.leftTrigger().whileTrue(new PassFuel(drivetrain,S_Shooter,S_Hopper,joystick));

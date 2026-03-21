@@ -21,6 +21,8 @@ public class Robot extends TimedRobot {
     private LEDStrip ledStrip;
     private final RobotContainer m_robotContainer;
     private boolean hasGameData;
+    private boolean wonAuto = false;
+    private boolean isHubActive = true;
 
     /* log and replay timestamp and joystick data */
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
@@ -34,7 +36,66 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         m_timeAndJoystickReplay.update();
+        double matchTime = DriverStation.getMatchTime();
+        double shiftTimer = 0;
+        String shiftName = "Transition";
+        if (matchTime > 130) {
+            shiftName = "Transition";
+            shiftTimer = matchTime - 130;
+            isHubActive = true;
+        }
+        else if (matchTime > 105) {
+            shiftName = "Shift 1";
+            shiftTimer = matchTime - 105;
+            if (wonAuto == true){
+                isHubActive = false;
+            }
+            else{
+                isHubActive = true;
+            }
+        }
+        else if (matchTime > 80) {
+            shiftName = "Shift 2";
+            shiftTimer = matchTime - 80;
+            if (wonAuto == false){
+                isHubActive = false;
+            }
+            else{
+                isHubActive = true;
+            }
+        }
+        else if (matchTime > 55) {
+            shiftName = "Shift 3";
+            shiftTimer = matchTime - 55;
+            if (wonAuto == true){
+                isHubActive = false;
+            }
+            else{
+                isHubActive = true;
+            }
+        }
+        else if (matchTime > 30) {
+            shiftName = "Shift 4";
+            shiftTimer = matchTime - 30;
+            if (wonAuto == false){
+                isHubActive = false;
+            }
+            else{
+                isHubActive = true;
+            }
+        }
+        else  {
+            shiftName = "End Game";
+            shiftTimer = matchTime;
+            isHubActive = true;
+        }
         ledStrip.periodic();  // SDW uncomment when ready to use
+        SmartDashboard.putNumber("Match Timer", matchTime);
+        SmartDashboard.putString("Shift #", shiftName);
+        SmartDashboard.putNumber("Shift Timer", shiftTimer);
+        SmartDashboard.putBoolean("Hub Active", isHubActive);
+        
+
         CommandScheduler.getInstance().run(); 
     }
 
@@ -95,7 +156,7 @@ public class Robot extends TimedRobot {
         ledStrip.setDiagnosticPattern(diagState);
         ledStrip.diagnosticLEDmode(); // SDW uncomment when ready to use
 
-        ledStrip.setLEDMode(LEDModes.SOLIDBLUE); // SDW
+       // ledStrip.setLEDMode(LEDModes.SOLIDBLUE); // SDW
 
         ledStrip.periodic();
     }
@@ -130,53 +191,45 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         String gameData;
-
-        // set our alliance LED colour
-        // ****** shouldn't we do this where we get our colour on init or something? \like in one place? *****
+       
+        
         Optional<Alliance> ally = DriverStation.getAlliance();
-        ledStrip = LEDStrip.getInstance();
-
-        if (ally.isPresent()) {
-            if (ally.get() == Alliance.Blue) {                
-                ledStrip.setLEDMode(LEDModes.SOLIDGREEN);
-            }
-            else {
-                ledStrip.setLEDMode(LEDModes.SOLIDPURPLE);
-            }
-        }
+        
        
 
         // which alliance is inactive first?
-        boolean isRedInactiveFirst = false;
-        gameData = DriverStation.getGameSpecificMessage();
+        // boolean isRedInactiveFirst = false;
+        // gameData = DriverStation.getGameSpecificMessage();
         
-        if(!hasGameData && gameData.length() > 0) {
-            switch (gameData.charAt(0)) {
-                case 'B':
-                    isRedInactiveFirst = false;
-                    break;
-                case 'R':
-                    isRedInactiveFirst = true;
-                    break;
-                default:
-                    break;
-            }
-        }
+        // if(!hasGameData && gameData.length() > 0) {
+        //     switch (gameData.charAt(0)) {
+        //         case 'B':
+        //             isRedInactiveFirst = false;
+        //             break;
+        //         case 'R':
+        //             isRedInactiveFirst = true;
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        // }
 
         // ******** add code to check if our hub is active currently *********
         // This should likely be a function accessible from where we need to use it
 
-        /* 
+        
         gameData = DriverStation.getGameSpecificMessage();
         
         if(!hasGameData && gameData.length() > 0) {
-            Optional<Alliance> ally = DriverStation.getAlliance();
+           // Optional<Alliance> ally = DriverStation.getAlliance();
             switch (gameData.charAt(0)) {
                 case 'B':
                     if(ally.isPresent()) {
                         if (ally.get() == Alliance.Blue) {
                             ledStrip = LEDStrip.getInstance();
-                            ledStrip.setLEDMode(LEDModes.SOLIDGREEN);  
+                            ledStrip.setLEDMode(LEDModes.SOLIDGREEN);
+                            wonAuto = true;  
+                            SmartDashboard.putString("Won or Lost Auto", "Won");
                         }
 
                     }
@@ -184,6 +237,8 @@ public class Robot extends TimedRobot {
                         if (ally.get() == Alliance.Red) {
                             ledStrip = LEDStrip.getInstance();
                             ledStrip.setLEDMode(LEDModes.SOLIDPURPLE);
+                            wonAuto = false;
+                            SmartDashboard.putString("Won or Lost Auto", "Lost");
                         }
 
                     }
@@ -196,6 +251,8 @@ public class Robot extends TimedRobot {
                         if (ally.get() == Alliance.Red) {
                             ledStrip = LEDStrip.getInstance();
                             ledStrip.setLEDMode(LEDModes.SOLIDGREEN);
+                            wonAuto = true;
+                            SmartDashboard.putString("Won or Lost Auto", "Won");
                         }
 
                     }
@@ -203,6 +260,8 @@ public class Robot extends TimedRobot {
                         if (ally.get() == Alliance.Blue) {
                             ledStrip = LEDStrip.getInstance();
                             ledStrip.setLEDMode(LEDModes.SOLIDPURPLE);
+                            wonAuto = false;
+                            SmartDashboard.putString("Won or Lost Auto", "Lost");
                         }
 
                     }
@@ -213,7 +272,7 @@ public class Robot extends TimedRobot {
                     break;
             }
         }
-        */
+        
     }
 
     @Override

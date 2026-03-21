@@ -8,21 +8,21 @@ import static edu.wpi.first.units.Units.*;
 public final class Constants {
     public static final Pose2d BLUE_HUB_POSITION = new Pose2d(4.675, 8.07/2, new Rotation2d());
     public static final Pose2d RED_HUB_POSITION = new Pose2d(4.675 + 7.19, 8.07/2, new Rotation2d());
-    public static final double FIELD_WIDTH_METERS = 8.042656;
+    public static final double FIELD_WIDTH_METERS = 8.069;
     public static final double FIELD_LENGTH_METERS = 16.54;
     public static class ClimberConstants {
         public static final double extendPosition = 0;
-        public static final double retractPosition = 14.5;
+        public static final double retractPosition = 33.0;
     }
     public static class IntakeConstants {
-        public static final double deployPosition = -11.38;
-        public static final double retractPosition = -0.1;
+        public static final double deployPosition = 49.5;
+        public static final double retractPosition = 0;
         public static final double IntakeRPS = 90;
     }
     public static class ShooterConstants {
         public static final double hoodRetractPosition = 0;
         public static final double hoodStage1Position = 10.5;
-        public static final double hoodStage2Position = 16.5;
+        public static final double hoodStage2Position = 18.0;
         public static final double idleRPS = 45;
 
     }
@@ -31,7 +31,9 @@ public final class Constants {
     }
     public static class SwerveConstants {
         public static double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-        public static double MaxAngularRate = RotationsPerSecond.of(1.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+        public static double MaxAngularRate = RotationsPerSecond.of(1.85).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+        public static double RightCLimbLidar = 66.8;
+        public static double LeftCLimbLidar = 58.8;
     }
     
     public static class AutoWaypoint{

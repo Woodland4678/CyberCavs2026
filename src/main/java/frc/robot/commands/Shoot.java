@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.Optional;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 
@@ -35,10 +36,15 @@ public class Shoot extends Command {
   Translation2d hubDist;
   double hubX = 0;
   double hubY = 0;
-  Debouncer shooterReadyDebounce = new Debouncer(0.04, Debouncer.DebounceType.kRising);
-
+  int hoodPos = 0;
+  int state = 0;
+  double xSpeed = 0;
+  Debouncer shooterReadyDebounce = new Debouncer(0.06, Debouncer.DebounceType.kRising);
+   private final SwerveRequest.RobotCentric m_driveRequestAutoAlign = new SwerveRequest.RobotCentric()
+   .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+   .withSteerRequestType(SteerRequestType.MotionMagicExpo);
    PhoenixPIDController rController = new PhoenixPIDController(19.1, 0, 0.15);
-    private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
+    private final SwerveRequest.RobotCentric m_driveRequestDrive = new SwerveRequest.RobotCentric()
             .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
   
@@ -54,9 +60,11 @@ public class Shoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    state = 0;
+    //hoodPos = 0;
     S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodRetractPosition);
    // S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    S_Hopper.setFloorRPS(112);
+    S_Hopper.setFloorRPS(117);
 
     startTime = Timer.getFPGATimestamp();
     Optional<Alliance> ally = DriverStation.getAlliance();
@@ -78,49 +86,77 @@ public class Shoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Pose2d robotPose = S_Swerve.getState().Pose;
-    
+    switch(state) {
+      // case 0:
+      //   if (S_Swerve.getHasMultiTagTarget()) {
+      //     state++;
+      //   }
+      //   else {
+      //     S_Swerve.setControl(
+      //       m_driveRequestAutoAlign.withVelocityX(-1)
+      //           .withVelocityY(0)
+      //           .withRotationalRate(0)
+      //           .withDriveRequestType(DriveRequestType.Velocity)
+      //     );
+      //   }
+      // break;
+      case 0:
+        if (S_Swerve.isOdometryLikelyBad()) {
+          xSpeed = -2.5;
+        }
+        else {
+          xSpeed = 0.0;
+        }
+        Pose2d robotPose = S_Swerve.getState().Pose;
+        
+        // Vector to hub
+        double dX = hubX - robotPose.getX();
+        double dY = hubY - robotPose.getY();
 
-    // Vector to hub
-    double dX = hubX - robotPose.getX();
-    double dY = hubY - robotPose.getY();
+        // Desired field-relative heading
+        Rotation2d targetHeading =
+            Rotation2d.fromRadians(Math.atan2(dY, dX));
 
-    // Desired field-relative heading
-    Rotation2d targetHeading =
-        Rotation2d.fromRadians(Math.atan2(dY, dX));
+        double rSpeed = rController.calculate(robotPose.getRotation().getRadians(), targetHeading.getRadians(), Timer.getFPGATimestamp());
+        S_Swerve.setControl(m_driveRequestDrive.withVelocityX(xSpeed).withVelocityY(0).withRotationalRate(rSpeed));
+        SmartDashboard.putNumber("Auto Aim rspeed", rSpeed);
+        SmartDashboard.putNumber("Target Angle", targetHeading.getDegrees());
 
-    double rSpeed = rController.calculate(robotPose.getRotation().getRadians(), targetHeading.getRadians(), Timer.getFPGATimestamp());
-    S_Swerve.setControl(m_driveRequestDrive.withVelocityX(0).withVelocityY(0).withRotationalRate(rSpeed));
-    SmartDashboard.putNumber("Auto Aim rspeed", rSpeed);
-    SmartDashboard.putNumber("Target Angle", targetHeading.getDegrees());
-
-     double distance =
-        robotPose.getTranslation()
-            .getDistance(hubDist);
-    shooterTargetRPS = S_Shooter.getDesiredShooterRPS(distance);
-    if (Timer.getFPGATimestamp() - startTime < 0.8) {
-      shooterTargetRPS = S_Shooter.getDesiredShooterRPS(distance) * 1.05;
+        double distance =
+            robotPose.getTranslation()
+                .getDistance(hubDist);
+        if (distance < 2.4) {
+          hoodPos = 0;
+        }
+        else if (distance > 2.75) {
+          hoodPos = 1;
+        }
+        shooterTargetRPS = S_Shooter.getDesiredShooterRPS(distance, hoodPos);
+        if (Timer.getFPGATimestamp() - startTime < 0.35) {
+          //shooterTargetRPS = S_Shooter.getDesiredShooterRPS(distance, hoodPos) * 1.05;
+        }
+        // else {
+        //   shooterTargetRPS = 47.0;
+        // }
+        //shooterTargetRPS = 80;
+        S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
+        boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 0.75;
+        boolean rotationReady = Math.abs(rController.getPositionError()) < Math.toRadians(2); //this radians
+        boolean shooterReady = shooterReadyDebounce.calculate(rawReady && rotationReady && !S_Swerve.isOdometryLikelyBad());
+        double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
+        if (shooterReady) {
+          S_Shooter.setFeederSpeed(95);
+        }
+        // else if (error > 8.0) {//slow down if shooter not within speed
+        //   S_Shooter.stopFeeder();
+        // }
+        // else {
+        //   S_Shooter.setFeederSpeed(20);
+        // }
+        SmartDashboard.putNumber("Distance to hub middle", distance);
+        SmartDashboard.putNumber("Calculated RPS Speed", shooterTargetRPS);
+      break;
     }
-    // else {
-    //   shooterTargetRPS = 47.0;
-    // }
-    //shooterTargetRPS = 80;
-    S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 0.75;
-    boolean rotationReady = Math.abs(rController.getPositionError()) < 0.07; //this radians
-    boolean shooterReady = shooterReadyDebounce.calculate(rawReady && rotationReady);
-    double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
-    if (shooterReady) {
-      S_Shooter.setFeederSpeed(95);
-    }
-    // else if (error > 8.0) {//slow down if shooter not within speed
-    //   S_Shooter.stopFeeder();
-    // }
-    // else {
-    //   S_Shooter.setFeederSpeed(20);
-    // }
-     SmartDashboard.putNumber("Distance to hub middle", distance);
-     SmartDashboard.putNumber("Calculated RPS Speed", shooterTargetRPS);
   }
 
   // Called once the command ends or is interrupted.

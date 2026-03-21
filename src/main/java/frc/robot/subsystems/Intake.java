@@ -6,9 +6,11 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -33,14 +35,17 @@ public class Intake extends SubsystemBase {
   private SparkClosedLoopController deployMotorController;
 
   TalonFX intakeWheels;
+  TalonFX intakeWheelsFollower;
   private boolean isIntakeDeployed;
 
   /** Creates a new Intake. */
   public Intake() {
 
     final CANBus canbus = new CANBus("rio");
-    intakeWheels = new TalonFX(1,canbus);
+    intakeWheels = new TalonFX(10,canbus);
+    intakeWheelsFollower = new TalonFX(1, canbus);
 
+     intakeWheelsFollower.setControl(new Follower(intakeWheels.getDeviceID(), MotorAlignmentValue.Opposed));
     deployMotor = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
     deployMotorController = deployMotor.getClosedLoopController();
 
@@ -53,7 +58,7 @@ public class Intake extends SubsystemBase {
       .p(0.2)
       .i(0)
       .d(0)
-      .outputRange(-0.5, 0.5);
+      .outputRange(-1.0, 1.0);
 
       deployMotor.configure(deployMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 

@@ -21,8 +21,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveOverBump extends Command {
   /** Creates a new DriveOverBump. */
-   PhoenixPIDController rController = new PhoenixPIDController(0.25, 0, 0.0); //14.1, 0, 0.15
-   Optional<Alliance> ally = DriverStation.getAlliance();
+   PhoenixPIDController rController = new PhoenixPIDController(0.14, 0, 0.0); //14.1, 0, 0.15
+  // Optional<Alliance> ally = DriverStation.getAlliance();
   CommandSwerveDrivetrain S_Swerve;
   double angleToTarget;
   double targetX = 5.223; //from blue alliance wall to middle of blue hub
@@ -58,13 +58,13 @@ public class DriveOverBump extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+     Optional<Alliance> ally = DriverStation.getAlliance();
     rController.enableContinuousInput(-180, 180);
     if (directionType == 0 || directionType == 2) {
-      xSpeed = 3.5;
+      xSpeed = 3.75;
     }
     else {
-      xSpeed = -3.5;
+      xSpeed = -3.75;
     }
     state = 0;
     cnt = 0;
@@ -85,13 +85,13 @@ public class DriveOverBump extends Command {
   public void execute() {
     if (directionType == 0 || directionType == 3) {
       gyroAxisValue = S_Swerve.getGyroPitch();
-      firstThreshold = -3.0;
-      secondThreshold = 3.0;
+      firstThreshold = -6.0;
+      secondThreshold = 6.0;
     }
     else if (directionType == 1 || directionType == 2) {
       gyroAxisValue = S_Swerve.getGyroRoll();
-      firstThreshold = -3.0;
-      secondThreshold = 3.0;
+      firstThreshold = -6.0;
+      secondThreshold = 6.0;
     }
     
     double rSpeed = rController.calculate(S_Swerve.getGyroValue(), directionTypeRotationAngles[directionType], Timer.getFPGATimestamp());
@@ -102,51 +102,74 @@ public class DriveOverBump extends Command {
               .withDriveRequestType(DriveRequestType.Velocity) // Drive counterclockwise with negative X (left)
 
         );
-        //I conclude looking for one direction, then the other, then flat will be more consistent
       switch(state) {
-        case 0:
-          if (firstThreshold > 0) {
-            if (gyroAxisValue > firstThreshold) {
-              state++;
-            }
-          }
-          else {
-            if (gyroAxisValue < firstThreshold) {
-              state++;
-            }
-          }
-          
-        break;
-        case 1:
-          if (secondThreshold > 0) {
-            if (gyroAxisValue > secondThreshold) {
-              state++;
-            }
-          }
-          else {
-            if (gyroAxisValue < secondThreshold) {
-              state++;
-            }
+        case 0 :
+          if (gyroAxisValue > secondThreshold) {
+            state++;
           }
         break;
-        case 2:
-          if ((gyroAxisValue > -7 && gyroAxisValue < 7)) {
-            //state++;
+        case 1 :
+          if (gyroAxisValue> -2.5 && gyroAxisValue < 2.5){
             cnt++;
           }
           else {
             cnt = 0;
           }
-          if (cnt > 5) {
+          if (cnt > 0) {
             state++;
           }
         break;
-        case 3:
+        case 2:
           xSpeed = 0;
           ySpeed = 0;
           isDone = true;
         break;
       }
+        //I conclude looking for one direction, then the other, then flat will be more consistent
+      // switch(state) {
+      //   case 0:
+      //     if (firstThreshold > 0) {
+      //       if (gyroAxisValue > firstThreshold) {
+      //         state++;
+      //       }
+      //     }
+      //     else {
+      //       if (gyroAxisValue < firstThreshold) {
+      //         state++;
+      //       }
+      //     }
+          
+      //   break;
+      //   case 1:
+      //     if (secondThreshold > 0) {
+      //       if (gyroAxisValue > secondThreshold) {
+      //         state++;
+      //       }
+      //     }
+      //     else {
+      //       if (gyroAxisValue < secondThreshold) {
+      //         state++;
+      //       }
+      //     }
+      //   break;
+      //   case 2:
+      //     if ((gyroAxisValue > -7 && gyroAxisValue < 7)) {
+      //       //state++;
+      //       cnt++;
+      //     }
+      //     else {
+      //       cnt = 0;
+      //     }
+      //     if (cnt > 5) {
+      //       state++;
+      //     }
+      //   break;
+      //   case 3:
+      //     xSpeed = 0;
+      //     ySpeed = 0;
+      //     isDone = true;
+      //   break;
+      //}
       SmartDashboard.putNumber("Get Over Bump State", state);
   }
 

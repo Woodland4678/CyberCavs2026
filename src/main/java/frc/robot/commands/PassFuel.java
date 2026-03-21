@@ -65,7 +65,7 @@ public class PassFuel extends Command {
   // Called when the command is initially scheduled.
   @Override
     public void initialize() {
-    S_Hopper.setFloorRPS(80);
+    S_Hopper.setFloorRPS(110);
     S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodStage2Position);
     Optional<Alliance> ally = DriverStation.getAlliance();
     if (ally.isPresent()) {
@@ -115,11 +115,11 @@ public class PassFuel extends Command {
     double distance =
             robotPose.getTranslation()
                 .getDistance(targetPose.getTranslation());
-    
+    //SmartDashboard.putNumber("Pass distance", distance);
     double shooterTargetRPS = S_Shooter.getShooterPassRPS(distance);
     S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    if(Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 1.0) {
-      S_Shooter.setFeederSpeed(60);
+    if(Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 1.0 && rController.getPositionError() < Math.toRadians(3)) {
+      S_Shooter.setFeederSpeed(95);
     }
   }
 

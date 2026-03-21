@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -29,6 +30,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
@@ -38,6 +40,7 @@ public class Shooter extends SubsystemBase {
   TalonFX shooterFollowerMotor3;
 
   InterpolatingDoubleTreeMap shooterRPSLookup = new InterpolatingDoubleTreeMap();
+  InterpolatingDoubleTreeMap shooterRPSLookupStage1 = new InterpolatingDoubleTreeMap();
 
    InterpolatingDoubleTreeMap passingRPSLookup = new InterpolatingDoubleTreeMap();
 
@@ -70,11 +73,27 @@ public class Shooter extends SubsystemBase {
     shooterRPSLookup.put(3.42, 55.2);
     shooterRPSLookup.put(3.83, 59.8);
 
-    passingRPSLookup.put(3.83, 57.8);
-    passingRPSLookup.put(3.83, 57.8);
-    passingRPSLookup.put(3.83, 57.8);
-    passingRPSLookup.put(3.83, 57.8);
-    passingRPSLookup.put(3.83, 57.8);
+    shooterRPSLookupStage1.put(2.34, 40.2);
+    shooterRPSLookupStage1.put(2.64, 43.2);
+    shooterRPSLookupStage1.put(3.08, 45.8);
+    shooterRPSLookupStage1.put(3.42, 47.2);
+    shooterRPSLookupStage1.put(3.90, 50.4);
+    shooterRPSLookupStage1.put(4.26, 52.4);
+    shooterRPSLookupStage1.put(4.58, 55.0);
+    
+    // shooterRPSLookupStage1.put(2.21, 44.0);
+    // shooterRPSLookupStage1.put(2.71, 48.0);
+    // shooterRPSLookupStage1.put(3.1, 52.0);
+    // shooterRPSLookupStage1.put(3.42, 55.2);
+    // shooterRPSLookupStage1.put(3.83, 59.8);
+
+    passingRPSLookup.put(3.83, 30.8);
+    passingRPSLookup.put(6.14, 40.0);
+    passingRPSLookup.put(8.0, 57.8);
+    passingRPSLookup.put(9.52, 65.0);
+    passingRPSLookup.put(9.52, 65.0);
+    passingRPSLookup.put(12.5, 85.8);
+    passingRPSLookup.put(14.95, 95.0);
     final CANBus canbus = new CANBus("rio");
 
     leftFuelSensor = new DigitalInput(8); //needs valid channel ???
@@ -152,7 +171,7 @@ public class Shooter extends SubsystemBase {
       .outputRange(-1, 1);
 
       hoodMotor.configure(hoodMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
+      feederMotor.setNeutralMode(NeutralModeValue.Brake);
     // hoodPositions = new Dictionary<String,Double>() {
       
     // };
@@ -231,7 +250,15 @@ public class Shooter extends SubsystemBase {
     shooterLeadMotor.setVoltage(voltage);
   }
   // public void findFeederTargetSpeed(double distance) {}
-  public double getDesiredShooterRPS(double distance) {
+  public double getDesiredShooterRPS(double distance, int hoodPos) {
+    if (hoodPos == 0) {
+      setHoodPosition(Constants.ShooterConstants.hoodRetractPosition);
+      return shooterRPSLookup.get(distance);
+    } 
+    else if (hoodPos == 1) {
+      setHoodPosition(Constants.ShooterConstants.hoodStage1Position);
+      return shooterRPSLookupStage1.get(distance);
+    }
     return shooterRPSLookup.get(distance);
   }
   public void setHoodPosition(double position) {

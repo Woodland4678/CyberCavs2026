@@ -29,7 +29,7 @@ public class LEDStrip {
     private LEDModes LEDMode;
     private int blinkCnt = 0;
 
-    AddressableLED addressableLED = new AddressableLED(1); //should be PWM location
+    AddressableLED addressableLED = new AddressableLED(0); //should be PWM location
     AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(NUM_LEDS);
     private double intervalSeconds= 0.07; 
     private double blinkTime = 3;
@@ -265,7 +265,7 @@ public class LEDStrip {
                 blinkLEDs(0, 255, 0);
                 break;
             case SOLIDPURPLE:
-                setColour(100, 0, 100);
+                setColour(50, 0, 50);
                 break;
             case RAINBOW:
                 rainbow();

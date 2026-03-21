@@ -34,8 +34,10 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Unit;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
@@ -68,12 +70,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     Transform3d fieldToCameraPosition;
 
+    private DutyCycle rearLidar;
+    private DutyCycle frontLidar;
+
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
+
+    boolean odometryLikelyBad = true;
 
     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
@@ -165,6 +172,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
          rpi = new PhotonCamera("Arducam_Main");
          fieldToCameraPosition = new Transform3d();
          configureAutoBuilder();
+
+         frontLidar = new DutyCycle(new DigitalInput(0));
+         rearLidar = new DutyCycle(new DigitalInput(1));
     }
 
     /**
@@ -192,6 +202,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
          rpi = new PhotonCamera("Arducam_Main");
          fieldToCameraPosition = new Transform3d();
          configureAutoBuilder();
+
+         frontLidar = new DutyCycle(new DigitalInput(0));
+         rearLidar = new DutyCycle(new DigitalInput(1));
     }
 
     /**
@@ -227,6 +240,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
          rpi = new PhotonCamera("Arducam_Main");
          fieldToCameraPosition = new Transform3d();
          configureAutoBuilder();
+
+         frontLidar = new DutyCycle(new DigitalInput(0));
+         rearLidar = new DutyCycle(new DigitalInput(1));
     }
 
 
@@ -339,18 +355,22 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+        if (Math.abs(getGyroPitch()) > 8 || Math.abs(getGyroRoll()) > 8) {
+            odometryLikelyBad = true;
+        }
         var results = rpi.getAllUnreadResults();
             for (var result : results) {
             var multiTagResult = result.getMultiTagResult();
             if (multiTagResult.isPresent()) {
                 hasMultiTagTarget = true;
                 fieldToCameraPosition = multiTagResult.get().estimatedPose.best;
-                this.addVisionMeasurement(new Pose2d(fieldToCameraPosition.getX(), fieldToCameraPosition.getY(), this.getState().Pose.getRotation()).transformBy(cameraToRobot), Timer.getFPGATimestamp());
+                this.addVisionMeasurement(new Pose2d(fieldToCameraPosition.getX(), fieldToCameraPosition.getY(), fieldToCameraPosition.getRotation().toRotation2d()).transformBy(cameraToRobot), Timer.getFPGATimestamp());
                 SmartDashboard.putNumber("Field to camera X", fieldToCameraPosition.getX());
                 SmartDashboard.putNumber("Field to camera Y", fieldToCameraPosition.getY());
+                odometryLikelyBad = false;
             }
             else {
-                hasMultiTagTarget = true;
+                hasMultiTagTarget = false;
             }
         }
         field.setRobotPose(this.getState().Pose);
@@ -360,6 +380,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Gyro Pitch", this.getPigeon2().getPitch().getValueAsDouble());
         SmartDashboard.putNumber("Front left drive speed", this.getModule(0).getDriveMotor().getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Robot Velocity X", this.getState().Speeds.vxMetersPerSecond);
+        SmartDashboard.putNumber("Front Lidar", getFrontLidar());
+        SmartDashboard.putNumber("Rear Lidar", getRearLidar());
          double distance =
         this.getState().Pose.getTranslation()
             .getDistance(Constants.BLUE_HUB_POSITION.getTranslation());
@@ -415,6 +437,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
 
+    public double getFrontLidar(){
+        return frontLidar.getOutput() * 400; 
+    }
+    public double getRearLidar(){
+        return rearLidar.getOutput() * 400; 
+    }
+    // Is it getting a reading at all? May be a better way.
+    public boolean isFrontLidarReady() {
+        return (frontLidar.getOutput() > 0.0);
+    }
+    // Is it getting a reading at all? May be a better way.
+    public boolean isRearLidarReady() {
+        return (rearLidar.getOutput() > 0.0);
+    }
+
     /**
      * Return the pose at a given timestamp, if the buffer is not empty.
      *
@@ -449,5 +486,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     public boolean isGyroReady() {
         return this.getPigeon2().isConnected();
+    }
+    public boolean isOdometryLikelyBad() {
+        return odometryLikelyBad;
     }
 }
