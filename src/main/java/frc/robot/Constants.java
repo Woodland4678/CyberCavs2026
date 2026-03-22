@@ -10,6 +10,9 @@ public final class Constants {
     public static final Pose2d RED_HUB_POSITION = new Pose2d(4.675 + 7.19, 8.07/2, new Rotation2d());
     public static final double FIELD_WIDTH_METERS = 8.069;
     public static final double FIELD_LENGTH_METERS = 16.54;
+
+    public static final double RightSideRotateToSeeTagsTarget = 155;
+    public static final double LeftSideRotateToSeeTagsTarget = -45;
     public static class ClimberConstants {
         public static final double extendPosition = 0;
         public static final double retractPosition = 33.0;

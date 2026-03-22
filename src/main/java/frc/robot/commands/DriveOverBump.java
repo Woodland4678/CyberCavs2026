@@ -36,11 +36,13 @@ public class DriveOverBump extends Command {
   double firstThreshold = -9.0;
   double secondThreshold = 9.0;
   int directionType = 0;
+  double targetR = 0;
   /*
   
   0 & 1 are used for right side auto (0 goes to middle zone, 1 comes back)
   2 & 3 are used for left side auto (2 goes to middle zone and 3 comes back)
   */
+  double[] directionTypeRotationAngles_Diamond = {135, 45, -135,-45}; //135, 45, -135, -45
   double[] directionTypeRotationAngles = {90, 90, -90,-90}; //135, 45, -135, -45
   // private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
   //           .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
@@ -76,7 +78,18 @@ public class DriveOverBump extends Command {
         directionTypeRotationAngles[1] = -90; //was -135
         directionTypeRotationAngles[2] = 90; //was 45
         directionTypeRotationAngles[3] = 90; //was 135
+
+        directionTypeRotationAngles_Diamond[0] = -45; //was -45
+        directionTypeRotationAngles_Diamond[1] = -135; //was -135
+        directionTypeRotationAngles_Diamond[2] = 45; //was 45
+        directionTypeRotationAngles_Diamond[3] = 135; //was 135
       }
+    }
+    if (DriverStation.getMatchTime() > 18.0) { //first time in auto going across do diamond shape
+      targetR = directionTypeRotationAngles_Diamond[directionType];
+    }
+    else { //not first time going across go sideways
+      targetR = directionTypeRotationAngles[directionType];
     }
   }
 
@@ -93,8 +106,8 @@ public class DriveOverBump extends Command {
       firstThreshold = -6.0;
       secondThreshold = 6.0;
     }
-    
-    double rSpeed = rController.calculate(S_Swerve.getGyroValue(), directionTypeRotationAngles[directionType], Timer.getFPGATimestamp());
+
+    double rSpeed = rController.calculate(S_Swerve.getGyroValue(), targetR, Timer.getFPGATimestamp());
     S_Swerve.setControl(
           m_driveRequestDrive.withVelocityX(xSpeed)
               .withVelocityY(0)

@@ -40,7 +40,7 @@ import frc.robot.subsystems.Shooter;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class LeftSideMiddleSemiCircleThenSweepHub extends SequentialCommandGroup {
+public class LeftSideDisturbedMiddlePathOption1 extends SequentialCommandGroup {
   /** Creates a new RightSideToNeutralTwice. */
   CommandSwerveDrivetrain S_Swerve;
   Hopper S_Hopper;
@@ -48,7 +48,7 @@ public class LeftSideMiddleSemiCircleThenSweepHub extends SequentialCommandGroup
   Shooter S_Shooter;
   
   
-  public LeftSideMiddleSemiCircleThenSweepHub(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<AutoWaypoint[]> waypoints) {
+  public LeftSideDisturbedMiddlePathOption1(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<AutoWaypoint[]> waypoints) {
     this.S_Swerve = S_Swerve;
     this.S_Hopper = S_Hopper;
     this.S_Intake = S_Intake;
@@ -63,14 +63,14 @@ public class LeftSideMiddleSemiCircleThenSweepHub extends SequentialCommandGroup
         .withTimeout(3.5)
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
-      new AutoDrive(S_Swerve, waypoints.get(1)),
+      new AutoDrive(S_Swerve, waypoints.get(1)), //drive back to bump
       new DriveOverBump(S_Swerve,3)
         .withTimeout(2)
         .alongWith(new InstantCommand(() -> S_Intake.retractIntake())), 
       new Shoot(S_Swerve, S_Shooter, S_Hopper)
-        .withTimeout(2.75),
+        .withTimeout(3.0),
       new DriveOverBump(S_Swerve, 2)
-        .withTimeout(1.5), 
+        .withTimeout(1.5),
       new RotateToAngleUntilTagsSeen(S_Swerve, Constants.LeftSideRotateToSeeTagsTarget),
       new AutoDrive(S_Swerve, waypoints.get(2))
         //.withTimeout(4.0)
