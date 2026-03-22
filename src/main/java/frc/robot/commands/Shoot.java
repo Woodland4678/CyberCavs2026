@@ -101,12 +101,12 @@ public class Shoot extends Command {
       //   }
       // break;
       case 0:
-        if (S_Swerve.isOdometryLikelyBad()) {
-          xSpeed = -2.5;
-        }
-        else {
-          xSpeed = 0.0;
-        }
+        // if (S_Swerve.isOdometryLikelyBad()) {
+        //   xSpeed = -2.5;
+        // }
+        // else {
+        //   xSpeed = 0.0;
+        // }
         Pose2d robotPose = S_Swerve.getState().Pose;
         
         // Vector to hub

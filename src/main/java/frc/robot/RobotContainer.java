@@ -33,11 +33,13 @@ import frc.robot.Constants.AutoWaypoint;
 import frc.robot.autos.AutoPaths;
 import frc.robot.autos.LeftSideHubSweepCorralClimb;
 import frc.robot.autos.LeftSideMiddleCorralClimb;
+import frc.robot.autos.LeftSideMiddleSemiCircleThenSweepHub;
 import frc.robot.autos.LeftSideMiddleThenSweepHub;
 import frc.robot.autos.LeftSideSweepWallCorralClimb;
 import frc.robot.autos.LeftSideToNeutralTwice;
 import frc.robot.autos.RightSideDisruption;
 import frc.robot.autos.RightSideFullHopperThenClimb;
+import frc.robot.autos.RightSideMiddleSemiCircleThenSweepHub;
 import frc.robot.autos.RightSideMiddleThenSweepHub;
 import frc.robot.autos.RightSideNeutralTwiceWithLoop;
 import frc.robot.autos.RightSideShallowSemicircle;
@@ -81,12 +83,13 @@ public class RobotContainer {
     public final Shooter S_Shooter = new Shooter();
     public final Intake S_Intake = new Intake();
     private final Map<String, AutoDefinition> autos = Map.of(
-        "RightSideToNeutralTwice",
+        "RightSideMiddleSemiCircleThenSweepHub",
         new AutoDefinition(
-            paths -> new RightSideToNeutralTwice(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-            AutoPaths.RightSideGatherFuel1,
-            new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
+            paths -> new RightSideMiddleSemiCircleThenSweepHub(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.RightSideSemiCircleThenSweepHub,
+             new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
         ),
+        
         "RightSideFullHopperThenClimb",
         new AutoDefinition(
             paths -> new RightSideFullHopperThenClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
@@ -95,8 +98,8 @@ public class RobotContainer {
         ),
         "LeftSideMiddleThenHubSweep",
         new AutoDefinition(
-            paths -> new LeftSideMiddleThenSweepHub(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-            AutoPaths.LeftSideMiddleThenSweepHub,
+            paths -> new LeftSideMiddleSemiCircleThenSweepHub(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+            AutoPaths.LeftSideSemiCircleThenSweepHub,
             new Pose2d(3.573, 5.3633, Rotation2d.fromDegrees(-90))
         ),
         "RightSideToNeutralTwiceWithLoop",
@@ -230,11 +233,11 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-       // joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
-       // joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
-       // joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
-       // joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
-       joystick.y().whileTrue(new AutoClimb(drivetrain, S_Climber, false));
+       joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
+       joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
+       joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
+       joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
+       //joystick.y().whileTrue(new AutoClimb(drivetrain, S_Climber, false));
 
 
        // joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));

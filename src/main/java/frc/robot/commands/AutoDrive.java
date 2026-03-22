@@ -55,7 +55,7 @@ public class AutoDrive extends Command {
  // ProfiledPIDController yController2 = new ProfiledPIDController(8, 0, 0, new TrapezoidProfile.Constraints(5, 1));
   ProfiledPIDController thetaController =
       new ProfiledPIDController(
-          4.0, 0.0, 0.0,
+          5.3, 0.0, 0.0,
           new TrapezoidProfile.Constraints(
               3 * Math.PI, Math.PI * 6));
 
@@ -75,6 +75,7 @@ public class AutoDrive extends Command {
 
   @Override
   public void initialize() {
+    ally = DriverStation.getAlliance();
     isDone = false;
     currentIndex = 0;
     currentPose = S_Swerve.getState().Pose;
@@ -166,6 +167,10 @@ public class AutoDrive extends Command {
         speeds,
         currentPose.getRotation()
     );
+    if (ally.get() == Alliance.Blue) {
+      fieldSpeeds.vxMetersPerSecond *= -1;
+      fieldSpeeds.vyMetersPerSecond *= -1;
+    }
     S_Swerve.setControl(
           drive.withVelocityX(-fieldSpeeds.vxMetersPerSecond) // Drive forward with negative Y (forward)
               .withVelocityY(-fieldSpeeds.vyMetersPerSecond) // Drive left with negative X (left)

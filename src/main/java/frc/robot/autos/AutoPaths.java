@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.Constants;
 import frc.robot.Constants.AutoWaypoint;
 /********************************************************
  * Steps for new autos
@@ -15,7 +16,11 @@ import frc.robot.Constants.AutoWaypoint;
  **********************************************************/
 
 public final class AutoPaths {
-    public static final double FIELD_WIDTH_METERS = 8.042656;
+    static double rightSideReturnDefaultPoseX = 5.841;
+    static double rightSideReturnDefaultPoseY = 2.47;
+
+    static double leftSideReturnDefaultPoseX = 5.841;
+    static double leftSideReturnDefaultPoseY = 5.622;
     public static final List<AutoWaypoint[]> RightSideGatherFuel1 = List.of(
         // First segment
         new AutoWaypoint[] {
@@ -93,24 +98,25 @@ public final class AutoPaths {
     public static final List<AutoWaypoint[]> LeftSideMiddleThenSweepHub = List.of(
         new AutoWaypoint[] {
             //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(7.240 , 5.064, new Rotation2d().fromDegrees(155)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(7.620 , 4.900, new Rotation2d().fromDegrees(135)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(7.950 , 4.550, new Rotation2d().fromDegrees(110)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(8.060 , 4.100, new Rotation2d().fromDegrees(80)), 2.5, 2.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(7.980 , 3.850, new Rotation2d().fromDegrees(55)), 2.5, 2.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(7.840 , 3.751, new Rotation2d().fromDegrees(28.3)), 2.5, 4.0, Math.PI * 3, 0.08, 6)
+            new AutoWaypoint(new Pose2d(7.240 , 5.064, new Rotation2d().fromDegrees(155)), 1.0, 1.0, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.620 , 4.900, new Rotation2d().fromDegrees(135)), 1.5, 1.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(7.950 , 4.550, new Rotation2d().fromDegrees(110)), 1.5, 1.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(8.060 , 4.100, new Rotation2d().fromDegrees(80)), 2.5, 1.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(7.980 , 3.850, new Rotation2d().fromDegrees(55)), 2.5, 1.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(7.840 , 3.751, new Rotation2d().fromDegrees(28.3)), 2.5, 1.0, Math.PI * 3, 0.08, 6)
         },
         new AutoWaypoint[] {
-            new AutoWaypoint(new Pose2d(5.869, 5.541, new Rotation2d().fromDegrees(-45)), 1.0, 4.2, Math.PI * 3, 0.02, 2)
+            new AutoWaypoint(new Pose2d(5.869, leftSideReturnDefaultPoseY, new Rotation2d().fromDegrees(90)), 0.0, 4.2, Math.PI * 3, 0.05, 2)
         },
         //Sweep hub section
         new AutoWaypoint[] {
             //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(5.857 , 4.812, new Rotation2d().fromDegrees(90)), 1.0, 1.5, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(5.857 , 3.501, new Rotation2d().fromDegrees(90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(6.2455 , 3.189, new Rotation2d().fromDegrees(-135)), 1.5, 2.0, Math.PI * 2, 0.08, 6),
-            new AutoWaypoint(new Pose2d(6.634 , 3.889, new Rotation2d().fromDegrees(-90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(6.440 , 4.942, new Rotation2d().fromDegrees(-90)), 2.5, 2.0, Math.PI * 3, 0.08, 6)
+            new AutoWaypoint(new Pose2d(7.029 , 5.169, new Rotation2d().fromDegrees(-125)), 0.0, 0.0, Math.PI * 3, 100.0, 0.04),
+            new AutoWaypoint(new Pose2d(6.934 , 4.116, new Rotation2d().fromDegrees(90)), 1.5, 3.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(6.934 , 3.468, new Rotation2d().fromDegrees(90)), 1.5, 3.0, Math.PI * 2, 0.08, 6),
+            new AutoWaypoint(new Pose2d(6.532 , 3.168, new Rotation2d().fromDegrees(0)), 1.5, 3.0, Math.PI * 2, 0.08, 6),
+            new AutoWaypoint(new Pose2d(6.13 , 3.468, new Rotation2d().fromDegrees(-90)), 0.0, 2.5, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(6.13 , leftSideReturnDefaultPoseY, new Rotation2d().fromDegrees(-90)), 0.0, 3.0, Math.PI * 3, 0.08, 6)
         }
     );
     public static final List<AutoWaypoint[]> LeftSideHubSweepCorralClimb = List.of(
@@ -242,12 +248,12 @@ public final class AutoPaths {
             //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
             new AutoWaypoint(new Pose2d(7.3950 , 3.041, new Rotation2d().fromDegrees(180)), 1.0, 3.5, Math.PI * 3, 0.15, 12),
             new AutoWaypoint(new Pose2d(8.108 , 3.041, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(8.529 , 2.870, new Rotation2d().fromDegrees(90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(8.108 , 2.699, new Rotation2d().fromDegrees(0)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
-            new AutoWaypoint(new Pose2d(7.039 , 2.699, new Rotation2d().fromDegrees(45)), 2.5, 4.0, Math.PI * 3, 0.08, 6)
+            new AutoWaypoint(new Pose2d(8.529 , 2.570, new Rotation2d().fromDegrees(90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(8.108 , 2.399, new Rotation2d().fromDegrees(0)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(7.039 , 2.399, new Rotation2d().fromDegrees(45)), 2.5, 4.0, Math.PI * 3, 0.08, 6)
         },
         new AutoWaypoint[] {
-            new AutoWaypoint(new Pose2d(5.841, 2.531, new Rotation2d().fromDegrees(45)), 1.0, 4.2, Math.PI * 3, 0.02, 2)
+            new AutoWaypoint(new Pose2d(5.841, 2.47, new Rotation2d().fromDegrees(90)), 0.0, 4.2, Math.PI * 3, 0.02, 2)
         },
         //Sweep hub section
         new AutoWaypoint[] {
@@ -261,6 +267,23 @@ public final class AutoPaths {
             new AutoWaypoint(new Pose2d(7.541 , 3.565, new Rotation2d().fromDegrees(0)), 2.5, 2.0, Math.PI * 3, 0.08, 6)
         }
     );
+     public static final List<AutoWaypoint[]> RightSideSemiCircleThenSweepHub = List.of(
+        new AutoWaypoint[] {
+            //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+           new AutoWaypoint(new Pose2d(7.3950 , 3.141, new Rotation2d().fromDegrees(130)), 0.0, 0.0, Math.PI * 3, 100, 0.087),
+            //new AutoWaypoint(new Pose2d(7.3950 , 3.141, new Rotation2d().fromDegrees(180)), 1.0, 3.5, Math.PI * 3, 0.08, 0.087),
+            new AutoWaypoint(new Pose2d(8.108 , 3.141, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(8.529 , 2.82, new Rotation2d().fromDegrees(90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(8.108 , 2.499, new Rotation2d().fromDegrees(0)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(7.039 , 2.499, new Rotation2d().fromDegrees(45)), 2.5, 4.0, Math.PI * 3, 0.08, 6)
+        },
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(5.841, 2.47, new Rotation2d().fromDegrees(90)), 0.0, 4.2, Math.PI * 3, 0.07, 2)
+        },
+        //Sweep hub section
+        mirrorBlueRightToLeft(LeftSideMiddleThenSweepHub.get(2), Constants.FIELD_WIDTH_METERS)
+    );
+    
 
     public static final List<AutoWaypoint[]> RightSideDisruption = List.of(
         new AutoWaypoint[] {
@@ -290,11 +313,16 @@ public final class AutoPaths {
     
     public static final List<AutoWaypoint[]> LeftSideGatherFuel1 =
     RightSideGatherFuel1.stream()
-        .map(segment -> mirrorBlueRightToLeft(segment, FIELD_WIDTH_METERS))
+        .map(segment -> mirrorBlueRightToLeft(segment, Constants.FIELD_WIDTH_METERS))
+        .toList();
+
+    public static final List<AutoWaypoint[]> LeftSideSemiCircleThenSweepHub =
+    RightSideSemiCircleThenSweepHub.stream()
+        .map(segment -> mirrorBlueRightToLeft(segment, Constants.FIELD_WIDTH_METERS))
         .toList();
 
     public static final List<AutoWaypoint[]> RightSideMiddleThenSweepHub = LeftSideMiddleThenSweepHub.stream()
-        .map(segment -> mirrorBlueRightToLeft(segment, FIELD_WIDTH_METERS))
+        .map(segment -> mirrorBlueRightToLeft(segment, Constants.FIELD_WIDTH_METERS))
         .toList();
 
     public static Pose2d[] extractPoses(List<AutoWaypoint[]> waypointSegments) {

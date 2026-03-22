@@ -21,7 +21,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveOverBump extends Command {
   /** Creates a new DriveOverBump. */
-   PhoenixPIDController rController = new PhoenixPIDController(0.14, 0, 0.0); //14.1, 0, 0.15
+   PhoenixPIDController rController = new PhoenixPIDController(0.15, 0, 0.0); //14.1, 0, 0.15
   // Optional<Alliance> ally = DriverStation.getAlliance();
   CommandSwerveDrivetrain S_Swerve;
   double angleToTarget;
@@ -41,7 +41,7 @@ public class DriveOverBump extends Command {
   0 & 1 are used for right side auto (0 goes to middle zone, 1 comes back)
   2 & 3 are used for left side auto (2 goes to middle zone and 3 comes back)
   */
-  double[] directionTypeRotationAngles = {135, 45, -135,-45};
+  double[] directionTypeRotationAngles = {90, 90, -90,-90}; //135, 45, -135, -45
   // private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
   //           .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
   //           .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -61,10 +61,10 @@ public class DriveOverBump extends Command {
      Optional<Alliance> ally = DriverStation.getAlliance();
     rController.enableContinuousInput(-180, 180);
     if (directionType == 0 || directionType == 2) {
-      xSpeed = 3.75;
+      xSpeed = 3.25;
     }
     else {
-      xSpeed = -3.75;
+      xSpeed = -3.25;
     }
     state = 0;
     cnt = 0;
@@ -72,10 +72,10 @@ public class DriveOverBump extends Command {
      if (ally.isPresent()) {
       if (ally.get() == Alliance.Red) {
         //xSpeed *= -1;
-        directionTypeRotationAngles[0] = -45;
-        directionTypeRotationAngles[1] = -135;
-        directionTypeRotationAngles[2] = 45;
-        directionTypeRotationAngles[3] = 135;
+        directionTypeRotationAngles[0] = -90; //was -45
+        directionTypeRotationAngles[1] = -90; //was -135
+        directionTypeRotationAngles[2] = 90; //was 45
+        directionTypeRotationAngles[3] = 90; //was 135
       }
     }
   }
