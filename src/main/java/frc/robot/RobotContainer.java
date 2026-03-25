@@ -43,6 +43,7 @@ import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoClimb;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
+import frc.robot.commands.ManualShot;
 import frc.robot.commands.PassFuel;
 import frc.robot.commands.RotateToAngleUntilTagsSeen;
 import frc.robot.commands.Shoot;
@@ -71,6 +72,7 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(Constants.SwerveConstants.MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController operatorJoystick = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final SendableChooser<String> autoChooser = new SendableChooser<>();
@@ -194,11 +196,11 @@ public class RobotContainer {
 
        // joystick.povUp().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPM(500)));
        // joystick.povUp().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
-       joystick.povUp().whileTrue(new RotateToAngleUntilTagsSeen(drivetrain, Constants.RightSideRotateToSeeTagsTarget));
-       joystick.povDown().whileTrue(new RotateToAngleUntilTagsSeen(drivetrain, Constants.LeftSideRotateToSeeTagsTarget));
-//
-       joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.extendClimber()));
-       joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.retractClimber()));
+//        joystick.povUp().whileTrue(new RotateToAngleUntilTagsSeen(drivetrain, Constants.RightSideRotateToSeeTagsTarget));
+//        joystick.povDown().whileTrue(new RotateToAngleUntilTagsSeen(drivetrain, Constants.LeftSideRotateToSeeTagsTarget));
+// //
+    //    joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.extendClimber()));
+    //    joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.retractClimber()));
 
         //joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(70)));//up position (placeholder value)
         //joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
@@ -271,10 +273,10 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-       joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
-       joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
-       joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
-       joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
+    //    joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
+    //    joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
+    //    joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
+    //    joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
        //joystick.y().whileTrue(new AutoClimb(drivetrain, S_Climber, false));
 
 
@@ -297,6 +299,11 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(new InstantCommand(() -> S_Hopper.stopFloor()));
 
         joystick.leftTrigger().whileTrue(new PassFuel(drivetrain,S_Shooter,S_Hopper,joystick));
+
+        operatorJoystick.rightTrigger().whileTrue(new ManualShot(S_Shooter, S_Hopper, Constants.ShooterConstants.trenchShotRPS, Constants.ShooterConstants.hoodStage1Position));
+        operatorJoystick.leftTrigger().whileTrue(new ManualShot(S_Shooter, S_Hopper, Constants.ShooterConstants.towerShotRPS, Constants.ShooterConstants.hoodStage1Position));
+        operatorJoystick.x().whileTrue(new ManualShot(S_Shooter, S_Hopper, Constants.ShooterConstants.midwayShotRPS, Constants.ShooterConstants.hoodRetractPosition));
+        operatorJoystick.leftBumper().onTrue(new InstantCommand(() -> S_Intake.stopDeployMotor()));
     }
 
     public Command getAutonomousCommand() {

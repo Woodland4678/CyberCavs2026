@@ -28,6 +28,9 @@ public final class Constants {
         public static final double hoodStage2Position = 18.0;
         public static final double idleRPS = 45;
         public static final double feederShootRPS = 95;
+        public static final double trenchShotRPS = 47.2;
+        public static final double towerShotRPS = 45.5;
+        public static final double midwayShotRPS = 44.5;
 
     }
     public static class HopperConstants {

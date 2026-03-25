@@ -142,4 +142,7 @@ public class Intake extends SubsystemBase {
   public boolean isIntakeDeployReady() {
     return !deployMotor.hasActiveFault();
   }
+  public void stopDeployMotor() {
+    deployMotor.stopMotor();
+  }
 }
