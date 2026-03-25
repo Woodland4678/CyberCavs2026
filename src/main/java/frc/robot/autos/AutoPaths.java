@@ -96,7 +96,7 @@ public final class AutoPaths {
     public static final List<AutoWaypoint[]> LeftSideMiddleThenSweepHub = List.of(
         new AutoWaypoint[] {
             //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(7.240 , 5.064, new Rotation2d().fromDegrees(155)), 1.0, 1.0, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.240 , 5.064, new Rotation2d().fromDegrees(155)), 1.0, 2.5, Math.PI * 3, 0.15, 12),
             new AutoWaypoint(new Pose2d(7.620 , 4.900, new Rotation2d().fromDegrees(135)), 1.5, 1.0, Math.PI * 3, 0.08, 6),
             new AutoWaypoint(new Pose2d(7.950 , 4.550, new Rotation2d().fromDegrees(110)), 1.5, 1.0, Math.PI * 3, 0.08, 6),
             new AutoWaypoint(new Pose2d(8.060 , 4.100, new Rotation2d().fromDegrees(80)), 2.5, 1.0, Math.PI * 3, 0.08, 6),
@@ -140,6 +140,7 @@ public final class AutoPaths {
             new AutoWaypoint((leftReturnPose), 0.0, 3.0, Math.PI * 3, 0.10, 6)
         }
     );
+    
     public static final List<AutoWaypoint[]> LeftSideDisturbedMiddlePathOption2 = List.of(
         new AutoWaypoint[] {
             //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
@@ -162,6 +163,7 @@ public final class AutoPaths {
             new AutoWaypoint((leftReturnPose), 0.0, 3.0, Math.PI * 3, 0.10, 6)
         }
     );
+    
     public static final List<AutoWaypoint[]> LeftSideHubSweepCorralClimb = List.of(
         // First segment
         new AutoWaypoint[] {
@@ -222,6 +224,15 @@ public final class AutoPaths {
             new AutoWaypoint(new Pose2d(1.033, 4.968, new Rotation2d().fromDegrees(0)), 0.0, 2.0, Math.PI * 3, 0.01, 1)
         }
     );
+    public static final List<AutoWaypoint[]> LeftSideDisturbedMiddlePathOption2ThenDepot = List.of(
+        LeftSideDisturbedMiddlePathOption2.get(0),
+        new AutoWaypoint[] {
+            new AutoWaypoint((leftReturnPose), 0.0, 4.0, Math.PI * 3, 0.05, 0.0875)
+        },
+        //Sweep hub section
+        LeftSideTestCorral.get(0),
+        LeftSideTestCorral.get(1)
+    );
 
     public static final List<AutoWaypoint[]> DriveToClimberLeftSide = List.of(
         // First segment
@@ -261,6 +272,25 @@ public final class AutoPaths {
             new AutoWaypoint(new Pose2d(8.157 , 4.109, new Rotation2d().fromDegrees(90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
             new AutoWaypoint(new Pose2d(7.849 , 3.565, new Rotation2d().fromDegrees(45)), 1.5, 2.0, Math.PI * 2, 0.08, 6),
             new AutoWaypoint(new Pose2d(7.541 , 3.565, new Rotation2d().fromDegrees(0)), 2.5, 2.0, Math.PI * 3, 0.08, 6)
+        }
+    );
+    public static final List<AutoWaypoint[]> RightSideFullHopperThenFill = List.of(
+        new AutoWaypoint[] {
+            //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.039 , 3.258, new Rotation2d().fromDegrees(125)), 1.0, 3.5, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(8.189 , 2.172, new Rotation2d().fromDegrees(160)), 0.0, 1.0, Math.PI * 3, 0.08, 6),
+        },
+        new AutoWaypoint[] {
+            new AutoWaypoint((rightReturnPose), 0.0, 4.0, Math.PI * 3, 0.05, 0.0875)
+        },
+        //Sweep hub section
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(6.242 , 2.793, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+           new AutoWaypoint(new Pose2d(6.934 , 3.953, new Rotation2d().fromDegrees(90)), 1.5, 3.0, Math.PI * 3, 0.10, 6),
+            new AutoWaypoint(new Pose2d(6.934 , 4.601, new Rotation2d().fromDegrees(90)), 1.5, 3.0, Math.PI * 2, 0.10, 6),
+           new AutoWaypoint(new Pose2d(6.532 , 4.901, new Rotation2d().fromDegrees(0)), 1.5, 3.0, Math.PI * 2, 0.10, 6),
+           new AutoWaypoint(new Pose2d(6.13 , 4.601, new Rotation2d().fromDegrees(-90)), 0.0, 2.5, Math.PI * 3, 0.10, 6),
+           // new AutoWaypoint((rightReturnPose), 0.0, 3.0, Math.PI * 3, 0.06, 0.0875)
         }
     );
      public static final List<AutoWaypoint[]> RightSideSemiCircleThenSweepHub = List.of(

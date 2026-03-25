@@ -145,7 +145,7 @@ public class Shoot extends Command {
         boolean shooterReady = shooterReadyDebounce.calculate(rawReady && rotationReady && !S_Swerve.isOdometryLikelyBad());
         double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
         if (shooterReady) {
-          S_Shooter.setFeederSpeed(95);
+          S_Shooter.setFeederSpeed(Constants.ShooterConstants.feederShootRPS);
         }
         // else if (error > 8.0) {//slow down if shooter not within speed
         //   S_Shooter.stopFeeder();

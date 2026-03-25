@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.autos;
+package frc.robot.autos.Old;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,32 +39,47 @@ import frc.robot.subsystems.Shooter;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class RightSideNeutralTwiceWithLoop extends SequentialCommandGroup {
+public class LeftSideMiddleThenSweepHub extends SequentialCommandGroup {
   /** Creates a new RightSideToNeutralTwice. */
   CommandSwerveDrivetrain S_Swerve;
   Hopper S_Hopper;
   Intake S_Intake;
   Shooter S_Shooter;
   
-  public RightSideNeutralTwiceWithLoop(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<AutoWaypoint[]> waypoints) {
+  
+  public LeftSideMiddleThenSweepHub(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<AutoWaypoint[]> waypoints) {
     this.S_Swerve = S_Swerve;
     this.S_Hopper = S_Hopper;
     this.S_Intake = S_Intake;
-    this.S_Shooter = S_Shooter;
     addRequirements(S_Swerve);
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
     addCommands(
-      new DriveOverBump(S_Swerve,0),
-      new AutoDrive(S_Swerve, waypoints.get(0)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())),
-      new DriveOverBump(S_Swerve, 1).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
-      new Shoot(S_Swerve, S_Shooter, S_Hopper).withTimeout(4),
-      new DriveOverBump(S_Swerve, 1),
-      new AutoDrive(S_Swerve, waypoints.get(1)).alongWith(new InstantCommand(() -> S_Intake.deployIntake())),
-      new DriveOverBump(S_Swerve, 1).alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
-      new AutoAim(S_Swerve).withTimeout(3.5)
-
+      new DriveOverBump(S_Swerve, 2)
+        .withTimeout(1.5), 
+      new AutoDrive(S_Swerve, waypoints.get(0))
+        .withTimeout(3.5)
+        .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
+        .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
+      new AutoDrive(S_Swerve, waypoints.get(1)),
+      new DriveOverBump(S_Swerve,3)
+        .withTimeout(2)
+        .alongWith(new InstantCommand(() -> S_Intake.retractIntake())), 
+      new Shoot(S_Swerve, S_Shooter, S_Hopper)
+        .withTimeout(2.75),
+      new DriveOverBump(S_Swerve, 2)
+        .withTimeout(1.5), 
+      new AutoDrive(S_Swerve, waypoints.get(2))
+        .withTimeout(3.5)
+        .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
+        .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
+      new AutoDrive(S_Swerve, waypoints.get(1)),
+      new DriveOverBump(S_Swerve,3)
+        .withTimeout(2)
+        .alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
+      new Shoot(S_Swerve, S_Shooter, S_Hopper)
+      
     );
   }
   

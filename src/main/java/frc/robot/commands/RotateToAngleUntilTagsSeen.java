@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.LEDStrip;
+import frc.robot.LEDStrip.LEDModes;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -23,6 +25,8 @@ public class RotateToAngleUntilTagsSeen extends Command {
   CommandSwerveDrivetrain S_Swerve;
   double angle;
   boolean isDone = false;
+      private Command m_autonomousCommand;
+    private LEDStrip ledStrip;
   PhoenixPIDController rController = new PhoenixPIDController(0.15, 0, 0.0); //14.1, 0, 0.15
    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -30,6 +34,8 @@ public class RotateToAngleUntilTagsSeen extends Command {
   public RotateToAngleUntilTagsSeen(CommandSwerveDrivetrain S_Swerve, double angle) {
     this.angle = angle;
     this.S_Swerve = S_Swerve;
+     ledStrip = LEDStrip.getInstance();
+        ledStrip.setLEDMode(LEDModes.SOLIDRED); 
     addRequirements(S_Swerve);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -74,6 +80,7 @@ public class RotateToAngleUntilTagsSeen extends Command {
               .withRotationalRate(0)
               .withDriveRequestType(DriveRequestType.Velocity) // Drive counterclockwise with negative X (left)
       );
+      ledStrip.setLEDMode(LEDModes.SOLIDBLUE); // SDW
   }
 
   // Returns true when the command should end.

@@ -31,26 +31,20 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.AutoWaypoint;
 import frc.robot.autos.AutoPaths;
-import frc.robot.autos.LeftSideDisturbedMiddlePathOption1;
-import frc.robot.autos.LeftSideDisturbedMiddlePathOption2;
+import frc.robot.autos.LeftSideDoubleRunToMiddleBase;
 import frc.robot.autos.LeftSideHubSweepCorralClimb;
 import frc.robot.autos.LeftSideMiddleCorralClimb;
-import frc.robot.autos.LeftSideMiddleSemiCircleThenSweepHub;
-import frc.robot.autos.LeftSideMiddleThenSweepHub;
 import frc.robot.autos.LeftSideSweepWallCorralClimb;
-import frc.robot.autos.LeftSideToNeutralTwice;
 import frc.robot.autos.RightSideDisruption;
+import frc.robot.autos.RightSideDoubleRunToMiddleBase;
 import frc.robot.autos.RightSideFullHopperThenClimb;
-import frc.robot.autos.RightSideMiddleSemiCircleThenSweepHub;
-import frc.robot.autos.RightSideMiddleThenSweepHub;
-import frc.robot.autos.RightSideNeutralTwiceWithLoop;
-import frc.robot.autos.RightSideShallowSemicircle;
-import frc.robot.autos.RightSideToNeutralTwice;
+import frc.robot.autos.RightSideFullHopperThenFill;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoClimb;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
 import frc.robot.commands.PassFuel;
+import frc.robot.commands.RotateToAngleUntilTagsSeen;
 import frc.robot.commands.Shoot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Climber;
@@ -87,7 +81,7 @@ public class RobotContainer {
     private final Map<String, AutoDefinition> autos = Map.ofEntries(
         Map.entry("RightSideMiddleSemiCircleThenSweepHub",
             new AutoDefinition(
-                paths -> new RightSideMiddleSemiCircleThenSweepHub(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                paths -> new RightSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
                 AutoPaths.RightSideSemiCircleThenSweepHub,
                 new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
             )
@@ -100,18 +94,32 @@ public class RobotContainer {
                 new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
             )
         ),
+        Map.entry("RightSideFullHopperThenFill",
+            new AutoDefinition(
+                paths -> new RightSideFullHopperThenFill(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                AutoPaths.RightSideFullHopperThenFill,
+                new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
+            )
+        ),
 
         Map.entry("LeftSideMiddleThenHubSweep",
             new AutoDefinition(
-                paths -> new LeftSideMiddleSemiCircleThenSweepHub(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
                 AutoPaths.LeftSideSemiCircleThenSweepHub,
+                new Pose2d(3.573, 5.3633, Rotation2d.fromDegrees(-90))
+            )
+        ),
+          Map.entry("LeftSideMiddleThenHubSweepOption2",
+            new AutoDefinition(
+                paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                AutoPaths.LeftSideMiddleThenSweepHub,
                 new Pose2d(3.573, 5.3633, Rotation2d.fromDegrees(-90))
             )
         ),
 
         Map.entry("LeftSideDisturbedMiddlePathOption1",
             new AutoDefinition(
-                paths -> new LeftSideDisturbedMiddlePathOption1(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
                 AutoPaths.LeftSideDisturbedMiddlePathOption1,
                 new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
             )
@@ -119,7 +127,7 @@ public class RobotContainer {
 
         Map.entry("LeftSideDisturbedMiddlePathOption2",
             new AutoDefinition(
-                paths -> new LeftSideDisturbedMiddlePathOption2(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
                 AutoPaths.LeftSideDisturbedMiddlePathOption2,
                 new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
             )
@@ -151,7 +159,7 @@ public class RobotContainer {
 
         Map.entry("RightSideMiddleThenSweepHub",
             new AutoDefinition(
-                paths -> new RightSideMiddleThenSweepHub(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                paths -> new RightSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
                 AutoPaths.RightSideMiddleThenSweepHub,
                 new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
             )
@@ -159,7 +167,7 @@ public class RobotContainer {
 
         Map.entry("RightSideShallowSemicircle",
             new AutoDefinition(
-                paths -> new RightSideShallowSemicircle(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                paths -> new RightSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
                 AutoPaths.RightSideShallowSemicircle,
                 new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
             )
@@ -186,6 +194,8 @@ public class RobotContainer {
 
        // joystick.povUp().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPM(500)));
        // joystick.povUp().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
+       joystick.povUp().whileTrue(new RotateToAngleUntilTagsSeen(drivetrain, Constants.RightSideRotateToSeeTagsTarget));
+       joystick.povDown().whileTrue(new RotateToAngleUntilTagsSeen(drivetrain, Constants.LeftSideRotateToSeeTagsTarget));
 //
        joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.extendClimber()));
        joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.retractClimber()));
@@ -213,8 +223,8 @@ public class RobotContainer {
         
         
         joystick.rightTrigger().whileTrue(new Shoot(drivetrain,S_Shooter, S_Hopper));
-        joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelSpeed(60)));
-        joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
+        //joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelSpeed(40)));
+        //joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
 
         //joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterVoltage(2)));
         //joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));

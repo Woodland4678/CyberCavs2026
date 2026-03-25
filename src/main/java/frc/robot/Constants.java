@@ -11,14 +11,14 @@ public final class Constants {
     public static final double FIELD_WIDTH_METERS = 8.069;
     public static final double FIELD_LENGTH_METERS = 16.54;
 
-    public static final double RightSideRotateToSeeTagsTarget = 155;
-    public static final double LeftSideRotateToSeeTagsTarget = -45;
+    public static final double RightSideRotateToSeeTagsTarget = 135;
+    public static final double LeftSideRotateToSeeTagsTarget = -135;
     public static class ClimberConstants {
         public static final double extendPosition = 0;
         public static final double retractPosition = 33.0;
     }
     public static class IntakeConstants {
-        public static final double deployPosition = 49.5;
+        public static final double deployPosition = 63.4;
         public static final double retractPosition = 0;
         public static final double IntakeRPS = 90;
     }
@@ -27,6 +27,7 @@ public final class Constants {
         public static final double hoodStage1Position = 10.5;
         public static final double hoodStage2Position = 18.0;
         public static final double idleRPS = 45;
+        public static final double feederShootRPS = 95;
 
     }
     public static class HopperConstants {
@@ -34,7 +35,7 @@ public final class Constants {
     }
     public static class SwerveConstants {
         public static double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-        public static double MaxAngularRate = RotationsPerSecond.of(1.85).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+        public static double MaxAngularRate = RotationsPerSecond.of(2.0).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
         public static double RightCLimbLidar = 66.8;
         public static double LeftCLimbLidar = 58.8;
     }

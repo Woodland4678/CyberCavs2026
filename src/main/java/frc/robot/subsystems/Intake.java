@@ -85,7 +85,8 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putBoolean("Intake Deploy Status = ", isIntakeDeployed());
     SmartDashboard.putNumber("IntakeWheel Speed", getIntakeWheelSpeed());
     SmartDashboard.putNumber("Intake Positiion", getintakePosition());
-
+     SmartDashboard.putNumber("Intake Leader supply current", intakeWheels.getSupplyCurrent().getValueAsDouble());
+     SmartDashboard.putNumber("Intake Follower supply current", intakeWheelsFollower.getSupplyCurrent().getValueAsDouble());
 
   }
 
