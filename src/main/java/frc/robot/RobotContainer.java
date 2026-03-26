@@ -31,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.AutoWaypoint;
 import frc.robot.autos.AutoPaths;
+import frc.robot.autos.LeftSideDisruption;
+import frc.robot.autos.LeftSideDisruptionDepot;
 import frc.robot.autos.LeftSideDoubleRunToMiddleBase;
 import frc.robot.autos.LeftSideHubSweepCorralClimb;
 import frc.robot.autos.LeftSideMiddleCorralClimb;
@@ -81,83 +83,83 @@ public class RobotContainer {
     public final Shooter S_Shooter = new Shooter();
     public final Intake S_Intake = new Intake();
     private final Map<String, AutoDefinition> autos = Map.ofEntries(
-        Map.entry("RightSideMiddleSemiCircleThenSweepHub",
-            new AutoDefinition(
-                paths -> new RightSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-                AutoPaths.RightSideSemiCircleThenSweepHub,
-                new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
-            )
-        ),
+        // Map.entry("RightSideMiddleSemiCircleThenSweepHub",
+        //     new AutoDefinition(
+        //         paths -> new RightSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+        //         AutoPaths.RightSideSemiCircleThenSweepHub,
+        //         new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
+        //     )
+        // ),
 
-        Map.entry("RightSideFullHopperThenClimb",
-            new AutoDefinition(
-                paths -> new RightSideFullHopperThenClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-                AutoPaths.RightSideFullHopperThenClimb,
-                new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
-            )
-        ),
-        Map.entry("RightSideFullHopperThenFill",
-            new AutoDefinition(
-                paths -> new RightSideFullHopperThenFill(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-                AutoPaths.RightSideFullHopperThenFill,
-                new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
-            )
-        ),
+        // Map.entry("RightSideFullHopperThenClimb",
+        //     new AutoDefinition(
+        //         paths -> new RightSideFullHopperThenClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+        //         AutoPaths.RightSideFullHopperThenClimb,
+        //         new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
+        //     )
+        // ),
+        // Map.entry("RightSideFullHopperThenFill",
+        //     new AutoDefinition(
+        //         paths -> new RightSideFullHopperThenFill(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+        //         AutoPaths.RightSideFullHopperThenFill,
+        //         new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
+        //     )
+        // ),
 
         Map.entry("LeftSideMiddleThenHubSweep",
-            new AutoDefinition(
-                paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-                AutoPaths.LeftSideSemiCircleThenSweepHub,
-                new Pose2d(3.573, 5.3633, Rotation2d.fromDegrees(-90))
-            )
-        ),
-          Map.entry("LeftSideMiddleThenHubSweepOption2",
             new AutoDefinition(
                 paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
                 AutoPaths.LeftSideMiddleThenSweepHub,
                 new Pose2d(3.573, 5.3633, Rotation2d.fromDegrees(-90))
             )
         ),
+        //   Map.entry("LeftSideMiddleThenHubSweepOption2",
+        //     new AutoDefinition(
+        //         paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+        //         AutoPaths.LeftSideMiddleThenSweepHub,
+        //         new Pose2d(3.573, 5.3633, Rotation2d.fromDegrees(-90))
+        //     )
+        // ),
 
-        Map.entry("LeftSideDisturbedMiddlePathOption1",
-            new AutoDefinition(
-                paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-                AutoPaths.LeftSideDisturbedMiddlePathOption1,
-                new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
-            )
-        ),
+        // Map.entry("LeftSideDisturbedMiddlePathOption1",
+        //     new AutoDefinition(
+        //         paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+        //         AutoPaths.LeftSideDisturbedMiddlePathOption1,
+        //         new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
+        //     )
+        // ),
 
-        Map.entry("LeftSideDisturbedMiddlePathOption2",
-            new AutoDefinition(
-                paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-                AutoPaths.LeftSideDisturbedMiddlePathOption2,
-                new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
-            )
-        ),
+        // Map.entry("LeftSideDisturbedMiddlePathOption2",
+        //     new AutoDefinition(
+        //         paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+        //         AutoPaths.LeftSideDisturbedMiddlePathOption2,
+        //         new Pose2d(3.573, 2.579, Rotation2d.fromDegrees(90))
+        //     )
+        // ),
 
-        Map.entry("LeftSideMiddleOnceCorralClimb",
-            new AutoDefinition(
-                paths -> new LeftSideMiddleCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-                AutoPaths.LeftSideMiddleCorralClimbPaths,
-                new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
-            )
-        ),
+        // Map.entry("LeftSideMiddleOnceCorralClimb",
+        //     new AutoDefinition(
+        //         paths -> new LeftSideMiddleCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+        //         AutoPaths.LeftSideMiddleCorralClimbPaths,
+        //         new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
+        //     )
+        // ),
 
-        Map.entry("LeftSideHubSweepCorralClimb",
-            new AutoDefinition(
-                paths -> new LeftSideHubSweepCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-                AutoPaths.LeftSideHubSweepCorralClimb,
-                new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
-            )
-        ),
+        // Map.entry("LeftSideHubSweepCorralClimb",
+        //     new AutoDefinition(
+        //         paths -> new LeftSideHubSweepCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+        //         AutoPaths.LeftSideHubSweepCorralClimb,
+        //         new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
+        //     )
+        // ),
 
-        Map.entry("LeftSideSweepWallCorralClimb",
-            new AutoDefinition(
-                paths -> new LeftSideSweepWallCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
-                AutoPaths.LeftSideSweepWallCorral,
-                new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
-            )
-        ),
+        // Map.entry("LeftSideSweepWallCorralClimb",
+        //     new AutoDefinition(
+        //         paths -> new LeftSideSweepWallCorralClimb(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+        //         AutoPaths.LeftSideSweepWallCorral,
+        //         new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
+        //     )
+        // ),
 
         Map.entry("RightSideMiddleThenSweepHub",
             new AutoDefinition(
@@ -174,12 +176,33 @@ public class RobotContainer {
                 new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
             )
         ),
+         Map.entry("LeftSideShallowSemicircle",
+            new AutoDefinition(
+                paths -> new LeftSideDoubleRunToMiddleBase(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                AutoPaths.LeftSideShallowSemicircle,
+                new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
+            )
+        ),
 
         Map.entry("RightSideDisruption",
             new AutoDefinition(
                 paths -> new RightSideDisruption(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
                 AutoPaths.RightSideDisruption,
                 new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
+            )
+        ),
+        Map.entry("LeftSideDisruption",
+            new AutoDefinition(
+                paths -> new LeftSideDisruption(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                AutoPaths.LeftSideDisruption,
+                new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
+            )
+        ),
+        Map.entry("LeftSideDisruptionDepot",
+            new AutoDefinition(
+                paths -> new LeftSideDisruptionDepot(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                AutoPaths.LeftSideDisruptionDepot,
+                new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
             )
         )
     );
@@ -282,7 +305,7 @@ public class RobotContainer {
 
        // joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));
        // joystick.y().whileTrue(new DriveOverBump(drivetrain, 3));
-      // joystick.y().whileTrue(new AutoDrive(drivetrain,AutoPaths.rotateBlueToRed(AutoPaths.LeftSideTestCorral.get(0), Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS) ));
+       joystick.y().whileTrue(new AutoDrive(drivetrain,AutoPaths.LeftSideTestCorral2.get(0) ));
        //joystick.y().onTrue(new InstantCommand(() -> S_Intake.deployIntake()));
        //joystick.y().whileTrue(new AutoDrive(drivetrain, AutoPaths.DriveToClimberLeftSide.get(0)));
        // joystick.povUp().whileTrue(new DriveOverBump(drivetrain, 2));
@@ -292,7 +315,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         joystick.rightBumper().onTrue(new InstantCommand(() -> S_Intake.deployIntake()));
-        joystick.rightBumper().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(45)));
+        joystick.rightBumper().onTrue(new InstantCommand(() -> S_Hopper.setFloorRPS(30)));
         joystick.leftBumper().onTrue(new InstantCommand(() -> S_Intake.retractIntake()));
         joystick.leftBumper().whileTrue(new InstantCommand(() -> S_Intake.setIntakeWheelSpeed(Constants.IntakeConstants.IntakeRPS)));
         joystick.leftBumper().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));

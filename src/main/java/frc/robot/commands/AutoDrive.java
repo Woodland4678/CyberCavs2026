@@ -47,15 +47,15 @@ public class AutoDrive extends Command {
   double CRUISE_SPEED = 2.75;
   double ROTATION_TOLERANCE_RAD = Math.toRadians(8.0);
   boolean isDone = false;
-  PIDController xController = new PIDController(4.0, 0.0, 0.0); //8
-  PIDController yController = new PIDController(4.0, 0.0, 0.0); //8
+  PIDController xController = new PIDController(4.5, 0.0, 0.0); //8
+  PIDController yController = new PIDController(4.5, 0.0, 0.0); //8
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
  // ProfiledPIDController xController2 = new ProfiledPIDController(8, 0, 0, new TrapezoidProfile.Constraints(5, 1));
  // ProfiledPIDController yController2 = new ProfiledPIDController(8, 0, 0, new TrapezoidProfile.Constraints(5, 1));
   ProfiledPIDController thetaController =
       new ProfiledPIDController(
-          5.3, 0.0, 0.0,
+          4.3, 0.0, 0.0,
           new TrapezoidProfile.Constraints(
               3 * Math.PI, Math.PI * 6));
 

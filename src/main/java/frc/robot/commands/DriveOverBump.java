@@ -21,7 +21,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveOverBump extends Command {
   /** Creates a new DriveOverBump. */
-   PhoenixPIDController rController = new PhoenixPIDController(0.15, 0, 0.0); //14.1, 0, 0.15
+   PhoenixPIDController rController = new PhoenixPIDController(0.13, 0, 0.0); //14.1, 0, 0.15
   // Optional<Alliance> ally = DriverStation.getAlliance();
   CommandSwerveDrivetrain S_Swerve;
   double angleToTarget;
@@ -63,17 +63,17 @@ public class DriveOverBump extends Command {
      Optional<Alliance> ally = DriverStation.getAlliance();
     rController.enableContinuousInput(-180, 180);
     if (directionType == 0 || directionType == 2) {
-      xSpeed = 3.25;
+      xSpeed = -2.75;
     }
     else {
-      xSpeed = -3.25;
+      xSpeed = 2.75;
     }
     state = 0;
     cnt = 0;
     isDone = false;
      if (ally.isPresent()) {
       if (ally.get() == Alliance.Red) {
-        //xSpeed *= -1;
+        xSpeed *= -1;
         directionTypeRotationAngles[0] = -90; //was -45
         directionTypeRotationAngles[1] = -90; //was -135
         directionTypeRotationAngles[2] = 90; //was 45
@@ -90,6 +90,7 @@ public class DriveOverBump extends Command {
     }
     else { //not first time going across go sideways
       targetR = directionTypeRotationAngles[directionType];
+      xSpeed = xSpeed * 0.75;
     }
   }
 

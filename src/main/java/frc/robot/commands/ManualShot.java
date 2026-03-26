@@ -41,6 +41,7 @@ public class ManualShot extends Command {
     boolean shooterReady = shooterReadyDebounce.calculate(rawReady);
     if (shooterReady) {
       S_Shooter.setFeederSpeed(Constants.ShooterConstants.feederShootRPS);
+      S_Hopper.setFloorRPS(Constants.HopperConstants.floorShootSpeed);
     }
   }
 

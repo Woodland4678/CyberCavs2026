@@ -34,7 +34,7 @@ public final class Constants {
 
     }
     public static class HopperConstants {
-
+        public static final double floorShootSpeed = 112;
     }
     public static class SwerveConstants {
         public static double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
