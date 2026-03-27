@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -39,6 +40,13 @@ public class Hopper extends SubsystemBase {
     floorMotionPIDConfigs.kI = 0; // no output for integrated error
     floorMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
+    
+    CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs();
+    currentConfigs.StatorCurrentLimit = 80;
+    currentConfigs.StatorCurrentLimitEnable = true;
+    floorConfigs.withCurrentLimits(currentConfigs);
+
+   // floorConfigs.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(60));
 
     floorMotor.getConfigurator().apply(floorConfigs);
   }

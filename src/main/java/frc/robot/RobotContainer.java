@@ -296,16 +296,16 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    //    joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
-    //    joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
-    //    joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
-    //    joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
+       joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
+       joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
+       joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
+       joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
        //joystick.y().whileTrue(new AutoClimb(drivetrain, S_Climber, false));
 
 
        // joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));
        // joystick.y().whileTrue(new DriveOverBump(drivetrain, 3));
-       joystick.y().whileTrue(new AutoDrive(drivetrain,AutoPaths.LeftSideTestCorral2.get(0) ));
+      // joystick.y().whileTrue(new AutoDrive(drivetrain,AutoPaths.LeftSideTestCorral2.get(0) ));
        //joystick.y().onTrue(new InstantCommand(() -> S_Intake.deployIntake()));
        //joystick.y().whileTrue(new AutoDrive(drivetrain, AutoPaths.DriveToClimberLeftSide.get(0)));
        // joystick.povUp().whileTrue(new DriveOverBump(drivetrain, 2));

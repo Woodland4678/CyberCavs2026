@@ -234,19 +234,19 @@ public final class AutoPaths {
         new AutoWaypoint[] {
             //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
             new AutoWaypoint(new Pose2d(7.3950 , 3.041, new Rotation2d().fromDegrees(180)), 1.0, 3.5, Math.PI * 2, 0.15, 12),
-            new AutoWaypoint(new Pose2d(8.108 , 3.041, new Rotation2d().fromDegrees(180)), 1.0, 1.25, Math.PI * 2, 0.08, 6),
-            new AutoWaypoint(new Pose2d(8.529 , 2.570, new Rotation2d().fromDegrees(90)), 1.0, 1.25, Math.PI * 2, 0.08, 6),
-            new AutoWaypoint(new Pose2d(8.108 , 2.399, new Rotation2d().fromDegrees(0)), 1.0, 1.25, Math.PI * 2, 0.08, 6),
-            new AutoWaypoint(new Pose2d(7.039 , 2.399, new Rotation2d().fromDegrees(0)), 1.0, 1.5, Math.PI * 2, 0.08, 6)
+            new AutoWaypoint(new Pose2d(8.108 , 3.041, new Rotation2d().fromDegrees(180)), 1.0, 1.75, Math.PI * 2, 0.08, 6),
+            new AutoWaypoint(new Pose2d(8.529 , 2.570, new Rotation2d().fromDegrees(90)), 1.0, 1.75, Math.PI * 2, 0.08, 6),
+            new AutoWaypoint(new Pose2d(8.108 , 2.399, new Rotation2d().fromDegrees(0)), 1.0, 1.75, Math.PI * 2, 0.08, 6),
+            new AutoWaypoint(new Pose2d(7.039 , 2.399, new Rotation2d().fromDegrees(0)), 1.0, 2.0, Math.PI * 2, 0.1, 6)
         },
         new AutoWaypoint[] {
-            new AutoWaypoint(rightReturnPose, 0.0, 3.2, Math.PI * 3, 0.07, 0.080)
+            new AutoWaypoint(rightReturnPose, 0.0, 3.2, Math.PI * 3, 0.08, 0.080)
         },
         //Sweep hub section
         new AutoWaypoint[] {
             //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
             //new AutoWaypoint(new Pose2d(5.792 , 3.565, new Rotation2d().fromDegrees(180)), 1.0, 3.5, Math.PI * 3, 0.15, 12),
-            new AutoWaypoint(new Pose2d(6.391 , 4.197, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+            new AutoWaypoint(new Pose2d(6.391 , 4.197, new Rotation2d().fromDegrees(133)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
             new AutoWaypoint(new Pose2d(7.379 , 4.537, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 2, 0.08, 6),
             new AutoWaypoint(new Pose2d(7.962 , 4.408, new Rotation2d().fromDegrees(135)), 1.5, 2.0, Math.PI * 2, 0.08, 6),
             new AutoWaypoint(new Pose2d(8.157 , 4.109, new Rotation2d().fromDegrees(90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),

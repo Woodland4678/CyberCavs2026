@@ -60,20 +60,20 @@ public class DriveOverBump extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-     Optional<Alliance> ally = DriverStation.getAlliance();
+    Optional<Alliance> ally = DriverStation.getAlliance();
     rController.enableContinuousInput(-180, 180);
     if (directionType == 0 || directionType == 2) {
-      xSpeed = -2.75;
+      xSpeed = 3.00;
     }
     else {
-      xSpeed = 2.75;
+      xSpeed = -3.00;
     }
     state = 0;
     cnt = 0;
     isDone = false;
      if (ally.isPresent()) {
       if (ally.get() == Alliance.Red) {
-        xSpeed *= -1;
+        //xSpeed *= -1;
         directionTypeRotationAngles[0] = -90; //was -45
         directionTypeRotationAngles[1] = -90; //was -135
         directionTypeRotationAngles[2] = 90; //was 45

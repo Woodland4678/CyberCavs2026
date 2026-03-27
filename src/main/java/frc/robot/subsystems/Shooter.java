@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.util.Dictionary;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -137,7 +138,15 @@ public class Shooter extends SubsystemBase {
     shooterMotionConfigs.MotionMagicAcceleration = 200; // Target acceleration of 160 rps/s (0.5 seconds)
     shooterMotionConfigs.MotionMagicJerk = 2000; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
+    CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs();
+    currentConfigs.StatorCurrentLimit = 100;
+    currentConfigs.StatorCurrentLimitEnable = true;
+    shooterConfigs.withCurrentLimits(currentConfigs);
+
     shooterLeadMotor.getConfigurator().apply(shooterConfigs);
+    shooterFollowerMotor1.getConfigurator().apply(shooterConfigs);
+    shooterFollowerMotor2.getConfigurator().apply(shooterConfigs);
+    shooterFollowerMotor3.getConfigurator().apply(shooterConfigs);
 
     feederMotor = new TalonFX(9,canbus); //needs valid device id ???
 
@@ -153,7 +162,7 @@ public class Shooter extends SubsystemBase {
     feederMotionConfigs.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
     feederMotionConfigs.MotionMagicAcceleration = 200; // Target acceleration of 160 rps/s (0.5 seconds)
     feederMotionConfigs.MotionMagicJerk = 2000; // Target jerk of 1600 rps/s/s (0.1 seconds)
-
+    feederConfigs.withCurrentLimits(new CurrentLimitsConfigs().withSupplyCurrentLimit(60));
     feederMotor.getConfigurator().apply(feederConfigs);
     
      hoodMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???

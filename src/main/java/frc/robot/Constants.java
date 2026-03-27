@@ -18,7 +18,7 @@ public final class Constants {
         public static final double retractPosition = 33.0;
     }
     public static class IntakeConstants {
-        public static final double deployPosition = 63.4;
+        public static final double deployPosition = 67.4;
         public static final double retractPosition = 0;
         public static final double IntakeRPS = 90;
     }

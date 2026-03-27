@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -23,6 +24,7 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,7 +47,7 @@ public class Intake extends SubsystemBase {
     intakeWheels = new TalonFX(10,canbus);
     intakeWheelsFollower = new TalonFX(1, canbus);
 
-     intakeWheelsFollower.setControl(new Follower(intakeWheels.getDeviceID(), MotorAlignmentValue.Opposed));
+    intakeWheelsFollower.setControl(new Follower(intakeWheels.getDeviceID(), MotorAlignmentValue.Opposed));
     deployMotor = new SparkMax(2, SparkLowLevel.MotorType.kBrushless); // needs valid device id ???
     deployMotorController = deployMotor.getClosedLoopController();
 
@@ -75,7 +77,13 @@ public class Intake extends SubsystemBase {
     intakeWheelsMotionPIDConfigs.kI = 0; // no output for integrated error
     intakeWheelsMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
+    CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs();
+    currentConfigs.StatorCurrentLimit = 80;
+    currentConfigs.StatorCurrentLimitEnable = true;
+    intakeWheelsConfigs.withCurrentLimits(currentConfigs);
 
+    
+    intakeWheelsFollower.getConfigurator().apply(intakeWheelsConfigs);
     intakeWheels.getConfigurator().apply(intakeWheelsConfigs);
   }
 

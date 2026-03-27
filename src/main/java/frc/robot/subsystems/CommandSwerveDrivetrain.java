@@ -378,9 +378,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("Robot Rotation", getGyroValue());
         SmartDashboard.putNumber("Gyro Roll", this.getPigeon2().getRoll().getValueAsDouble());
         SmartDashboard.putNumber("Gyro Pitch", this.getPigeon2().getPitch().getValueAsDouble());
-        for (int i = 0; i < 4; i++) {
-            SmartDashboard.putNumber(("Module " + i + " Supply Current"), this.getModule(0).getDriveMotor().getSupplyCurrent().getValueAsDouble());
-        }
+        //for (int i = 0; i < 4; i++) {
+        //    SmartDashboard.putNumber(("Module " + i + " Supply Current"), this.getModule(0).getDriveMotor().getSupplyCurrent().getValueAsDouble());
+       // }
         //SmartDashboard.putNumber("Front left drive speed", this.getModule(0).getDriveMotor().getVelocity().getValueAsDouble());
         //SmartDashboard.putNumber("Robot Velocity X", this.getState().Speeds.vxMetersPerSecond);
         //SmartDashboard.putNumber("Front Lidar", getFrontLidar());

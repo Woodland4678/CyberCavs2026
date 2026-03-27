@@ -102,7 +102,7 @@ public class Shoot extends Command {
       // break;
       case 0:
         // if (S_Swerve.isOdometryLikelyBad()) {
-        //   xSpeed = -2.5;
+        //   xSpeed = -1.00;
         // }
         // else {
         //   xSpeed = 0.0;
@@ -140,10 +140,10 @@ public class Shoot extends Command {
         // }
         //shooterTargetRPS = 80;
         S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-        boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 0.75;
-        boolean rotationReady = Math.abs(rController.getPositionError()) < Math.toRadians(2); //this radians
-        boolean shooterReady = shooterReadyDebounce.calculate(rawReady && rotationReady && !S_Swerve.isOdometryLikelyBad());
-        double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
+        boolean rawReady = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 0.85;
+        boolean rotationReady = Math.abs(rController.getPositionError()) < Math.toRadians(3); //this radians
+        boolean shooterReady = shooterReadyDebounce.calculate(rawReady && rotationReady);
+        //double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
         if (shooterReady) {
           S_Shooter.setFeederSpeed(Constants.ShooterConstants.feederShootRPS);
         }
