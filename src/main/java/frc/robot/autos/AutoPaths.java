@@ -298,8 +298,34 @@ public final class AutoPaths {
             new AutoWaypoint(new Pose2d(7.930 , 2.237, new Rotation2d().fromDegrees(-133.134)), 2.75, 3.75, Math.PI * 3, 0.15, 12),
             new AutoWaypoint(new Pose2d(8.400 , 2.317, new Rotation2d().fromDegrees(-89.842)), 2.75, 3.75, Math.PI * 3, 0.15, 6),
             new AutoWaypoint(new Pose2d(8.643 , 3.548, new Rotation2d().fromDegrees(-42.692)), 2.75, 3.75, Math.PI * 3, 0.15, 6),
-            new AutoWaypoint(new Pose2d(8.254 , 4.601, new Rotation2d().fromDegrees(47.490)), 2.75, 3.75, Math.PI * 3, 0.15, 6),
+            new AutoWaypoint(new Pose2d(8.254 , 4.301, new Rotation2d().fromDegrees(47.490)), 2.75, 3.75, Math.PI * 3, 0.15, 6),
             new AutoWaypoint(new Pose2d(6.877 , 2.49, new Rotation2d().fromDegrees(24.775)), 2.75, 3.75, Math.PI * 3, 0.15, 6),
+        },
+        new AutoWaypoint[] {
+            new AutoWaypoint(new Pose2d(5.841, 2.49, new Rotation2d().fromDegrees(45)), 1.0, 4.2, Math.PI * 3, 0.02, 2)
+        },
+        mirrorBlueRightToLeft(LeftSideMiddleThenSweepHub.get(2), Constants.FIELD_WIDTH_METERS)
+        //Sweep hub section
+        // new AutoWaypoint[] {
+        //     //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+        //     //new AutoWaypoint(new Pose2d(5.792 , 3.565, new Rotation2d().fromDegrees(180)), 1.0, 3.5, Math.PI * 3, 0.15, 12),
+        //     new AutoWaypoint(new Pose2d(6.391 , 4.197, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+        //     new AutoWaypoint(new Pose2d(7.379 , 4.537, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 2, 0.08, 6),
+        //     new AutoWaypoint(new Pose2d(7.962 , 4.408, new Rotation2d().fromDegrees(135)), 1.5, 2.0, Math.PI * 2, 0.08, 6),
+        //     new AutoWaypoint(new Pose2d(8.157 , 4.109, new Rotation2d().fromDegrees(90)), 1.5, 2.0, Math.PI * 3, 0.08, 6),
+        //     new AutoWaypoint(new Pose2d(7.849 , 3.565, new Rotation2d().fromDegrees(45)), 1.5, 2.0, Math.PI * 2, 0.08, 6),
+        //     new AutoWaypoint(new Pose2d(7.541 , 3.565, new Rotation2d().fromDegrees(0)), 2.5, 2.0, Math.PI * 3, 0.08, 6)
+        // }
+    );
+    public static final List<AutoWaypoint[]> RightSideDisruptionLegal = List.of(
+        new AutoWaypoint[] {
+            //new AutoWaypoint(new Pose2d(6.242 , 5.276, new Rotation2d().fromDegrees(180)), 1.5, 2.0, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.136 , 2.237, new Rotation2d().fromDegrees(180)), 2.0, 3.75, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(7.730 , 2.237, new Rotation2d().fromDegrees(-133.134)), 2.75, 3.75, Math.PI * 3, 0.15, 12),
+            new AutoWaypoint(new Pose2d(8.200 , 2.317, new Rotation2d().fromDegrees(-89.842)), 2.75, 3.75, Math.PI * 3, 0.15, 6),
+            new AutoWaypoint(new Pose2d(8.443 , 3.548, new Rotation2d().fromDegrees(-42.692)), 2.75, 3.75, Math.PI * 3, 0.15, 6),
+            new AutoWaypoint(new Pose2d(8.054 , 4.301, new Rotation2d().fromDegrees(47.490)), 2.75, 3.75, Math.PI * 3, 0.15, 6),
+            new AutoWaypoint(new Pose2d(6.677 , 2.49, new Rotation2d().fromDegrees(24.775)), 2.75, 3.75, Math.PI * 3, 0.15, 6),
         },
         new AutoWaypoint[] {
             new AutoWaypoint(new Pose2d(5.841, 2.49, new Rotation2d().fromDegrees(45)), 1.0, 4.2, Math.PI * 3, 0.02, 2)
@@ -328,6 +354,12 @@ public final class AutoPaths {
     RightSideDisruption.stream()
         .map(segment -> mirrorBlueRightToLeft(segment, Constants.FIELD_WIDTH_METERS))
         .toList();
+
+    public static final List<AutoWaypoint[]> LeftSideDisruptionLegal =
+    RightSideDisruptionLegal.stream()
+        .map(segment -> mirrorBlueRightToLeft(segment, Constants.FIELD_WIDTH_METERS))
+        .toList();
+
 
     public static final List<AutoWaypoint[]> LeftSideShallowSemicircle =
     RightSideShallowSemicircle.stream()

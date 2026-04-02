@@ -41,6 +41,7 @@ import frc.robot.autos.RightSideDisruption;
 import frc.robot.autos.RightSideDoubleRunToMiddleBase;
 import frc.robot.autos.RightSideFullHopperThenClimb;
 import frc.robot.autos.RightSideFullHopperThenFill;
+import frc.robot.autos.TestBLine;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoClimb;
 import frc.robot.commands.AutoDrive;
@@ -191,10 +192,24 @@ public class RobotContainer {
                 new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
             )
         ),
+         Map.entry("RightSideDisruptionLegal",
+            new AutoDefinition(
+                paths -> new RightSideDisruption(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                AutoPaths.RightSideDisruptionLegal,
+                new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90))
+            )
+        ),
         Map.entry("LeftSideDisruption",
             new AutoDefinition(
                 paths -> new LeftSideDisruption(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
                 AutoPaths.LeftSideDisruption,
+                new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
+            )
+        ),
+        Map.entry("LeftSideDisruptionLegal",
+            new AutoDefinition(
+                paths -> new LeftSideDisruption(drivetrain, S_Intake, S_Hopper, S_Shooter, paths),
+                AutoPaths.LeftSideDisruptionLegal,
                 new Pose2d(3.599, 5.620, Rotation2d.fromDegrees(-90))
             )
         ),
@@ -221,9 +236,9 @@ public class RobotContainer {
        // joystick.povUp().onFalse(new InstantCommand(() -> S_Hopper.stopFloor()));
 //        joystick.povUp().whileTrue(new RotateToAngleUntilTagsSeen(drivetrain, Constants.RightSideRotateToSeeTagsTarget));
 //        joystick.povDown().whileTrue(new RotateToAngleUntilTagsSeen(drivetrain, Constants.LeftSideRotateToSeeTagsTarget));
-// //
-    //    joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.extendClimber()));
-    //    joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.retractClimber()));
+//
+       joystick.povRight().onTrue(new InstantCommand(() -> S_Climber.extendClimber()));
+       joystick.povLeft().onTrue(new InstantCommand(() -> S_Climber.retractClimber()));
 
         //joystick.leftTrigger().onTrue(new InstantCommand(() -> S_Shooter.setShooterSpeedRPS(70)));//up position (placeholder value)
         //joystick.leftTrigger().onFalse(new InstantCommand(() -> S_Shooter.stopShooterMotor()));
@@ -296,11 +311,11 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-       joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
-       joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
-       joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
-       joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
-       //joystick.y().whileTrue(new AutoClimb(drivetrain, S_Climber, false));
+    //    joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
+    //    joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
+    //    joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
+    //    joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
+       joystick.y().whileTrue(new TestBLine(drivetrain));
 
 
        // joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));

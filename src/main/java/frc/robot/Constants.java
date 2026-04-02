@@ -15,7 +15,7 @@ public final class Constants {
     public static final double LeftSideRotateToSeeTagsTarget = -135;
     public static class ClimberConstants {
         public static final double extendPosition = 0;
-        public static final double retractPosition = 33.0;
+        public static final double retractPosition = 40.0;
     }
     public static class IntakeConstants {
         public static final double deployPosition = 67.4;

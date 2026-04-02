@@ -78,7 +78,7 @@ public class Intake extends SubsystemBase {
     intakeWheelsMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
     CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs();
-    currentConfigs.StatorCurrentLimit = 80;
+    currentConfigs.StatorCurrentLimit = 70;
     currentConfigs.StatorCurrentLimitEnable = true;
     intakeWheelsConfigs.withCurrentLimits(currentConfigs);
 

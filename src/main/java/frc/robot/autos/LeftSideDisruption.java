@@ -64,7 +64,7 @@ public class LeftSideDisruption extends SequentialCommandGroup {
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
       new AutoDrive(S_Swerve, waypoints.get(1)),
-      new DriveOverBump(S_Swerve,1)
+      new DriveOverBump(S_Swerve,3)
         .withTimeout(2)
         .alongWith(new InstantCommand(() -> S_Intake.retractIntake())), 
       new Shoot(S_Swerve, S_Shooter, S_Hopper)

@@ -42,7 +42,7 @@ public class Hopper extends SubsystemBase {
 
     
     CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs();
-    currentConfigs.StatorCurrentLimit = 80;
+    currentConfigs.StatorCurrentLimit = 70;
     currentConfigs.StatorCurrentLimitEnable = true;
     floorConfigs.withCurrentLimits(currentConfigs);
 

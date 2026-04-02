@@ -11,6 +11,7 @@ import org.photonvision.PhotonCamera;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -24,6 +25,7 @@ import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -49,6 +51,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.lib.BLine.FollowPath;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -454,6 +457,29 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public boolean isRearLidarReady() {
         return (rearLidar.getOutput() > 0.0);
     }
+    // Create a reusable builder with your robot's configuration
+    public FollowPath.Builder pathBuilder = new FollowPath.Builder(
+        this,
+
+        // Pose supplier
+        () -> this.getState().Pose,
+
+        // Speed supplier
+        () -> this.getState().Speeds,
+
+        // Drive consumer
+        speeds -> this.setControl(
+            new SwerveRequest.ApplyRobotSpeeds().withSpeeds(speeds).withDriveRequestType(DriveRequestType.Velocity)
+            //new SwerveRequest.FieldCentric().withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond).withRotationalRate(speeds.omegaRadiansPerSecond)
+        ),
+
+        // PID controllers
+        new PIDController(3.0, 0.0, 0.0),   // Translation
+        new PIDController(3.0, 0.0, 0.0),   // Rotation
+        new PIDController(2.0, 0.0, 0.0)    // Cross-track
+    )
+    .withDefaultShouldFlip()
+    .withPoseReset(pose -> this.resetPose(pose));
 
     /**
      * Return the pose at a given timestamp, if the buffer is not empty.
