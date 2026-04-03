@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoWaypoint;
+import frc.robot.lib.BLine.Path;
 /********************************************************
  * Steps for new autos
  * 1. Create new list of AutoWaypoints
@@ -384,6 +385,27 @@ public final class AutoPaths {
            new AutoWaypoint(new Pose2d(2.294, 5.152, new Rotation2d().fromDegrees(-20)), 0.5, 2.0, Math.PI * 3, 0.05, 5),
         }
     );
+
+    public static final List<Path> rightSideBLineVsTrench = List.of(
+        new Path("ReturnToBump"),
+        new Path("path1"),
+        new Path("path2")
+    );
+    public static final List<Path> leftSideBLineVsTrench;
+
+    static {
+        // initialize the left side paths in a static block
+        Path p0 = new Path("ReturnToBump");
+        p0.mirror();
+
+        Path p1 = new Path("path1");
+        p1.mirror();
+
+        Path p2 = new Path("path2");
+        p2.mirror();
+
+        leftSideBLineVsTrench = List.of(p0, p1, p2);
+    }
 
     public static Pose2d[] extractPoses(List<AutoWaypoint[]> waypointSegments) {
         // Count total number of waypoints

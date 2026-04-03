@@ -29,6 +29,7 @@ import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveOverBump;
 import frc.robot.commands.RotateToAngleUntilTagsSeen;
 import frc.robot.commands.Shoot;
+import frc.robot.lib.BLine.Path;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -40,7 +41,7 @@ import frc.robot.subsystems.Shooter;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class RightSideDoubleRunToMiddleBase extends SequentialCommandGroup {
+public class RightSideDoubleRunToMiddleBaseBLine extends SequentialCommandGroup {
   /** Creates a new RightSideToNeutralTwice. */
   CommandSwerveDrivetrain S_Swerve;
   Hopper S_Hopper;
@@ -48,7 +49,7 @@ public class RightSideDoubleRunToMiddleBase extends SequentialCommandGroup {
   Shooter S_Shooter;
   
   
-  public RightSideDoubleRunToMiddleBase(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<AutoWaypoint[]> waypoints) {
+  public RightSideDoubleRunToMiddleBaseBLine(CommandSwerveDrivetrain S_Swerve, Intake S_Intake, Hopper S_Hopper, Shooter S_Shooter, List<Path> waypoints) {
     this.S_Swerve = S_Swerve;
     this.S_Hopper = S_Hopper;
     this.S_Intake = S_Intake;
@@ -57,13 +58,14 @@ public class RightSideDoubleRunToMiddleBase extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
 
     addCommands(
+      new InstantCommand(() -> S_Swerve.resetPose(AutoPaths.rotateBlueToRed(Constants.bumpRightStartingPose, Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS))),
       new DriveOverBump(S_Swerve, 0)
         .withTimeout(1.5), 
-      new AutoDrive(S_Swerve, waypoints.get(0))
+      S_Swerve.pathBuilder.build(waypoints.get(1))
         .withTimeout(3.5)
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
-      new AutoDrive(S_Swerve, waypoints.get(1)), //drive back to bump
+      S_Swerve.pathBuilder.build(waypoints.get(0)), //drive back to bump
       new DriveOverBump(S_Swerve,1)
         .withTimeout(2)
         .alongWith(new InstantCommand(() -> S_Intake.retractIntake())), 
@@ -72,11 +74,11 @@ public class RightSideDoubleRunToMiddleBase extends SequentialCommandGroup {
       new DriveOverBump(S_Swerve, 0)
         .withTimeout(1.5),
       new RotateToAngleUntilTagsSeen(S_Swerve, Constants.RightSideRotateToSeeTagsTarget),
-      new AutoDrive(S_Swerve, waypoints.get(2))
-        .withTimeout(4.0)
+      S_Swerve.pathBuilder.build(waypoints.get(2))
+        .withTimeout(4.25)
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
-      new AutoDrive(S_Swerve, waypoints.get(1)),
+      S_Swerve.pathBuilder.build(waypoints.get(0)),
       new DriveOverBump(S_Swerve,1)
         .withTimeout(2)
         .alongWith(new InstantCommand(() -> S_Intake.retractIntake())),

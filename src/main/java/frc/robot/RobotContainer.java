@@ -34,11 +34,13 @@ import frc.robot.autos.AutoPaths;
 import frc.robot.autos.LeftSideDisruption;
 import frc.robot.autos.LeftSideDisruptionDepot;
 import frc.robot.autos.LeftSideDoubleRunToMiddleBase;
+import frc.robot.autos.LeftSideDoubleRunToMiddleBaseBLine;
 import frc.robot.autos.LeftSideHubSweepCorralClimb;
 import frc.robot.autos.LeftSideMiddleCorralClimb;
 import frc.robot.autos.LeftSideSweepWallCorralClimb;
 import frc.robot.autos.RightSideDisruption;
 import frc.robot.autos.RightSideDoubleRunToMiddleBase;
+import frc.robot.autos.RightSideDoubleRunToMiddleBaseBLine;
 import frc.robot.autos.RightSideFullHopperThenClimb;
 import frc.robot.autos.RightSideFullHopperThenFill;
 import frc.robot.autos.TestBLine;
@@ -315,7 +317,8 @@ public class RobotContainer {
     //    joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
     //    joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
     //    joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
-       joystick.y().whileTrue(new TestBLine(drivetrain));
+       joystick.y().whileTrue(new RightSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.rightSideBLineVsTrench));
+       joystick.a().whileTrue(new LeftSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.leftSideBLineVsTrench));
 
 
        // joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));

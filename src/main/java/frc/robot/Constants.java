@@ -11,6 +11,9 @@ public final class Constants {
     public static final double FIELD_WIDTH_METERS = 8.069;
     public static final double FIELD_LENGTH_METERS = 16.54;
 
+    public static final Pose2d bumpLeftStartingPose = new Pose2d(3.573, 5.3633, Rotation2d.fromDegrees(-90));
+    public static final Pose2d bumpRightStartingPose = new Pose2d(3.573, 2.23, Rotation2d.fromDegrees(90));
+
     public static final double RightSideRotateToSeeTagsTarget = 135;
     public static final double LeftSideRotateToSeeTagsTarget = -135;
     public static class ClimberConstants {
