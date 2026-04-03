@@ -53,6 +53,7 @@ import frc.robot.commands.PassFuel;
 import frc.robot.commands.RotateToAngleUntilTagsSeen;
 import frc.robot.commands.Shoot;
 import frc.robot.generated.TunerConstants;
+import frc.robot.lib.BLine.Path;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
@@ -317,8 +318,9 @@ public class RobotContainer {
     //    joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
     //    joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
     //    joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
-       joystick.y().whileTrue(new RightSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.rightSideBLineVsTrench));
-       joystick.a().whileTrue(new LeftSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.leftSideBLineVsTrench));
+       joystick.y().whileTrue(new RightSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.ZachAndEliSpecial));
+       joystick.a().whileTrue(new LeftSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.leftSideShallowSemiCircle));
+       joystick.x().whileTrue(drivetrain.pathBuilder.build(new Path("ReturnToBump")));
 
 
        // joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));
@@ -348,11 +350,18 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        String key = autoChooser.getSelected();
-        if (key == null) return Commands.none();
+        // String key = autoChooser.getSelected();
+        // if (key == null) return Commands.none();
 
-        AutoDefinition auto = autos.get(key);
-        return buildAuto(auto);
+        // AutoDefinition auto = autos.get(key);
+        // return buildAuto(auto);
+        //return new LeftSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.leftSideDisruption);
+        return new RightSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.rightSideDisruption);
+
+
+
+
+
          //return autoChooser.getSelected();
         //return new RightSideToNeutralTwice(drivetrain, S_Intake, AutoPaths.RightSideGatherFuel2, new Pose2d(3.573, 2.579, new Rotation2d().fromDegrees(-90)));
        

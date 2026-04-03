@@ -3,6 +3,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.generated.TunerConstants;
+import frc.robot.lib.BLine.Path.PathConstraints;
+
 import static edu.wpi.first.units.Units.*;
 
 public final class Constants {
@@ -16,6 +18,15 @@ public final class Constants {
 
     public static final double RightSideRotateToSeeTagsTarget = 135;
     public static final double LeftSideRotateToSeeTagsTarget = -135;
+
+    public static final PathConstraints fastConstraints = new PathConstraints()
+        .setMaxVelocityMetersPerSec(3.5)
+        .setMaxAccelerationMetersPerSec2(8.0)
+        .setMaxVelocityDegPerSec(360)
+        .setMaxAccelerationDegPerSec2(720)
+        .setEndTranslationToleranceMeters(0.05)
+        .setEndRotationToleranceDeg(2);
+
     public static class ClimberConstants {
         public static final double extendPosition = 0;
         public static final double retractPosition = 40.0;
@@ -23,7 +34,7 @@ public final class Constants {
     public static class IntakeConstants {
         public static final double deployPosition = 67.4;
         public static final double retractPosition = 0;
-        public static final double IntakeRPS = 90;
+        public static final double IntakeRPS = 92;
     }
     public static class ShooterConstants {
         public static final double hoodRetractPosition = 0;

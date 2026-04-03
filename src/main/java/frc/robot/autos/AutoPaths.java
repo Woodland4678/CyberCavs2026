@@ -1,5 +1,6 @@
 package frc.robot.autos;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -7,6 +8,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoWaypoint;
 import frc.robot.lib.BLine.Path;
+import frc.robot.lib.BLine.Path.TranslationTarget;
+import frc.robot.lib.BLine.Path.Waypoint;
 /********************************************************
  * Steps for new autos
  * 1. Create new list of AutoWaypoints
@@ -388,9 +391,30 @@ public final class AutoPaths {
 
     public static final List<Path> rightSideBLineVsTrench = List.of(
         new Path("ReturnToBump"),
-        new Path("path1"),
-        new Path("path2")
+        new Path("RunMiddle"),
+        new Path("SweepHub")
     );
+    public static final List<Path> ZachAndEliSpecial = List.of(
+        new Path("ReturnToBump"),
+        new Path("Test2"),
+        new Path("AntiSid")
+    );
+     public static final List<Path> rightSideShallowSemiCircle = List.of(
+        new Path("ReturnToBump"),
+        new Path("ShallowSemiCircle"),
+        new Path("ShallowSemiCircle2")
+    );
+     public static final List<Path> rightSideDisruption = List.of(
+        new Path("ReturnToBump"),
+        new Path("Disruption"),
+        new Path("SweepHub")
+    );
+    public static final List<Path> rightSideDisruptionReverseSweep = List.of(
+        new Path("ReturnToBump"),
+        new Path("Disruption"),
+        new Path("ReverseHubSweep")
+    );
+
     public static final List<Path> leftSideBLineVsTrench;
 
     static {
@@ -398,13 +422,43 @@ public final class AutoPaths {
         Path p0 = new Path("ReturnToBump");
         p0.mirror();
 
-        Path p1 = new Path("path1");
+        Path p1 = new Path("RunMiddle");
         p1.mirror();
 
-        Path p2 = new Path("path2");
+        Path p2 = new Path("SweepHub");
         p2.mirror();
 
         leftSideBLineVsTrench = List.of(p0, p1, p2);
+    }
+    public static final List<Path> leftSideDisruption;
+
+    static {
+        // initialize the left side paths in a static block
+        Path p0 = new Path("ReturnToBump");
+        p0.mirror();
+
+        Path p1 = new Path("Disruption");
+        p1.mirror();
+
+        Path p2 = new Path("SweepHub");
+        p2.mirror();
+
+        leftSideDisruption = List.of(p0, p1, p2);
+    }
+    public static final List<Path> leftSideShallowSemiCircle;
+
+    static {
+        // initialize the left side paths in a static block
+        Path p0 = new Path("ReturnToBump");
+        p0.mirror();
+
+        Path p1 = new Path("ShallowSemiCircle");
+        p1.mirror();
+
+        Path p2 = new Path("ShallowSemiCircle2");
+        p2.mirror();
+
+        leftSideShallowSemiCircle = List.of(p0, p1, p2);
     }
 
     public static Pose2d[] extractPoses(List<AutoWaypoint[]> waypointSegments) {
@@ -421,6 +475,7 @@ public final class AutoPaths {
 
         return poses;
     }
+
 
     public static AutoWaypoint[] mirrorBlueRightToLeft(AutoWaypoint[] original,
         double fieldWidthMeters

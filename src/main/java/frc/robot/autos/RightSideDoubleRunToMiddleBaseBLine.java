@@ -62,7 +62,7 @@ public class RightSideDoubleRunToMiddleBaseBLine extends SequentialCommandGroup 
       new DriveOverBump(S_Swerve, 0)
         .withTimeout(1.5), 
       S_Swerve.pathBuilder.build(waypoints.get(1))
-        .withTimeout(3.5)
+        .withTimeout(3.0)
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
       S_Swerve.pathBuilder.build(waypoints.get(0)), //drive back to bump
@@ -75,7 +75,7 @@ public class RightSideDoubleRunToMiddleBaseBLine extends SequentialCommandGroup 
         .withTimeout(1.5),
       new RotateToAngleUntilTagsSeen(S_Swerve, Constants.RightSideRotateToSeeTagsTarget),
       S_Swerve.pathBuilder.build(waypoints.get(2))
-        .withTimeout(4.25)
+        .withTimeout(3.0)
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
       S_Swerve.pathBuilder.build(waypoints.get(0)),

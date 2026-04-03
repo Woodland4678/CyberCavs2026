@@ -119,7 +119,7 @@ public class Shooter extends SubsystemBase {
     shooterMotionPIDConfigs.kS = 0.1; // Add 0.25 V output to overcome static friction
     shooterMotionPIDConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
     shooterMotionPIDConfigs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterMotionPIDConfigs.kP = 0.3; // A position error of 2.5 rotations results in 12 V output
+    shooterMotionPIDConfigs.kP = 0.12; // A position error of 2.5 rotations results in 12 V output
     shooterMotionPIDConfigs.kI = 0; // no output for integrated error
     shooterMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 

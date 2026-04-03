@@ -59,27 +59,27 @@ public class LeftSideDoubleRunToMiddleBaseBLine extends SequentialCommandGroup {
 
     addCommands(
       new InstantCommand(() -> S_Swerve.resetPose(AutoPaths.rotateBlueToRed(Constants.bumpLeftStartingPose, Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS))),
-      new DriveOverBump(S_Swerve, 0)
+      new DriveOverBump(S_Swerve, 2)
         .withTimeout(1.5), 
       S_Swerve.pathBuilder.build(waypoints.get(1))
-        .withTimeout(3.5)
+        .withTimeout(3.0)
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
       S_Swerve.pathBuilder.build(waypoints.get(0)), //drive back to bump
-      new DriveOverBump(S_Swerve,1)
+      new DriveOverBump(S_Swerve,3)
         .withTimeout(2)
         .alongWith(new InstantCommand(() -> S_Intake.retractIntake())), 
       new Shoot(S_Swerve, S_Shooter, S_Hopper)
         .withTimeout(3.0),
-      new DriveOverBump(S_Swerve, 0)
+      new DriveOverBump(S_Swerve, 2)
         .withTimeout(1.5),
-      new RotateToAngleUntilTagsSeen(S_Swerve, Constants.RightSideRotateToSeeTagsTarget),
+      new RotateToAngleUntilTagsSeen(S_Swerve, Constants.LeftSideRotateToSeeTagsTarget),
       S_Swerve.pathBuilder.build(waypoints.get(2))
-        .withTimeout(4.25)
+        .withTimeout(3.0)
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
       S_Swerve.pathBuilder.build(waypoints.get(0)),
-      new DriveOverBump(S_Swerve,1)
+      new DriveOverBump(S_Swerve,3)
         .withTimeout(2)
         .alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
       new Shoot(S_Swerve, S_Shooter, S_Hopper)
