@@ -6,10 +6,17 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -20,6 +27,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.AutoWaypoint;
+import frc.robot.RobotContainer.AutoDefinition;
 import frc.robot.autos.AutoPaths;
 import frc.robot.autos.LeftSideDisruption;
 import frc.robot.autos.LeftSideDisruptionDepot;
@@ -86,6 +95,72 @@ public class RobotContainer {
     public final Climber S_Climber = new Climber();
     public final Shooter S_Shooter = new Shooter();
     public final Intake S_Intake = new Intake();
+
+    private final Map<String, BLineAutoDefinition> autos_BLine = Map.ofEntries(
+        Map.entry("Right Side Middle Run Sweep Hub",
+            new BLineAutoDefinition(
+                paths -> new RightSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "RunMiddle", "SweepHub" },
+                Constants.bumpRightStartingPose,
+                false
+            )
+        ),
+        Map.entry("Right Side Disruption Then Sweep Hub",
+            new BLineAutoDefinition(
+                paths -> new RightSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "Disruption", "SweepHub" },
+                Constants.bumpRightStartingPose,
+                false
+            )
+        ),
+        Map.entry("Right Side Shallow Semi Circle",
+            new BLineAutoDefinition(
+                paths -> new RightSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "ShallowSemiCircle", "ShallowSemiCircle2" },
+                Constants.bumpRightStartingPose,
+                false
+            )
+        ),
+
+
+        Map.entry("Left Side Middle Run Sweep Hub",
+            new BLineAutoDefinition(
+                paths -> new LeftSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "RunMiddle", "SweepHub" },
+                Constants.bumpLeftStartingPose,
+                true
+            )
+        ),
+        Map.entry("Left Side Disruption Then Sweep Hub",
+            new BLineAutoDefinition(
+                paths -> new LeftSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "Disruption", "SweepHub" },
+                Constants.bumpLeftStartingPose,
+                true
+            )
+        ),
+        Map.entry("Left Side Shallow Semi Circle",
+            new BLineAutoDefinition(
+                paths -> new LeftSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "ShallowSemiCircle", "ShallowSemiCircle2" },
+                Constants.bumpLeftStartingPose,
+                true
+            )
+        )
+    );
+
     private final Map<String, AutoDefinition> autos = Map.ofEntries(
         // Map.entry("RightSideMiddleSemiCircleThenSweepHub",
         //     new AutoDefinition(
@@ -356,7 +431,7 @@ public class RobotContainer {
         // AutoDefinition auto = autos.get(key);
         // return buildAuto(auto);
         //return new LeftSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.leftSideDisruption);
-        return new RightSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.rightSideDisruption);
+        //return new RightSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.rightSideDisruption);
 
 
 
@@ -364,12 +439,19 @@ public class RobotContainer {
 
          //return autoChooser.getSelected();
         //return new RightSideToNeutralTwice(drivetrain, S_Intake, AutoPaths.RightSideGatherFuel2, new Pose2d(3.573, 2.579, new Rotation2d().fromDegrees(-90)));
+
+
+        String key = autoChooser.getSelected();
+        if (key == null) return Commands.none();
+
+        BLineAutoDefinition auto = autos_BLine.get(key);
+        return buildBLineAuto(auto);
        
     }
     private void configureAutoChooser() {
         boolean first = true;
 
-        for (String key : autos.keySet()) {
+        for (String key : autos_BLine.keySet()) {
             if (first) {
                 autoChooser.setDefaultOption(key, key);
                 first = false;
@@ -380,7 +462,64 @@ public class RobotContainer {
 
         SmartDashboard.putData("Autonomous Mode", autoChooser);
     }
+    public static Pose2d[] extractPosesFromPaths(String[] pathNames) {
+        List<Pose2d> allPoses = new ArrayList<>();
+
+        for (String name : pathNames) {
+            Pose2d[] poses = extractPosesFromJson(name + ".json");
+
+            Collections.addAll(allPoses, poses);
+        }
+
+        return allPoses.toArray(new Pose2d[0]);
+    }
     public void updateAutoPreview() {
+        String selectedKey = autoChooser.getSelected();
+        if (selectedKey == null || selectedKey.equals(lastSelectedAuto)) {
+            return;
+        }
+
+        lastSelectedAuto = selectedKey;
+
+        Object auto = autos_BLine.get(selectedKey);
+        if (auto == null) return;
+
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+
+        Pose2d[] poses;
+
+        if (auto instanceof BLineAutoDefinition bline) {
+
+            poses = extractPosesFromPaths(bline.pathNames());
+            if (bline.mirrorForLeft()) {
+                for (int i = 0; i < poses.length; i++) {
+                    poses[i] = AutoPaths.mirrorBlueRightToLeft(
+                        poses[i],
+                        Constants.FIELD_WIDTH_METERS
+                    );
+                }
+            }
+
+        } 
+         else {
+            return;
+        }
+
+        // Apply red flip
+        if (alliance == Alliance.Red) {
+            for (int i = 0; i < poses.length; i++) {
+                poses[i] = AutoPaths.rotateBlueToRed(
+                    poses[i],
+                    Constants.FIELD_LENGTH_METERS,
+                    Constants.FIELD_WIDTH_METERS
+                );
+            }
+        }
+
+        field.getObject("AutoPath").setPoses(poses);
+        SmartDashboard.putData("Auto Field", field);
+    }
+    public void updateAutoPreview_old() {
         String selectedKey = autoChooser.getSelected();
         if (selectedKey == null) {
             return;
@@ -413,6 +552,28 @@ public class RobotContainer {
 
         field.getObject("AutoPath").setPoses(poses);
         SmartDashboard.putData("Auto Field", field);
+    }
+    private Command buildBLineAuto(BLineAutoDefinition def) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+
+        boolean rotate = (alliance == Alliance.Red);
+
+        List<Path> paths = buildBLinePaths(def);
+
+        Pose2d startPose = def.blueStartPose();
+
+        if (rotate) {
+            startPose = AutoPaths.rotateBlueToRed(
+                startPose,
+                Constants.FIELD_LENGTH_METERS,
+                Constants.FIELD_WIDTH_METERS
+            );
+        }
+
+        Pose2d finalStartPose = startPose;
+
+        return def.builder().apply(paths)
+            .beforeStarting(() -> drivetrain.resetPose(finalStartPose));
     }
     private Command buildAuto(AutoDefinition def) {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
@@ -447,6 +608,93 @@ public class RobotContainer {
         List<AutoWaypoint[]> bluePaths,
         Pose2d blueStartPose
     ) {}
+    public record BLineAutoDefinition(
+        Function<List<Path>, Command> builder,
+        String[] pathNames,
+        Pose2d blueStartPose,
+        boolean mirrorForLeft
+    ) {}
+    public static Pose2d[] extractPosesFromJson(String fileName) {
+        List<Pose2d> poses = new ArrayList<>();
+
+        try {
+            java.nio.file.Path path = Filesystem.getDeployDirectory().toPath()
+                .resolve("autos/paths")
+                .resolve(fileName);
+
+            String content = Files.readString(path);
+
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(content);
+
+            JSONArray elements = (JSONArray) json.get("path_elements");
+
+            Rotation2d lastRotation = new Rotation2d(); // default = 0 rad
+
+            for (Object objRaw : elements) {
+                JSONObject obj = (JSONObject) objRaw;
+
+                String type = (String) obj.get("type");
+
+                switch (type) {
+
+                    case "waypoint": {
+                        JSONObject translation = (JSONObject) obj.get("translation_target");
+                        JSONObject rotation = (JSONObject) obj.get("rotation_target");
+
+                        double x = (double) translation.get("x_meters");
+                        double y = (double) translation.get("y_meters");
+
+                        double headingRad = (double) rotation.get("rotation_radians");
+                        lastRotation = new Rotation2d(headingRad);
+
+                        poses.add(new Pose2d(x, y, lastRotation));
+                        break;
+                    }
+
+                    case "translation": {
+                        double x = (double) obj.get("x_meters");
+                        double y = (double) obj.get("y_meters");
+
+                        // reuse last rotation so preview stays smooth
+                        poses.add(new Pose2d(x, y, lastRotation));
+                        break;
+                    }
+
+                    case "rotation": {
+                        double headingRad = (double) obj.get("rotation_radians");
+                        lastRotation = new Rotation2d(headingRad);
+                        break; // no pose added
+                    }
+
+                    default:
+                        // ignore unknown types safely
+                        break;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return poses.toArray(new Pose2d[0]);
+    }
+    private List<Path> buildBLinePaths(BLineAutoDefinition def) {
+        List<Path> paths = new ArrayList<>();
+
+        for (String name : def.pathNames()) {
+            Path p = new Path(name);
+
+            if (def.mirrorForLeft()) {
+                p.mirror(); // mirror for LEFT side autos
+            }
+
+            paths.add(p);
+        }
+
+        return paths;
+    }
+
     public boolean isShooterMotorsReady() {
         // return false;
         //return true; //nothing to check just return true
