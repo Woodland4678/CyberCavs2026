@@ -61,6 +61,7 @@ import frc.robot.commands.ManualShot;
 import frc.robot.commands.PassFuel;
 import frc.robot.commands.RotateToAngleUntilTagsSeen;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.ShootOTM;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.BLine.Path;
 import frc.robot.subsystems.Climber;
@@ -127,6 +128,36 @@ public class RobotContainer {
                 false
             )
         ),
+        Map.entry("Right Side Disruption Then Long Sweep",
+            new BLineAutoDefinition(
+                paths -> new RightSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "Disruption", "CloseHubLongSweep" },
+                Constants.bumpRightStartingPose,
+                false
+            )
+        ),
+        Map.entry("Right Baby Disruption Then Run Middle",
+            new BLineAutoDefinition(
+                paths -> new RightSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "BabyDisruption", "RunMiddle" },
+                Constants.bumpRightStartingPose,
+                false
+            )
+        ),
+        Map.entry("Right Side Disruption Then Long Sweep Without Foul",
+            new BLineAutoDefinition(
+                paths -> new RightSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "Disruption", "CloseHubLongSweepNoFoul" },
+                Constants.bumpRightStartingPose,
+                false
+            )
+        ),
 
 
         Map.entry("Left Side Middle Run Sweep Hub",
@@ -158,7 +189,38 @@ public class RobotContainer {
                 Constants.bumpLeftStartingPose,
                 true
             )
+        ),
+        Map.entry("Left Side Disruption Then Long Sweep",
+            new BLineAutoDefinition(
+                paths -> new LeftSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "Disruption", "CloseHubLongSweep" },
+                Constants.bumpLeftStartingPose,
+                true
+            )
+        ),
+        Map.entry("Left Side Baby Disruption Then Run Middle",
+            new BLineAutoDefinition(
+                paths -> new LeftSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "BabyDisruption", "RunMiddle" },
+                Constants.bumpLeftStartingPose,
+                true
+            )
+        ),
+        Map.entry("Left Side Disruption Then Long Sweep Without Foul",
+            new BLineAutoDefinition(
+                paths -> new LeftSideDoubleRunToMiddleBaseBLine(
+                    drivetrain, S_Intake, S_Hopper, S_Shooter, paths
+                ),
+                new String[] { "ReturnToBump", "Disruption", "CloseHubLongSweepNoFoul" },
+                Constants.bumpLeftStartingPose,
+                true
+            )
         )
+
     );
 
     private final Map<String, AutoDefinition> autos = Map.ofEntries(
@@ -340,7 +402,7 @@ public class RobotContainer {
         
         
         
-        joystick.rightTrigger().whileTrue(new Shoot(drivetrain,S_Shooter, S_Hopper));
+        joystick.rightTrigger().whileTrue(new ShootOTM(drivetrain,S_Shooter, S_Hopper,joystick));
         //joystick.rightTrigger().onTrue(new InstantCommand(() -> S_Intake.setIntakeWheelSpeed(40)));
         //joystick.rightTrigger().onFalse(new InstantCommand(() -> S_Intake.stopIntakeWheels()));
 
@@ -395,7 +457,7 @@ public class RobotContainer {
     //    joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
        joystick.y().whileTrue(new RightSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.ZachAndEliSpecial));
        joystick.a().whileTrue(new LeftSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.leftSideShallowSemiCircle));
-       joystick.x().whileTrue(drivetrain.pathBuilder.build(new Path("ReturnToBump")));
+       joystick.x().whileTrue(drivetrain.pathBuilder.build(new Path("CloseHubLongSweep")));
 
 
        // joystick.x().whileTrue(new DriveOverBump(drivetrain, 2));
@@ -706,8 +768,9 @@ public class RobotContainer {
         return S_Shooter.isShooterHoodReady();
     }
     public boolean isClimberReady() {
+        return true;
         //return true; // no diagnostoic test for this
-        return S_Climber.isClimberReady();
+        //return S_Climber.isClimberReady();
     }
     public boolean isGyroReady(){
         return drivetrain.isGyroReady();

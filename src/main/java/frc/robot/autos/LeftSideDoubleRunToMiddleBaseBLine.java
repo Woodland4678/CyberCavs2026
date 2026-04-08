@@ -58,11 +58,11 @@ public class LeftSideDoubleRunToMiddleBaseBLine extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
 
     addCommands(
-      new InstantCommand(() -> S_Swerve.resetPose(AutoPaths.rotateBlueToRed(Constants.bumpLeftStartingPose, Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS))),
+      //new InstantCommand(() -> S_Swerve.resetPose(AutoPaths.rotateBlueToRed(Constants.bumpLeftStartingPose, Constants.FIELD_LENGTH_METERS, Constants.FIELD_WIDTH_METERS))),
       new DriveOverBump(S_Swerve, 2)
         .withTimeout(1.5), 
       S_Swerve.pathBuilder.build(waypoints.get(1))
-        .withTimeout(3.0)
+        .withTimeout(2.75)
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
       S_Swerve.pathBuilder.build(waypoints.get(0)), //drive back to bump
@@ -73,9 +73,10 @@ public class LeftSideDoubleRunToMiddleBaseBLine extends SequentialCommandGroup {
         .withTimeout(3.0),
       new DriveOverBump(S_Swerve, 2)
         .withTimeout(1.5),
-      new RotateToAngleUntilTagsSeen(S_Swerve, Constants.LeftSideRotateToSeeTagsTarget),
+      new RotateToAngleUntilTagsSeen(S_Swerve, Constants.LeftSideRotateToSeeTagsTarget)
+        .withTimeout(1),
       S_Swerve.pathBuilder.build(waypoints.get(2))
-        .withTimeout(3.0)
+        .withTimeout(2.75)
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
       S_Swerve.pathBuilder.build(waypoints.get(0)),

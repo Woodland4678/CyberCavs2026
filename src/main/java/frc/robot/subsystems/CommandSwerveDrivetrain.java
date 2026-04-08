@@ -390,7 +390,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         //SmartDashboard.putNumber("Rear Lidar", getRearLidar());
          double distance =
         this.getState().Pose.getTranslation()
-            .getDistance(Constants.BLUE_HUB_POSITION.getTranslation());
+            .getDistance(Constants.RED_HUB_POSITION.getTranslation());
         SmartDashboard.putNumber("Distance to hub middle", distance);
     }
 
@@ -474,7 +474,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         ),
 
         // PID controllers
-        new PIDController(3.0, 0.0, 0.0),   // Translation
+        new PIDController(3.25, 0.0, 0.0),   // Translation
         new PIDController(3.0, 0.0, 0.0),   // Rotation
         new PIDController(2.0, 0.0, 0.0)    // Cross-track
     )

@@ -43,6 +43,8 @@ public class Shooter extends SubsystemBase {
   InterpolatingDoubleTreeMap shooterRPSLookup = new InterpolatingDoubleTreeMap();
   InterpolatingDoubleTreeMap shooterRPSLookupStage1 = new InterpolatingDoubleTreeMap();
 
+   InterpolatingDoubleTreeMap shotTimeOfFlightLookup = new InterpolatingDoubleTreeMap();
+
    InterpolatingDoubleTreeMap passingRPSLookup = new InterpolatingDoubleTreeMap();
 
 
@@ -73,6 +75,13 @@ public class Shooter extends SubsystemBase {
     shooterRPSLookup.put(3.1, 52.0);
     shooterRPSLookup.put(3.42, 55.2);
     shooterRPSLookup.put(3.83, 59.8);
+
+    shotTimeOfFlightLookup.put(1.82, 0.85); //hood retracted
+    shotTimeOfFlightLookup.put(2.20, 0.90); //hood retracted
+    shotTimeOfFlightLookup.put(2.66, 0.98); //hood retracted
+    shotTimeOfFlightLookup.put(3.16, 0.92);
+    shotTimeOfFlightLookup.put(3.6, 1.02);
+    shotTimeOfFlightLookup.put(4.4, 1.20);
 
     shooterRPSLookupStage1.put(2.34, 40.2);
     shooterRPSLookupStage1.put(2.64, 43.2);
@@ -117,9 +126,9 @@ public class Shooter extends SubsystemBase {
     //For Velocity Voltage
     var shooterMotionPIDConfigs = shooterConfigs.Slot0;
     shooterMotionPIDConfigs.kS = 0.1; // Add 0.25 V output to overcome static friction
-    shooterMotionPIDConfigs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
+    shooterMotionPIDConfigs.kV = 0.118; // A velocity target of 1 rps results in 0.12 V output
     shooterMotionPIDConfigs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-    shooterMotionPIDConfigs.kP = 0.12; // A position error of 2.5 rotations results in 12 V output
+    shooterMotionPIDConfigs.kP = 0.25; // A position error of 2.5 rotations results in 12 V output
     shooterMotionPIDConfigs.kI = 0; // no output for integrated error
     shooterMotionPIDConfigs.kD = 0.0; // A velocity error of 1 rps results in 0.1 V output
 
@@ -269,6 +278,9 @@ public class Shooter extends SubsystemBase {
       return shooterRPSLookupStage1.get(distance);
     }
     return shooterRPSLookup.get(distance);
+  }
+  public double getTimeOfFlight(double distance) {
+    return shotTimeOfFlightLookup.get(distance);
   }
   public void setHoodPosition(double position) {
 

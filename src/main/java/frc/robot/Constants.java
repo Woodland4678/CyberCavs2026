@@ -8,8 +8,8 @@ import frc.robot.lib.BLine.Path.PathConstraints;
 import static edu.wpi.first.units.Units.*;
 
 public final class Constants {
-    public static final Pose2d BLUE_HUB_POSITION = new Pose2d(4.675, 8.07/2, new Rotation2d());
-    public static final Pose2d RED_HUB_POSITION = new Pose2d(4.675 + 7.19, 8.07/2, new Rotation2d());
+    public static final Pose2d BLUE_HUB_POSITION = new Pose2d(4.626, 8.07/2, new Rotation2d());
+    public static final Pose2d RED_HUB_POSITION = new Pose2d(11.915, 8.07/2, new Rotation2d());
     public static final double FIELD_WIDTH_METERS = 8.069;
     public static final double FIELD_LENGTH_METERS = 16.54;
 
@@ -32,7 +32,7 @@ public final class Constants {
         public static final double retractPosition = 40.0;
     }
     public static class IntakeConstants {
-        public static final double deployPosition = 67.4;
+        public static final double deployPosition = 68.4; //67.4
         public static final double retractPosition = 0;
         public static final double IntakeRPS = 92;
     }
@@ -41,7 +41,7 @@ public final class Constants {
         public static final double hoodStage1Position = 10.5;
         public static final double hoodStage2Position = 18.0;
         public static final double idleRPS = 45;
-        public static final double feederShootRPS = 95;
+        public static final double feederShootRPS = 115; //95
         public static final double trenchShotRPS = 47.2;
         public static final double towerShotRPS = 45.5;
         public static final double midwayShotRPS = 44.5;
