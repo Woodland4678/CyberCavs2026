@@ -389,31 +389,31 @@ public final class AutoPaths {
         }
     );
 
-    public static final List<Path> rightSideBLineVsTrench = List.of(
-        new Path("ReturnToBump"),
-        new Path("RunMiddle"),
-        new Path("SweepHub")
-    );
-    public static final List<Path> ZachAndEliSpecial = List.of(
-        new Path("ReturnToBump"),
-        new Path("Test2"),
-        new Path("AntiSid")
-    );
-     public static final List<Path> rightSideShallowSemiCircle = List.of(
-        new Path("ReturnToBump"),
-        new Path("ShallowSemiCircle"),
-        new Path("ShallowSemiCircle2")
-    );
-     public static final List<Path> rightSideDisruption = List.of(
-        new Path("ReturnToBump"),
-        new Path("Disruption"),
-        new Path("SweepHub")
-    );
-    public static final List<Path> rightSideDisruptionReverseSweep = List.of(
-        new Path("ReturnToBump"),
-        new Path("Disruption"),
-        new Path("ReverseHubSweep")
-    );
+    // public static final List<Path> rightSideBLineVsTrench = List.of(
+    //     new Path("ReturnToBump"),
+    //     new Path("RunMiddle"),
+    //     new Path("SweepHub")
+    // );
+    // public static final List<Path> ZachAndEliSpecial = List.of(
+    //     new Path("ReturnToBump"),
+    //     new Path("Test2"),
+    //     new Path("AntiSid")
+    // );
+    //  public static final List<Path> rightSideShallowSemiCircle = List.of(
+    //     new Path("ReturnToBump"),
+    //     new Path("ShallowSemiCircle"),
+    //     new Path("ShallowSemiCircle2")
+    // );
+    //  public static final List<Path> rightSideDisruption = List.of(
+    //     new Path("ReturnToBump"),
+    //     new Path("Disruption"),
+    //     new Path("SweepHub")
+    // );
+    // public static final List<Path> rightSideDisruptionReverseSweep = List.of(
+    //     new Path("ReturnToBump"),
+    //     new Path("Disruption"),
+    //     new Path("ReverseHubSweep")
+    // );
 
     public static final List<Path> leftSideBLineVsTrench;
 

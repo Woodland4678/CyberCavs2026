@@ -67,21 +67,21 @@ public class LeftSideDoubleRunToMiddleBaseBLine extends SequentialCommandGroup {
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
       S_Swerve.pathBuilder.build(waypoints.get(0)), //drive back to bump
       new DriveOverBump(S_Swerve,3)
-        .withTimeout(2)
+        .withTimeout(1.5)
         .alongWith(new InstantCommand(() -> S_Intake.retractIntake())), 
       new Shoot(S_Swerve, S_Shooter, S_Hopper)
         .withTimeout(3.0),
       new DriveOverBump(S_Swerve, 2)
         .withTimeout(1.5),
       new RotateToAngleUntilTagsSeen(S_Swerve, Constants.LeftSideRotateToSeeTagsTarget)
-        .withTimeout(1),
+        .withTimeout(0.75),
       S_Swerve.pathBuilder.build(waypoints.get(2))
         .withTimeout(2.75)
         .alongWith(new InstantCommand(() -> S_Intake.deployIntake()))
         .alongWith(new InstantCommand(() -> S_Hopper.setFloorRPS(40))),
       S_Swerve.pathBuilder.build(waypoints.get(0)),
       new DriveOverBump(S_Swerve,3)
-        .withTimeout(2)
+        .withTimeout(1.5)
         .alongWith(new InstantCommand(() -> S_Intake.retractIntake())),
       new Shoot(S_Swerve, S_Shooter, S_Hopper)
       

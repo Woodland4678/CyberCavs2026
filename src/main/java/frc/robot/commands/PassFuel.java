@@ -40,6 +40,8 @@ public class PassFuel extends Command {
   double robotX;
   double robotY;
 
+  double rpsTolerance = 1.0;
+
   // Angle to turn to for passing fuel.
   Double targetAngle;
 
@@ -71,13 +73,13 @@ public class PassFuel extends Command {
     if (ally.isPresent()) {
       if (ally.get() == Alliance.Red) {
         
-        passPointX = 15.3;
+        passPointX = 16.3;
         passPointY = 1.33;
         targetPose = new Pose2d(passPointX, passPointY, new Rotation2d());
 
       } else if (ally.get() == Alliance.Blue) {
 
-        passPointX = Constants.FIELD_LENGTH_METERS - 15.3;
+        passPointX = Constants.FIELD_LENGTH_METERS - 16.3;
         passPointY = 1.33;
         targetPose = new Pose2d(passPointX, passPointY, new Rotation2d());
       }
@@ -117,8 +119,15 @@ public class PassFuel extends Command {
                 .getDistance(targetPose.getTranslation());
     //SmartDashboard.putNumber("Pass distance", distance);
     double shooterTargetRPS = S_Shooter.getShooterPassRPS(distance);
+    if (shooterTargetRPS > 90) {
+      shooterTargetRPS = 90;
+      rpsTolerance = 5.0;
+    }
+    else {
+      rpsTolerance = 1.0;
+    }
     S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    if(Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < 1.0 && rController.getPositionError() < Math.toRadians(3)) {
+    if(Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < rpsTolerance && rController.getPositionError() < Math.toRadians(3)) {
       S_Shooter.setFeederSpeed(95);
     }
   }

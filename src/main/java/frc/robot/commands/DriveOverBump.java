@@ -123,13 +123,13 @@ public class DriveOverBump extends Command {
           }
         break;
         case 1 :
-          if (gyroAxisValue> -2.5 && gyroAxisValue < 2.5){
+          if (gyroAxisValue> -3.5 && gyroAxisValue < 3.5){
             cnt++;
           }
           else {
             cnt = 0;
           }
-          if (cnt > 0) {
+          if (cnt > 9) {
             state++;
           }
         break;

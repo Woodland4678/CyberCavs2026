@@ -110,10 +110,10 @@ public class ShootOTM extends Command {
 
         double lookaheadDistance = Math.hypot(hubX - lookaheadX, hubY - lookaheadY);
 
-        if (lookaheadDistance < 2.4) {
+        if (distance < 2.4) {
           hoodPos = 0;
         }
-        else if (lookaheadDistance > 2.75) {
+        else if (distance > 2.75) { 
           hoodPos = 1;
         }
         double shotUnitX = (hubX - robotPose.getX()) / distance;
