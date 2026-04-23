@@ -43,6 +43,8 @@ public class Shoot extends Command {
    private final SwerveRequest.RobotCentric m_driveRequestAutoAlign = new SwerveRequest.RobotCentric()
    .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
    .withSteerRequestType(SteerRequestType.MotionMagicExpo);
+
+   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
    PhoenixPIDController rController = new PhoenixPIDController(19.1, 0, 0.15);
     private final SwerveRequest.RobotCentric m_driveRequestDrive = new SwerveRequest.RobotCentric()
             .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband

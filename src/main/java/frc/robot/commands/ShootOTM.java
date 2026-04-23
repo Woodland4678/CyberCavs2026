@@ -48,7 +48,7 @@ public class ShootOTM extends Command {
    .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
    .withSteerRequestType(SteerRequestType.MotionMagicExpo);
    PhoenixPIDController rController = new PhoenixPIDController(11.1, 0, 0.15);
-
+  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
             .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.Velocity); // Use open-loop control for drive motors
@@ -126,7 +126,7 @@ public class ShootOTM extends Command {
         // }
         shooterTargetRPS += -velocityAlongShot * k;
         double rSpeed = rController.calculate(robotPose.getRotation().getRadians(), targetAngle, Timer.getFPGATimestamp());
-        S_Swerve.setControl(m_driveRequestDrive.withVelocityX(-joystick.getLeftY() * Constants.SwerveConstants.MaxSpeed * 0.2).withVelocityY(-joystick.getLeftX() * Constants.SwerveConstants.MaxSpeed * 0.2).withRotationalRate(rSpeed));
+        
         
         SmartDashboard.putNumber("Auto Aim rspeed", rSpeed);
         SmartDashboard.putNumber("Target Angle", Math.toDegrees(targetAngle));
@@ -138,6 +138,13 @@ public class ShootOTM extends Command {
         boolean rotationReady = Math.abs(rController.getPositionError()) < Math.toRadians(3); //this radians
         boolean shooterReady = shooterReadyDebounce.calculate(rawReady && rotationReady);
         //double error = Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS);
+        if (rotationReady && (Math.abs(joystick.getLeftY()) < 0.01 && Math.abs(joystick.getLeftX()) < 0.01)) {
+          S_Swerve.setControl(brake);
+        }
+        else {
+          S_Swerve.setControl(m_driveRequestDrive.withVelocityX(-joystick.getLeftY() * Constants.SwerveConstants.MaxSpeed * 0.2).withVelocityY(-joystick.getLeftX() * Constants.SwerveConstants.MaxSpeed * 0.2).withRotationalRate(rSpeed));
+        }
+
         if (shooterReady) {
           S_Shooter.setFeederSpeed(Constants.ShooterConstants.feederShootRPS);
           S_Hopper.setFloorRPS(117);

@@ -50,6 +50,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.lib.BLine.FollowPath;
 
@@ -65,6 +66,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final double kSimLoopPeriod = 0.004; // 4 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+    private boolean doRejectUpdate = false;
     public static final Field2d field = new Field2d();
     double cameraForwardPos = Units.inchesToMeters(-14.9375);
     double cameraRightPos = Units.inchesToMeters(0); //negative is to the right
@@ -347,7 +349,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
          * Otherwise, only check and apply the operator perspective if the DS is disabled.
          * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
          */
-       
+        LimelightHelpers.SetRobotOrientation("limelight", this.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        doRejectUpdate = false;
+        if (Math.abs(this.getState().Speeds.omegaRadiansPerSecond) > 6.283185) {
+            doRejectUpdate = true;
+        }
+        if (mt2.tagCount == 0) {
+            doRejectUpdate = true;
+        }
+        if (!doRejectUpdate) {
+            this.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+        }
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
