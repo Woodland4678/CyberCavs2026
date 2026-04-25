@@ -66,7 +66,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final double kSimLoopPeriod = 0.004; // 4 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
-    private boolean doRejectUpdate = false;
+    private boolean doRejectUpdate_right = false;
+    private boolean doRejectUpdate_left = false;
     public static final Field2d field = new Field2d();
     double cameraForwardPos = Units.inchesToMeters(-14.9375);
     double cameraRightPos = Units.inchesToMeters(0); //negative is to the right
@@ -349,17 +350,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
          * Otherwise, only check and apply the operator perspective if the DS is disabled.
          * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
          */
-        LimelightHelpers.SetRobotOrientation("limelight", this.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-        doRejectUpdate = false;
+        LimelightHelpers.SetRobotOrientation("limelight-right", this.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
+        LimelightHelpers.SetRobotOrientation("limelight-left", this.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
+        doRejectUpdate_right = false;
+        doRejectUpdate_left = false;
         if (Math.abs(this.getState().Speeds.omegaRadiansPerSecond) > 6.283185) {
-            doRejectUpdate = true;
+            doRejectUpdate_right = true;
+            doRejectUpdate_left = true;
         }
-        if (mt2.tagCount == 0) {
-            doRejectUpdate = true;
+        if (mt2_right.tagCount == 0) {
+            doRejectUpdate_right = true;
         }
-        if (!doRejectUpdate) {
-            this.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+        if (mt2_left.tagCount == 0) {
+            doRejectUpdate_left = true;
+        }
+        if (!doRejectUpdate_right) {
+            this.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
+        }
+        if (!doRejectUpdate_left) {
+            this.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
         }
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
