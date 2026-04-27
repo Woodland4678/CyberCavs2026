@@ -25,6 +25,7 @@ import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -73,7 +74,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     double cameraRightPos = Units.inchesToMeters(0); //negative is to the right
     Transform2d cameraToRobot = new Transform2d(new Translation2d(cameraForwardPos, cameraRightPos),new Rotation2d());
     boolean hasMultiTagTarget = false;
-
+    boolean isShooting = false;
     Transform3d fieldToCameraPosition;
 
     private DutyCycle rearLidar;
@@ -356,21 +357,32 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         LimelightHelpers.PoseEstimate mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
         doRejectUpdate_right = false;
         doRejectUpdate_left = false;
-        if (Math.abs(this.getState().Speeds.omegaRadiansPerSecond) > 6.283185) {
-            doRejectUpdate_right = true;
-            doRejectUpdate_left = true;
-        }
-        if (mt2_right.tagCount == 0) {
-            doRejectUpdate_right = true;
-        }
-        if (mt2_left.tagCount == 0) {
-            doRejectUpdate_left = true;
-        }
+               
         if (!doRejectUpdate_right) {
-            this.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
+            var stdDevs = getVisionStdDevs(
+                false, // isPhotonCamera
+                isShooting,
+                mt2_right.tagCount,
+                mt2_right.avgTagDist,
+                this.getState().Speeds.omegaRadiansPerSecond
+            );
+            if (stdDevs != null) {
+                setVisionMeasurementStdDevs(stdDevs);
+                this.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
+            } 
         }
         if (!doRejectUpdate_left) {
-            this.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
+            var stdDevs = getVisionStdDevs(
+                false, // isPhotonCamera
+                isShooting,
+                mt2_left.tagCount,
+                mt2_left.avgTagDist,
+                this.getState().Speeds.omegaRadiansPerSecond
+            );
+            if (stdDevs != null) {
+                setVisionMeasurementStdDevs(stdDevs);
+                this.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
+            }   
         }
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
@@ -389,9 +401,24 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             for (var result : results) {
             var multiTagResult = result.getMultiTagResult();
             if (multiTagResult.isPresent()) {
+                
+               
                 hasMultiTagTarget = true;
                 fieldToCameraPosition = multiTagResult.get().estimatedPose.best;
-                this.addVisionMeasurement(new Pose2d(fieldToCameraPosition.getX(), fieldToCameraPosition.getY(), fieldToCameraPosition.getRotation().toRotation2d()).transformBy(cameraToRobot), Timer.getFPGATimestamp());
+                
+                double avgTagDist = multiTagResult.get().estimatedPose.best.getTranslation().getNorm();
+                var stdDevs = getVisionStdDevs(
+                    true, // isPhotonCamera
+                    isShooting, // or false if you don't track it yet
+                    multiTagResult.get().fiducialIDsUsed.size(),
+                    avgTagDist,
+                    this.getState().Speeds.omegaRadiansPerSecond
+                );
+
+                if (stdDevs != null) {
+                    setVisionMeasurementStdDevs(stdDevs);
+                    this.addVisionMeasurement(new Pose2d(fieldToCameraPosition.getX(), fieldToCameraPosition.getY(), fieldToCameraPosition.getRotation().toRotation2d()).transformBy(cameraToRobot), result.getTimestampSeconds());
+                }
                 SmartDashboard.putNumber("Field to camera X", fieldToCameraPosition.getX());
                 SmartDashboard.putNumber("Field to camera Y", fieldToCameraPosition.getY());
                 odometryLikelyBad = false;
@@ -466,6 +493,105 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Matrix<N3, N1> visionMeasurementStdDevs
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    }
+        private Matrix<N3, N1> getVisionStdDevs(
+        boolean isPhotonCamera,
+        boolean shooterMode,
+        int tagCount,
+        double avgTagDistance,
+        double omegaRadiansPerSecond
+    ) {
+
+        // -----------------------------
+        // REJECT
+        // -----------------------------
+
+        if (tagCount == 0) {
+            return null;
+        }
+
+        // spinning too fast
+        if (Math.abs(omegaRadiansPerSecond) > 6.28) {
+            return null;
+        }
+
+        // absurdly far away
+        if (avgTagDistance > 7.0) {
+            return null;
+        }
+
+        // -----------------------------
+        // VERY HIGH TRUST
+        // -----------------------------
+        // Front Photon during shooting
+
+        if (
+            isPhotonCamera
+            && shooterMode
+            && tagCount >= 2
+            && avgTagDistance < 6.0
+        ) {
+            return VecBuilder.fill(
+                0.05,
+                0.05,
+                Units.degreesToRadians(1)
+            );
+        }
+
+        // -----------------------------
+        // HIGH TRUST
+        // -----------------------------
+        // Close Limelight MegaTag2
+        // or very strong Photon solve
+
+        if (
+            tagCount >= 2
+            && avgTagDistance < 4.5
+        ) {
+            return VecBuilder.fill(
+                0.10,
+                0.10,
+                Units.degreesToRadians(999)
+            );
+        }
+
+        // -----------------------------
+        // MEDIUM TRUST
+        // -----------------------------
+        // Normal good solve
+
+        if (
+            tagCount >= 2
+            && avgTagDistance < 6.0
+        ) {
+            return VecBuilder.fill(
+                0.20,
+                0.20,
+                Units.degreesToRadians(999)
+            );
+        }
+
+        // -----------------------------
+        // LOW TRUST
+        // -----------------------------
+        // Single tag or farther solve
+
+        if (
+            tagCount >= 1
+            && avgTagDistance < 7.5
+        ) {
+            return VecBuilder.fill(
+                0.60,
+                0.60,
+                Units.degreesToRadians(999)
+            );
+        }
+
+        // -----------------------------
+        // DEFAULT = REJECT
+        // -----------------------------
+
+        return null;
     }
 
     public double getFrontLidar(){
@@ -543,5 +669,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     public boolean isOdometryLikelyBad() {
         return odometryLikelyBad;
+    }
+    public void setIsShooting(boolean val) {
+        isShooting = val;
     }
 }

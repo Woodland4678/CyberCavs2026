@@ -71,7 +71,7 @@ public class ShootOTM extends Command {
     S_Shooter.setHoodPosition(Constants.ShooterConstants.hoodRetractPosition);
    // S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
     
-
+    S_Swerve.setIsShooting(true);
     startTime = Timer.getFPGATimestamp();
     Optional<Alliance> ally = DriverStation.getAlliance();
     if (ally.isPresent()) {
@@ -161,6 +161,7 @@ public class ShootOTM extends Command {
     S_Shooter.stopFeeder();
     S_Shooter.setShooterSpeedRPS(Constants.ShooterConstants.idleRPS);
     S_Hopper.stopFloor();
+    S_Swerve.setIsShooting(false);
   }
 
   // Returns true when the command should end.
