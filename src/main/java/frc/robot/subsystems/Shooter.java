@@ -102,8 +102,8 @@ public class Shooter extends SubsystemBase {
     passingRPSLookup.put(8.0, 57.8);
     passingRPSLookup.put(9.52, 65.0);
     passingRPSLookup.put(9.52, 65.0);
-    passingRPSLookup.put(12.5, 85.8);
-    passingRPSLookup.put(14.95, 95.0);
+    passingRPSLookup.put(12.5, 80.8);
+    passingRPSLookup.put(14.95, 87.0);
     final CANBus canbus = new CANBus("rio");
 
     leftFuelSensor = new DigitalInput(8); //needs valid channel ???

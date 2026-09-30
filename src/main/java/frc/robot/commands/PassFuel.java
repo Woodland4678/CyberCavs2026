@@ -45,7 +45,7 @@ public class PassFuel extends Command {
   // Angle to turn to for passing fuel.
   Double targetAngle;
 
-  PhoenixPIDController rController = new PhoenixPIDController(19.1, 0, 0.15);
+  PhoenixPIDController rController = new PhoenixPIDController(12.1, 0, 0.15);
     private final SwerveRequest.FieldCentric m_driveRequestDrive = new SwerveRequest.FieldCentric()
             .withDeadband(4 * 0.1).withRotationalDeadband(6 * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -123,11 +123,15 @@ public class PassFuel extends Command {
       shooterTargetRPS = 90;
       rpsTolerance = 5.0;
     }
+    else if (shooterTargetRPS > 80) {
+      rpsTolerance = 5.0;
+    }
     else {
       rpsTolerance = 1.0;
     }
+
     S_Shooter.setShooterSpeedRPS(shooterTargetRPS);
-    if(Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < rpsTolerance && rController.getPositionError() < Math.toRadians(3)) {
+    if(Math.abs(S_Shooter.getShooterSpeedRPS() - shooterTargetRPS) < rpsTolerance && Math.abs(rController.getPositionError()) < Math.toRadians(3)) {
       S_Shooter.setFeederSpeed(95);
     }
   }

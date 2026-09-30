@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -76,6 +77,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     boolean hasMultiTagTarget = false;
     boolean isShooting = false;
     Transform3d fieldToCameraPosition;
+    double photonAvgTagDist = 0;
+     int photonNumTags = 0;
 
     private DutyCycle rearLidar;
     private DutyCycle frontLidar;
@@ -357,33 +360,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         LimelightHelpers.PoseEstimate mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
         doRejectUpdate_right = false;
         doRejectUpdate_left = false;
-               
-        if (!doRejectUpdate_right) {
-            var stdDevs = getVisionStdDevs(
-                false, // isPhotonCamera
-                isShooting,
-                mt2_right.tagCount,
-                mt2_right.avgTagDist,
-                this.getState().Speeds.omegaRadiansPerSecond
-            );
-            if (stdDevs != null) {
-                setVisionMeasurementStdDevs(stdDevs);
-                this.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
-            } 
-        }
-        if (!doRejectUpdate_left) {
-            var stdDevs = getVisionStdDevs(
-                false, // isPhotonCamera
-                isShooting,
-                mt2_left.tagCount,
-                mt2_left.avgTagDist,
-                this.getState().Speeds.omegaRadiansPerSecond
-            );
-            if (stdDevs != null) {
-                setVisionMeasurementStdDevs(stdDevs);
-                this.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
-            }   
-        }
+        SmartDashboard.putNumber("Left limelight mt2 distance", mt2_left.avgTagDist);
+        SmartDashboard.putNumber("Right limelight mt2 distance", mt2_right.avgTagDist);
+        double leftLimelightScore = scoreVision(mt2_left.tagCount, mt2_left.avgTagDist, isShooting, false);
+        double rightLimelightScore = scoreVision(mt2_right.tagCount, mt2_right.avgTagDist, isShooting, false);
+        double photonScore = 0;
+        
+       
+        double photonTimestamp = 0;
+        
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
@@ -406,25 +391,81 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 hasMultiTagTarget = true;
                 fieldToCameraPosition = multiTagResult.get().estimatedPose.best;
                 
-                double avgTagDist = multiTagResult.get().estimatedPose.best.getTranslation().getNorm();
-                var stdDevs = getVisionStdDevs(
-                    true, // isPhotonCamera
-                    isShooting, // or false if you don't track it yet
-                    multiTagResult.get().fiducialIDsUsed.size(),
-                    avgTagDist,
-                    this.getState().Speeds.omegaRadiansPerSecond
-                );
-
-                if (stdDevs != null) {
-                    setVisionMeasurementStdDevs(stdDevs);
-                    this.addVisionMeasurement(new Pose2d(fieldToCameraPosition.getX(), fieldToCameraPosition.getY(), fieldToCameraPosition.getRotation().toRotation2d()).transformBy(cameraToRobot), result.getTimestampSeconds());
-                }
-                SmartDashboard.putNumber("Field to camera X", fieldToCameraPosition.getX());
-                SmartDashboard.putNumber("Field to camera Y", fieldToCameraPosition.getY());
+                
+                photonNumTags = multiTagResult.get().fiducialIDsUsed.size();
+                SmartDashboard.putNumber("Photon XX", result.getTargets().get(0).bestCameraToTarget.getX());
+               // photonAvgTagDist = multiTagResult.get().estimatedPose.best.getTranslation().getNorm();
+                photonAvgTagDist =  result.getTargets().get(0).bestCameraToTarget.getX();
+                
+                photonTimestamp = result.getTimestampSeconds();
+                SmartDashboard.putNumber("Photon vision avg tag dist", photonAvgTagDist);
                 odometryLikelyBad = false;
             }
             else {
                 hasMultiTagTarget = false;
+            }
+        }
+        double highestScore = 0;
+       
+        if (hasMultiTagTarget) {
+            photonScore = scoreVision(photonNumTags, photonAvgTagDist, isShooting, true);
+        }
+        else {
+            photonScore = 0;
+        }
+        SmartDashboard.putNumber("Photon score", photonScore);
+        SmartDashboard.putNumber("Left limelight score", leftLimelightScore);
+        SmartDashboard.putNumber("Right limelight score", rightLimelightScore);
+        if (leftLimelightScore > highestScore) {
+            highestScore = leftLimelightScore;
+            SmartDashboard.putString("Vision source using this loop", "Left Limelight");
+        }
+        if (rightLimelightScore > highestScore) {
+            highestScore = rightLimelightScore;
+            SmartDashboard.putString("Vision source using this loop", "Right Limelight");
+        }
+        if (photonScore > highestScore) {
+            highestScore = photonScore;
+            SmartDashboard.putString("Vision source using this loop", "Photon vision");
+        }
+        if (rightLimelightScore == highestScore) {
+            var stdDevs = getVisionStdDevs(
+                false, // isPhotonCamera
+                isShooting,
+                mt2_right.tagCount,
+                mt2_right.avgTagDist,
+                this.getState().Speeds.omegaRadiansPerSecond
+            );
+            if (stdDevs != null) {
+                setVisionMeasurementStdDevs(stdDevs);
+                this.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
+            } 
+        }
+        else if (leftLimelightScore == highestScore) {
+            var stdDevs = getVisionStdDevs(
+                false, // isPhotonCamera
+                isShooting,
+                mt2_left.tagCount,
+                mt2_left.avgTagDist,
+                this.getState().Speeds.omegaRadiansPerSecond
+            );
+            if (stdDevs != null) {
+                setVisionMeasurementStdDevs(stdDevs);
+                this.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
+            }   
+        }
+        else if (photonScore == highestScore){
+            var stdDevs = getVisionStdDevs(
+                true, // isPhotonCamera
+                isShooting, // or false if you don't track it yet
+                photonNumTags,
+                photonAvgTagDist,
+                this.getState().Speeds.omegaRadiansPerSecond
+            );
+
+            if (stdDevs != null) {
+                setVisionMeasurementStdDevs(stdDevs);
+                this.addVisionMeasurement(new Pose2d(fieldToCameraPosition.getX(), fieldToCameraPosition.getY(), fieldToCameraPosition.getRotation().toRotation2d()).transformBy(cameraToRobot), photonTimestamp);
             }
         }
         field.setRobotPose(this.getState().Pose);
@@ -494,7 +535,26 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
-        private Matrix<N3, N1> getVisionStdDevs(
+    private double scoreVision(int tagCount, double distance, boolean isShooting, boolean isPhoton) {
+        /*Very basic scoring of vision readings 
+         * If we're shooting and photon vision has a reading, use that one (score high)
+         * otherwise at least 2 tags will score higher
+         * most of the time we will prioritize the target thats the closest, so 100 - distance will score higher for smaller distances
+        */
+        if (distance == 0) { //distance of 0 likely means this was not a valid reading
+            return 0;
+        }
+        double totalScore = 0.0;
+        if (isShooting && tagCount > 1 && isPhoton) {
+            return 1000.0;
+        }
+        if (tagCount > 1) {
+            totalScore += 50;
+        }
+        totalScore += (100.0 - distance); //larger distances will score lower
+        return totalScore;
+    }
+    private Matrix<N3, N1> getVisionStdDevs(
         boolean isPhotonCamera,
         boolean shooterMode,
         int tagCount,

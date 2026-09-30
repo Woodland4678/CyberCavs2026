@@ -43,7 +43,7 @@ public class LEDStrip {
     /** Left segment 2 */
     public static final int shooterHoodDiag = 0X02; //2
     /** Left segment 3*/
-    public static final int unused = 0X04; //4
+    public static final int leftLimelight = 0X04; //4
     /** Left segment 4*/
     public static final int climberDiag = 0X08; //8
     /** Left segment 5*/
@@ -51,7 +51,7 @@ public class LEDStrip {
     /** Left segment 6 */
     public static final int apriltagDiag = 0X20; //32
     /** Left segment 7 (top) */
-    public static final int spareDiag = 0X40; //64
+    public static final int rightLimelight = 0X40; //64
 
     /** Right segment 1 (starts at top) */
     public static final int swerve1Diag = 0X80; // 128
@@ -181,8 +181,8 @@ public class LEDStrip {
                 for(int i = 4;i<=7;i++) 
                     ledBuffer.setRGB(i, 0, 255, 0); 
             }
-            if (true) { //unsued segment
-            //if((diagnosticPattern & unused) != 0) {
+            //if ((diagnosticPattern & leftLimelight) != 0) { //unsued segment
+            if((diagnosticPattern & leftLimelight) != 0) {
                 for(int i = 8;i<=11;i++) 
                     ledBuffer.setRGB(i, 0, 255, 0); 
             }
@@ -198,7 +198,7 @@ public class LEDStrip {
                 for(int i = 20;i<=24;i++) 
                     ledBuffer.setRGB(i, 0, 255, 0); 
             }
-            if((diagnosticPattern & spareDiag) != 0) {
+            if((diagnosticPattern & rightLimelight) != 0) {
                 for(int i = 25;i<=29;i++) 
                     ledBuffer.setRGB(i, 0, 255, 0); 
             }

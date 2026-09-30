@@ -28,6 +28,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -69,6 +70,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
+import frc.robot.LimelightHelpers;
 
 public class RobotContainer {
     private LEDStrip ledStrip;
@@ -512,10 +514,14 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-       joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
-       joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
-       joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
-       joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
+         joystick.a().whileTrue(new ManualShot(S_Shooter, S_Hopper, 30, Constants.ShooterConstants.hoodRetractPosition));
+         joystick.b().whileTrue(new ManualShot(S_Shooter, S_Hopper, 30, Constants.ShooterConstants.hoodStage1Position));
+          joystick.y().whileTrue(new ManualShot(S_Shooter, S_Hopper, 30, Constants.ShooterConstants.hoodStage2Position));
+       
+     //  joystick.a().whileTrue(new DriveOverBump(drivetrain, 0));
+     //  joystick.b().whileTrue(new DriveOverBump(drivetrain, 1));
+     //  joystick.y().whileTrue(new DriveOverBump(drivetrain, 2));
+     //  joystick.x().whileTrue(new DriveOverBump(drivetrain, 3));
       // joystick.y().whileTrue(new RightSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.ZachAndEliSpecial));
       // joystick.a().whileTrue(new LeftSideDoubleRunToMiddleBaseBLine(drivetrain, S_Intake, S_Hopper, S_Shooter, AutoPaths.leftSideShallowSemiCircle));
       // joystick.x().whileTrue(drivetrain.pathBuilder.build(new Path("CloseHubLongSweep")));
@@ -867,6 +873,28 @@ public class RobotContainer {
        }
     public boolean isIntakeWheelsReady(){
         return S_Intake.isIntakeWheelsReady();
-        //return true;
-       } 
+    //return true;
+    } 
+    private double lastHeartbeat_right = -1;
+    private double lastHeartbeatUpdateTime_right = 0.0;
+    public boolean isRightLimelightReady() {
+        double hb = LimelightHelpers.getLimelightNTDouble("limelight-right", "hb");
+        double now = Timer.getFPGATimestamp();
+        if (hb != lastHeartbeat_right) {
+            lastHeartbeat_right = hb;
+            lastHeartbeatUpdateTime_right = now;
+        }
+        return (now - lastHeartbeatUpdateTime_right) < 0.5;
+    }
+    private double lastHeartbeat_left = -1;
+    private double lastHeartbeatUpdateTime_left = 0.0;
+    public boolean isLeftLimelightReady() {
+        double hb = LimelightHelpers.getLimelightNTDouble("limelight-left", "hb");
+        double now = Timer.getFPGATimestamp();
+        if (hb != lastHeartbeat_left) {
+            lastHeartbeat_left = hb;
+            lastHeartbeatUpdateTime_left = now;
+        }
+        return (now - lastHeartbeatUpdateTime_left) < 0.5;
+    }
 }

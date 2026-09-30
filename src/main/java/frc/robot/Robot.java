@@ -111,7 +111,9 @@ public class Robot extends TimedRobot {
         var diagState = 0; //diagnostic state 
    
         ledStrip = LEDStrip.getInstance();
-        diagState += LEDStrip.unused; //add unused segment as is always true
+        if (m_robotContainer.isLeftLimelightReady()) {
+             diagState += LEDStrip.leftLimelight; //add unused segment as is always true
+        }
         if (m_robotContainer.isShooterMotorsReady()){
         diagState += LEDStrip.shooterMotorDiag; 
         }
@@ -139,6 +141,9 @@ public class Robot extends TimedRobot {
         if (m_robotContainer.isAprilTagCameraReady()){
         diagState += LEDStrip.apriltagDiag;
         }  
+        if (m_robotContainer.isRightLimelightReady()) {
+            diagState += LEDStrip.rightLimelight;
+        }
         if (m_robotContainer.isFloorReady()){
         diagState += LEDStrip.hopperFloorDiag;
         }  
@@ -150,7 +155,7 @@ public class Robot extends TimedRobot {
         }  
 
         // force the spare led segment to be green
-        diagState += LEDStrip.spareDiag;
+       // diagState += LEDStrip.spareDiag;
 
         SmartDashboard.putNumber("diagState", diagState);
         ledStrip.setDiagnosticPattern(diagState);
