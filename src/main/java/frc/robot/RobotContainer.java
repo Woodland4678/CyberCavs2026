@@ -878,23 +878,25 @@ public class RobotContainer {
     private double lastHeartbeat_right = -1;
     private double lastHeartbeatUpdateTime_right = 0.0;
     public boolean isRightLimelightReady() {
-        double hb = LimelightHelpers.getLimelightNTDouble("limelight-right", "hb");
-        double now = Timer.getFPGATimestamp();
-        if (hb != lastHeartbeat_right) {
-            lastHeartbeat_right = hb;
-            lastHeartbeatUpdateTime_right = now;
-        }
-        return (now - lastHeartbeatUpdateTime_right) < 0.5;
+        return true;
+        // double hb = LimelightHelpers.getLimelightNTDouble("limelight-right", "hb");
+        // double now = Timer.getFPGATimestamp();
+        // if (hb != lastHeartbeat_right) {
+        //     lastHeartbeat_right = hb;
+        //     lastHeartbeatUpdateTime_right = now;
+        // }
+        // return (now - lastHeartbeatUpdateTime_right) < 0.5;
     }
     private double lastHeartbeat_left = -1;
     private double lastHeartbeatUpdateTime_left = 0.0;
     public boolean isLeftLimelightReady() {
-        double hb = LimelightHelpers.getLimelightNTDouble("limelight-left", "hb");
-        double now = Timer.getFPGATimestamp();
-        if (hb != lastHeartbeat_left) {
-            lastHeartbeat_left = hb;
-            lastHeartbeatUpdateTime_left = now;
-        }
-        return (now - lastHeartbeatUpdateTime_left) < 0.5;
+        return true;
+        // double hb = LimelightHelpers.getLimelightNTDouble("limelight-left", "hb");
+        // double now = Timer.getFPGATimestamp();
+        // if (hb != lastHeartbeat_left) {
+        //     lastHeartbeat_left = hb;
+        //     lastHeartbeatUpdateTime_left = now;
+        // }
+        // return (now - lastHeartbeatUpdateTime_left) < 0.5;
     }
 }

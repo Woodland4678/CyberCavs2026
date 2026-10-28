@@ -354,16 +354,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
          * Otherwise, only check and apply the operator perspective if the DS is disabled.
          * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
          */
-        LimelightHelpers.SetRobotOrientation("limelight-right", this.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
-        LimelightHelpers.SetRobotOrientation("limelight-left", this.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
+       // LimelightHelpers.SetRobotOrientation("limelight-right", this.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+       // LimelightHelpers.PoseEstimate mt2_right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
+       // LimelightHelpers.SetRobotOrientation("limelight-left", this.getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+       // LimelightHelpers.PoseEstimate mt2_left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
         doRejectUpdate_right = false;
         doRejectUpdate_left = false;
-        SmartDashboard.putNumber("Left limelight mt2 distance", mt2_left.avgTagDist);
-        SmartDashboard.putNumber("Right limelight mt2 distance", mt2_right.avgTagDist);
-        double leftLimelightScore = scoreVision(mt2_left.tagCount, mt2_left.avgTagDist, isShooting, false);
-        double rightLimelightScore = scoreVision(mt2_right.tagCount, mt2_right.avgTagDist, isShooting, false);
+        // SmartDashboard.putNumber("Left limelight mt2 distance", mt2_left.avgTagDist);
+        // SmartDashboard.putNumber("Right limelight mt2 distance", mt2_right.avgTagDist);
+        // double leftLimelightScore = scoreVision(mt2_left.tagCount, mt2_left.avgTagDist, isShooting, false);
+        // double rightLimelightScore = scoreVision(mt2_right.tagCount, mt2_right.avgTagDist, isShooting, false);
         double photonScore = 0;
         
        
@@ -404,6 +404,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             else {
                 hasMultiTagTarget = false;
             }
+            SmartDashboard.putBoolean("Has MultiTag", hasMultiTagTarget);
         }
         double highestScore = 0;
        
@@ -413,48 +414,48 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         else {
             photonScore = 0;
         }
-        SmartDashboard.putNumber("Photon score", photonScore);
-        SmartDashboard.putNumber("Left limelight score", leftLimelightScore);
-        SmartDashboard.putNumber("Right limelight score", rightLimelightScore);
-        if (leftLimelightScore > highestScore) {
-            highestScore = leftLimelightScore;
-            SmartDashboard.putString("Vision source using this loop", "Left Limelight");
-        }
-        if (rightLimelightScore > highestScore) {
-            highestScore = rightLimelightScore;
-            SmartDashboard.putString("Vision source using this loop", "Right Limelight");
-        }
-        if (photonScore > highestScore) {
+        // SmartDashboard.putNumber("Photon score", photonScore);
+        // SmartDashboard.putNumber("Left limelight score", leftLimelightScore);
+        // SmartDashboard.putNumber("Right limelight score", rightLimelightScore);
+        // if (leftLimelightScore > highestScore) {
+        //     highestScore = leftLimelightScore;
+        //     SmartDashboard.putString("Vision source using this loop", "Left Limelight");
+        // }
+        // if (rightLimelightScore > highestScore) {
+        //     highestScore = rightLimelightScore;
+        //     SmartDashboard.putString("Vision source using this loop", "Right Limelight");
+        // }
+        if (true) {
             highestScore = photonScore;
             SmartDashboard.putString("Vision source using this loop", "Photon vision");
         }
-        if (rightLimelightScore == highestScore) {
-            var stdDevs = getVisionStdDevs(
-                false, // isPhotonCamera
-                isShooting,
-                mt2_right.tagCount,
-                mt2_right.avgTagDist,
-                this.getState().Speeds.omegaRadiansPerSecond
-            );
-            if (stdDevs != null) {
-                setVisionMeasurementStdDevs(stdDevs);
-                this.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
-            } 
-        }
-        else if (leftLimelightScore == highestScore) {
-            var stdDevs = getVisionStdDevs(
-                false, // isPhotonCamera
-                isShooting,
-                mt2_left.tagCount,
-                mt2_left.avgTagDist,
-                this.getState().Speeds.omegaRadiansPerSecond
-            );
-            if (stdDevs != null) {
-                setVisionMeasurementStdDevs(stdDevs);
-                this.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
-            }   
-        }
-        else if (photonScore == highestScore){
+        // if (rightLimelightScore == highestScore) {
+        //     var stdDevs = getVisionStdDevs(
+        //         false, // isPhotonCamera
+        //         isShooting,
+        //         mt2_right.tagCount,
+        //         mt2_right.avgTagDist,
+        //         this.getState().Speeds.omegaRadiansPerSecond
+        //     );
+        //     if (stdDevs != null) {
+        //         setVisionMeasurementStdDevs(stdDevs);
+        //         this.addVisionMeasurement(mt2_right.pose, mt2_right.timestampSeconds);
+        //     } 
+        // }
+        // else if (leftLimelightScore == highestScore) {
+        //     var stdDevs = getVisionStdDevs(
+        //         false, // isPhotonCamera
+        //         isShooting,
+        //         mt2_left.tagCount,
+        //         mt2_left.avgTagDist,
+        //         this.getState().Speeds.omegaRadiansPerSecond
+        //     );
+        //     if (stdDevs != null) {
+        //         setVisionMeasurementStdDevs(stdDevs);
+        //         this.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
+        //     }   
+        // }
+        if (true){
             var stdDevs = getVisionStdDevs(
                 true, // isPhotonCamera
                 isShooting, // or false if you don't track it yet
