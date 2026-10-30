@@ -80,6 +80,32 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     double photonAvgTagDist = 0;
      int photonNumTags = 0;
 
+    /* Second camera: Left_Side. Mounted forward on the robot, on the left side, facing left.
+     * Robot frame: +X is forward, +Y is LEFT, +yaw is counter-clockwise (so facing left = +90 deg).
+     * TODO: measure these on the real robot. */
+    private PhotonCamera leftCam;
+    double leftCamForwardPos = Units.inchesToMeters(10.0); // TODO: forward of robot center
+    double leftCamLeftPos = Units.inchesToMeters(12.0);    // TODO: left of robot center
+    Transform2d leftRobotToCamera = new Transform2d(
+        new Translation2d(leftCamForwardPos, leftCamLeftPos), Rotation2d.fromDegrees(90));
+    // addVisionMeasurement needs camera -> robot, which is the inverse of robot -> camera
+    Transform2d leftCameraToRobot = leftRobotToCamera.inverse();
+    boolean leftHasMultiTagTarget = false;
+    Transform3d leftFieldToCameraPosition = new Transform3d();
+    double leftAvgTagDist = 0;
+    int leftNumTags = 0;
+
+    /** Newest multi-tag result read from one PhotonVision camera this loop. */
+    private static class PhotonSample {
+        boolean sawFrame = false; // any frame arrived this loop
+        boolean fresh = false;    // a new multi-tag pose arrived this loop
+        Transform3d fieldToCamera = new Transform3d();
+        int numTags = 0;
+        double avgTagDist = 0;
+        double timestamp = 0;
+        double score = 0;
+    }
+
     private DutyCycle rearLidar;
     private DutyCycle frontLidar;
 
@@ -180,6 +206,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
          rpi = new PhotonCamera("Arducam_Main");
+         leftCam = new PhotonCamera("Left_Side");
          fieldToCameraPosition = new Transform3d();
          configureAutoBuilder();
 
@@ -210,6 +237,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
          rpi = new PhotonCamera("Arducam_Main");
+         leftCam = new PhotonCamera("Left_Side");
          fieldToCameraPosition = new Transform3d();
          configureAutoBuilder();
 
@@ -248,6 +276,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
          rpi = new PhotonCamera("Arducam_Main");
+         leftCam = new PhotonCamera("Left_Side");
          fieldToCameraPosition = new Transform3d();
          configureAutoBuilder();
 
@@ -364,11 +393,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // SmartDashboard.putNumber("Right limelight mt2 distance", mt2_right.avgTagDist);
         // double leftLimelightScore = scoreVision(mt2_left.tagCount, mt2_left.avgTagDist, isShooting, false);
         // double rightLimelightScore = scoreVision(mt2_right.tagCount, mt2_right.avgTagDist, isShooting, false);
-        double photonScore = 0;
-        
-       
-        double photonTimestamp = 0;
-        
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
@@ -382,37 +406,52 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Math.abs(getGyroPitch()) > 8 || Math.abs(getGyroRoll()) > 8) {
             odometryLikelyBad = true;
         }
-        var results = rpi.getAllUnreadResults();
-            for (var result : results) {
-            var multiTagResult = result.getMultiTagResult();
-            if (multiTagResult.isPresent()) {
-                
-               
-                hasMultiTagTarget = true;
-                fieldToCameraPosition = multiTagResult.get().estimatedPose.best;
-                
-                
-                photonNumTags = multiTagResult.get().fiducialIDsUsed.size();
-                SmartDashboard.putNumber("Photon XX", result.getTargets().get(0).bestCameraToTarget.getX());
-               // photonAvgTagDist = multiTagResult.get().estimatedPose.best.getTranslation().getNorm();
-                photonAvgTagDist =  result.getTargets().get(0).bestCameraToTarget.getX();
-                
-                photonTimestamp = result.getTimestampSeconds();
-                SmartDashboard.putNumber("Photon vision avg tag dist", photonAvgTagDist);
-                odometryLikelyBad = false;
-            }
-            else {
-                hasMultiTagTarget = false;
-            }
-            SmartDashboard.putBoolean("Has MultiTag", hasMultiTagTarget);
+        // Read any new frames from both cameras
+        PhotonSample mainSample = readPhotonCamera(rpi);
+        PhotonSample leftSample = readPhotonCamera(leftCam);
+
+        // Legacy main-camera fields (other code may read these through the getters)
+        if (mainSample.sawFrame) {
+            hasMultiTagTarget = mainSample.fresh;
         }
-        double highestScore = 0;
-       
-        if (hasMultiTagTarget) {
-            photonScore = scoreVision(photonNumTags, photonAvgTagDist, isShooting, true);
+        if (leftSample.sawFrame) {
+            leftHasMultiTagTarget = leftSample.fresh;
         }
-        else {
-            photonScore = 0;
+        if (mainSample.fresh) {
+            fieldToCameraPosition = mainSample.fieldToCamera;
+            photonNumTags = mainSample.numTags;
+            photonAvgTagDist = mainSample.avgTagDist;
+            SmartDashboard.putNumber("Photon vision avg tag dist", photonAvgTagDist);
+        }
+        if (leftSample.fresh) {
+            leftFieldToCameraPosition = leftSample.fieldToCamera;
+            leftNumTags = leftSample.numTags;
+            leftAvgTagDist = leftSample.avgTagDist;
+            SmartDashboard.putNumber("Left_Side vision avg tag dist", leftAvgTagDist);
+        }
+        if (mainSample.fresh || leftSample.fresh) {
+            odometryLikelyBad = false;
+        }
+        SmartDashboard.putBoolean("Has MultiTag", hasMultiTagTarget);
+        SmartDashboard.putBoolean("Left_Side Has MultiTag", leftHasMultiTagTarget);
+
+        // Score each camera. Only the main camera gets the isPhoton shooting bonus (it faces the hub).
+        mainSample.score = mainSample.fresh
+            ? scoreVision(mainSample.numTags, mainSample.avgTagDist, isShooting, true) : 0;
+        leftSample.score = leftSample.fresh
+            ? scoreVision(leftSample.numTags, leftSample.avgTagDist, isShooting, false) : 0;
+        SmartDashboard.putNumber("Photon score", mainSample.score);
+        SmartDashboard.putNumber("Left_Side score", leftSample.score);
+
+        // Pick the better camera. Strictly greater for Left_Side so the main camera wins ties.
+        PhotonSample bestSample = null;
+        boolean bestIsMain = true;
+        if (mainSample.score > 0) {
+            bestSample = mainSample;
+        }
+        if (leftSample.score > mainSample.score) {
+            bestSample = leftSample;
+            bestIsMain = false;
         }
         // SmartDashboard.putNumber("Photon score", photonScore);
         // SmartDashboard.putNumber("Left limelight score", leftLimelightScore);
@@ -425,10 +464,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         //     highestScore = rightLimelightScore;
         //     SmartDashboard.putString("Vision source using this loop", "Right Limelight");
         // }
-        if (true) {
-            highestScore = photonScore;
-            SmartDashboard.putString("Vision source using this loop", "Photon vision");
-        }
+        SmartDashboard.putString("Vision source using this loop",
+            bestSample == null ? "None" : (bestIsMain ? "Arducam_Main" : "Left_Side"));
         // if (rightLimelightScore == highestScore) {
         //     var stdDevs = getVisionStdDevs(
         //         false, // isPhotonCamera
@@ -455,18 +492,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         //         this.addVisionMeasurement(mt2_left.pose, mt2_left.timestampSeconds);
         //     }   
         // }
-        if (true){
+        // Feed the single best camera result (if a new one arrived this loop) into the pose estimator
+        if (bestSample != null) {
             var stdDevs = getVisionStdDevs(
-                true, // isPhotonCamera
-                isShooting, // or false if you don't track it yet
-                photonNumTags,
-                photonAvgTagDist,
+                bestIsMain, // isPhotonCamera: only the main camera gets the "shooting" high-trust rule
+                isShooting,
+                bestSample.numTags,
+                bestSample.avgTagDist,
                 this.getState().Speeds.omegaRadiansPerSecond
             );
 
             if (stdDevs != null) {
                 setVisionMeasurementStdDevs(stdDevs);
-                this.addVisionMeasurement(new Pose2d(fieldToCameraPosition.getX(), fieldToCameraPosition.getY(), fieldToCameraPosition.getRotation().toRotation2d()).transformBy(cameraToRobot), photonTimestamp);
+                Pose2d cameraPose = new Pose2d(
+                    bestSample.fieldToCamera.getX(),
+                    bestSample.fieldToCamera.getY(),
+                    bestSample.fieldToCamera.getRotation().toRotation2d());
+                this.addVisionMeasurement(
+                    cameraPose.transformBy(bestIsMain ? cameraToRobot : leftCameraToRobot),
+                    bestSample.timestamp);
             }
         }
         field.setRobotPose(this.getState().Pose);
@@ -536,6 +580,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
+    /** Drains a camera's unread results and keeps the newest multi-tag pose (if any). */
+    private PhotonSample readPhotonCamera(PhotonCamera camera) {
+        PhotonSample sample = new PhotonSample();
+        for (var result : camera.getAllUnreadResults()) {
+            sample.sawFrame = true;
+            var multiTagResult = result.getMultiTagResult();
+            if (multiTagResult.isPresent() && result.hasTargets()) {
+                sample.fresh = true;
+                sample.fieldToCamera = multiTagResult.get().estimatedPose.best;
+                sample.numTags = multiTagResult.get().fiducialIDsUsed.size();
+                sample.avgTagDist = result.getTargets().get(0).bestCameraToTarget.getX();
+                sample.timestamp = result.getTimestampSeconds();
+            }
+        }
+        return sample;
+    }
+
     private double scoreVision(int tagCount, double distance, boolean isShooting, boolean isPhoton) {
         /*Very basic scoring of vision readings 
          * If we're shooting and photon vision has a reading, use that one (score high)
@@ -715,11 +776,20 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public double getGyroRoll() {
         return this.getPigeon2().getRoll().getValueAsDouble();
     }
+    public Transform3d getLeftFieldToCameraPosition() {
+        return leftFieldToCameraPosition;
+    }
+    public boolean getLeftHasMultiTagTarget() {
+        return leftHasMultiTagTarget;
+    }
+    public boolean isLeftAprilTagCameraReady() {
+        return leftCam.isConnected();
+    }
     public boolean getHasMultiTagTarget() {
         return hasMultiTagTarget;
     }
     public boolean isAprilTagCameraReady() {
-        return rpi.isConnected();
+        return (rpi.isConnected() && leftCam.isConnected());
     }
     public boolean isModuleReady(int module) {
         var mod = this.getModule(module);       
